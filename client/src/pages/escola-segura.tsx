@@ -278,7 +278,7 @@ export default function EscolaSegura() {
               <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg flex items-center">
                 SISTEMA DE ESCALA 
                 <span className="ml-2 bg-yellow-500 text-green-900 font-bold text-sm px-2 py-0.5 rounded-full shadow-md border border-yellow-400">
-                  PMF
+                  ES
                 </span>
               </h2>
             </div>
@@ -344,7 +344,7 @@ export default function EscolaSegura() {
         {/* Título informativo sobre dias escolares */}
         <div className="mb-6 text-center">
           <h2 className="text-xl font-bold text-gray-800 border-b border-green-300 pb-2 inline-block px-4">
-            Escala Operacional <span className="text-green-700">Escola Segura</span> - Somente Dias Úteis
+            Escala <span className="text-green-700">Escola Segura</span> - Somente Dias Úteis
           </h2>
         </div>
         
