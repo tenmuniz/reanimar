@@ -83,15 +83,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pmfSchedule = await storage.getSchedule('pmf', yearNum, monthNum);
       const esSchedule = await storage.getSchedule('escolaSegura', yearNum, monthNum);
       
-      // Extrai dados do formato correto
+      // Imprimir formato dos dados para depuração
+      console.log("Dados PMF originais:", JSON.stringify(pmfSchedule));
+      console.log("Dados ES originais:", JSON.stringify(esSchedule));
+
+      // Extrai dados do formato correto para PMF
       let pmfData = {};
-      if (pmfSchedule && pmfSchedule["2025"] && pmfSchedule["2025"]["4"]) {
-        pmfData = pmfSchedule["2025"]["4"];
+      
+      // Verifica várias possíveis estruturas para garantir que obtemos os dados
+      if (pmfSchedule && typeof pmfSchedule === 'object') {
+        if (pmfSchedule["2025"] && pmfSchedule["2025"]["4"]) {
+          pmfData = pmfSchedule["2025"]["4"];
+        } else if (pmfSchedule["schedule"] && pmfSchedule["schedule"]["2025"] && pmfSchedule["schedule"]["2025"]["4"]) {
+          pmfData = pmfSchedule["schedule"]["2025"]["4"];
+        } else if (pmfSchedule["1"] !== undefined) {
+          // Formato simplificado onde temos dias como chaves diretamente
+          pmfData = pmfSchedule;
+        }
       }
       
+      // Extrai dados do formato correto para Escola Segura
       let esData = {};
-      if (esSchedule && esSchedule["2025"] && esSchedule["2025"]["4"]) {
-        esData = esSchedule["2025"]["4"];
+      
+      // Verifica várias possíveis estruturas para garantir que obtemos os dados
+      if (esSchedule && typeof esSchedule === 'object') {
+        if (esSchedule["2025"] && esSchedule["2025"]["4"]) {
+          esData = esSchedule["2025"]["4"];
+        } else if (esSchedule["schedule"] && esSchedule["schedule"]["2025"] && esSchedule["schedule"]["2025"]["4"]) {
+          esData = esSchedule["schedule"]["2025"]["4"];
+        } else if (esSchedule["1"] !== undefined) {
+          // Formato simplificado onde temos dias como chaves diretamente
+          esData = esSchedule;
+        }
       }
       
       // Montar objeto de resposta com formato simples e direto
