@@ -7,6 +7,7 @@ import { Save } from "lucide-react";
 import CalendarCard from "@/components/calendar/CalendarCard";
 import MonthSelector from "@/components/calendar/MonthSelector";
 import ResumoEscala from "@/components/calendar/ResumoEscala";
+import ResumoGuarnicao from "@/components/calendar/ResumoGuarnicao";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 
@@ -270,7 +271,7 @@ export default function Home() {
       <main className="container mx-auto px-4 py-6">
         {/* Calendar controls */}
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <Button
               onClick={saveSchedule}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center shadow-sm transition"
@@ -280,6 +281,12 @@ export default function Home() {
             </Button>
             
             <ResumoEscala
+              schedule={schedule}
+              currentDate={currentDate}
+              combinedSchedules={combinedSchedules}
+            />
+            
+            <ResumoGuarnicao 
               schedule={schedule}
               currentDate={currentDate}
               combinedSchedules={combinedSchedules}
