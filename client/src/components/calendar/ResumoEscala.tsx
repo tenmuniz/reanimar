@@ -648,6 +648,17 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
             )}
           </div>
           
+          {/* Botão de Impressão */}
+          <div className="flex justify-center mb-4">
+            <Button
+              onClick={handlePrint}
+              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center"
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Imprimir Relatório
+            </Button>
+          </div>
+          
           {/* Legenda e informações sobre limite */}
           <div className="bg-blue-800/40 p-3 rounded-lg text-xs">
             <div className="flex items-center justify-around mb-2">
