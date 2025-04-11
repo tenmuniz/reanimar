@@ -202,6 +202,7 @@ export default function Home() {
                 officers={officers}
                 savedSelections={savedSelections}
                 onOfficerChange={handleOfficerChange}
+                schedule={schedule}
               />
             );
           })}

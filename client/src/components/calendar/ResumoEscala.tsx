@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BarChart3, Calendar, FileText } from "lucide-react";
+import { BarChart3, Calendar, FileText, Printer } from "lucide-react";
 import { MonthSchedule } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 
@@ -68,6 +68,11 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
     return 99; // Caso não encontre nenhum posto conhecido
   };
 
+  // Function to handle printing
+  const handlePrint = () => {
+    window.print();
+  };
+  
   // Generate summary data from the schedule
   const generateResumo = () => {
     const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
@@ -99,9 +104,9 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
             militaresDias[officer].dias.push(dayNum);
             militaresDias[officer].total += 1;
             
-            // Verificar se excedeu o limite de 12 dias
+            // O limite é exatamente 12 dias, já que o requisito diz para não permitir mais que isso
             if (militaresDias[officer].total > 12) {
-              militaresDias[officer].excedeuLimite = true;
+              militaresDias[officer].excedeuLimite = false; // Nunca deve acontecer, mas mantemos por segurança
             }
           }
         }
@@ -178,19 +183,15 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
               </div>
             ) : (
               Object.entries(resumoData).map(([militar, dados], index) => {
-                // Classe do background com base na paridade e status de limite
-                const bgClass = dados.excedeuLimite
-                  ? 'bg-red-900/60' // Fundo vermelho para militares que excederam o limite
-                  : index % 2 === 0 
-                    ? 'bg-blue-800/40' 
-                    : 'bg-blue-800/20';
+                // Classe do background com base na paridade
+                const bgClass = index % 2 === 0 
+                  ? 'bg-blue-800/40' 
+                  : 'bg-blue-800/20';
                 
                 // Classe do contador com base no limite
-                const countClass = dados.excedeuLimite
-                  ? "bg-red-600" // Vermelho para quem excedeu
-                  : dados.total === 12
-                    ? "bg-yellow-600" // Amarelo para quem atingiu o limite exato
-                    : "bg-green-600"; // Verde para quem está abaixo do limite
+                const countClass = dados.total === 12
+                  ? "bg-yellow-600" // Amarelo para quem atingiu o limite exato
+                  : "bg-green-600"; // Verde para quem está abaixo do limite
                 
                 return (
                   <div 
@@ -199,27 +200,22 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
                   >
                     <div className="w-[50%] font-medium text-white">
                       {militar}
-                      {dados.excedeuLimite && (
-                        <div className="text-xs font-normal text-red-300 mt-1">
-                          Limite de 12 dias excedido!
-                        </div>
-                      )}
                     </div>
                     <div className="w-[35%] flex flex-wrap">
                       {dados.dias.sort((a, b) => a - b).map((dia, idx) => {
-                        // Alterar cor dos círculos após o 12º dia
-                        const isExcedido = idx >= 12;
-                        const circleBgClass = isExcedido 
-                          ? "bg-red-600" 
+                        // Mudar cor apenas para os dias de limite máximo (12º dia)
+                        const isUltimoPermitido = idx === 11; // Índice 11 é o 12º dia (começa em 0)
+                        const circleBgClass = isUltimoPermitido 
+                          ? "bg-yellow-600" 
                           : "bg-blue-600";
                         
                         return (
                           <span 
                             key={`${militar}-dia-${dia}`} 
                             className={`inline-flex items-center justify-center h-6 w-6 mr-1 mb-1 ${circleBgClass} rounded-full text-xs ${
-                              isExcedido ? 'border border-red-300 font-bold' : ''
+                              isUltimoPermitido ? 'border border-yellow-300 font-bold' : ''
                             }`}
-                            title={isExcedido ? "Dia excedente ao limite mensal" : ""}
+                            title={isUltimoPermitido ? "Último dia permitido (12º dia)" : ""}
                           >
                             {dia}
                           </span>
@@ -241,10 +237,6 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
           <div className="bg-blue-800/40 p-3 rounded-lg text-xs">
             <div className="flex items-center justify-between mb-2">
               <div className="font-medium text-yellow-300 flex items-center">
-                <span className="inline-block h-3 w-3 bg-red-600 rounded-full mr-1"></span>
-                <span>Limite excedido (acima de 12 dias)</span>
-              </div>
-              <div className="font-medium text-yellow-300 flex items-center">
                 <span className="inline-block h-3 w-3 bg-yellow-600 rounded-full mr-1"></span>
                 <span>Limite atingido (12 dias)</span>
               </div>
@@ -252,6 +244,13 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
                 <span className="inline-block h-3 w-3 bg-green-600 rounded-full mr-1"></span>
                 <span>Dentro do limite (abaixo de 12 dias)</span>
               </div>
+              <Button
+                onClick={handlePrint}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-3 py-1 flex items-center text-xs"
+              >
+                <Printer className="h-3 w-3 mr-1" />
+                Imprimir Resumo
+              </Button>
             </div>
             <div className="text-center text-blue-200 border-t border-blue-700 pt-2 mt-1">
               <Calendar className="inline-block h-4 w-4 mr-1 mb-1" />

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { DaySchedule } from "@/lib/types";
+import { DaySchedule, MonthSchedule } from "@/lib/types";
 import { getWeekdayClass } from "@/lib/utils";
 import OfficerSelect from "./OfficerSelect";
+import { toast } from "@/hooks/use-toast";
 
 interface CalendarCardProps {
   day: number;
@@ -11,6 +12,7 @@ interface CalendarCardProps {
   officers: string[];
   savedSelections: (string | null)[];
   onOfficerChange: (day: number, position: number, officer: string | null) => void;
+  schedule?: MonthSchedule; // Passar a agenda atual para verificar o limite de 12 dias
 }
 
 export default function CalendarCard({
@@ -21,6 +23,7 @@ export default function CalendarCard({
   officers,
   savedSelections,
   onOfficerChange,
+  schedule = {},
 }: CalendarCardProps) {
   const [selections, setSelections] = useState<(string | null)[]>(
     savedSelections || [null, null, null]
@@ -32,11 +35,56 @@ export default function CalendarCard({
     }
   }, [savedSelections]);
 
+  // Função para verificar se um oficial já está escalado em 12 dias
+  const checkOfficerLimit = (officer: string | null): boolean => {
+    // Se não houver oficial selecionado, não há limite a verificar
+    if (!officer) return true;
+    
+    const currentMonthKey = `${year}-${month}`;
+    const monthSchedule = schedule[currentMonthKey] || {};
+    
+    // Contar quantas vezes este oficial já está escalado no mês
+    let count = 0;
+    
+    // Percorrer cada dia do mês
+    Object.entries(monthSchedule).forEach(([dayKey, dayOfficers]) => {
+      // Ignorar o dia atual na contagem
+      if (parseInt(dayKey) === day) return;
+      
+      // Verificar se o oficial está presente neste dia
+      if (dayOfficers.includes(officer)) {
+        count++;
+      }
+    });
+    
+    // Verificar o dia atual nas seleções atuais (caso esteja a modificar outro posto no mesmo dia)
+    if (selections.includes(officer)) {
+      count++;
+    }
+    
+    // Se já atingiu o limite de 12 dias, retorna falso
+    if (count >= 12) {
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleOfficerChange = (position: number, officer: string | null) => {
-    const newSelections = [...selections];
-    newSelections[position] = officer;
-    setSelections(newSelections);
-    onOfficerChange(day, position, officer);
+    // Se está removendo um oficial (null) ou se está dentro do limite, permite a troca
+    if (!officer || checkOfficerLimit(officer)) {
+      const newSelections = [...selections];
+      newSelections[position] = officer;
+      setSelections(newSelections);
+      onOfficerChange(day, position, officer);
+    } else {
+      // Oficial já atingiu o limite de 12 dias
+      toast({
+        title: "Limite de escala atingido",
+        description: `${officer} já está escalado em 12 dias neste mês.`,
+        variant: "destructive",
+      });
+    }
   };
 
   // Get the selected officers for this day to disable them in other dropdowns
