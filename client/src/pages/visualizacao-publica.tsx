@@ -1,334 +1,356 @@
-import { useState } from "react";
-import { Shield, School, Calendar, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { getMonthData, formatMonthYear, getWeekdayName } from "@/lib/utils";
-import { OfficersResponse, CombinedSchedules } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getWeekdayClass, formatMonthYear } from "@/lib/utils";
+import { CombinedSchedules } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import { List, RefreshCw, Shield, BookOpen } from "lucide-react";
 
-// Componente de card para visualização de escalas
+// Componente de visualização de escala para um dia específico
 function VisualizacaoCard({ 
   day, 
   month, 
   year, 
   weekday, 
-  pmfOfficers, 
-  escolaSeguraOfficers 
+  oficiais,
+  tipo
 }: { 
   day: number; 
   month: number; 
   year: number; 
   weekday: string; 
-  pmfOfficers: (string | null)[]; 
-  escolaSeguraOfficers: (string | null)[] 
+  oficiais: (string | null)[]; 
+  tipo: 'pmf' | 'escolaSegura';
 }) {
-  const isWeekend = weekday === 'Sábado' || weekday === 'Domingo';
-  const isPMFVazio = pmfOfficers.every(officer => officer === null);
-  const isEscolaSeguraVazio = escolaSeguraOfficers.every(officer => officer === null);
-
+  const weekdayClass = getWeekdayClass(weekday);
+  let maxOfficers = tipo === 'pmf' ? 3 : 2;
+  
+  const countOfficers = oficiais.filter(Boolean).length;
+  
+  let cardBgClass = "bg-white";
+  let statusText = "";
+  
+  if (countOfficers === 0) {
+    statusText = "Sem escala";
+    cardBgClass = "bg-gray-50";
+  } else if (countOfficers < maxOfficers) {
+    statusText = "Incompleto";
+    cardBgClass = "bg-amber-50";
+  } else {
+    statusText = "Completo";
+    cardBgClass = "bg-green-50";
+  }
+  
   return (
-    <Card className={`shadow-md ${isWeekend ? 'bg-amber-50 border-amber-200' : 'bg-white'}`}>
-      <CardHeader className="pb-3 pt-3 px-3 bg-gradient-to-br from-gray-50 to-gray-100 border-b">
+    <Card className={`${cardBgClass} border-2 shadow-lg hover:shadow-xl transition-all duration-200 h-full`}>
+      <CardHeader className={`${weekdayClass} py-2 px-3`}>
         <div className="flex justify-between items-center">
-          <div>
-            <CardTitle className="text-sm font-bold flex items-center">
-              <Calendar className="h-4 w-4 mr-1 text-gray-600" />
-              <span>{day}</span>
-              <span className="text-xs text-gray-500 ml-2">({weekday})</span>
-            </CardTitle>
-            <CardDescription className="text-xs">
-              {format(new Date(year, month - 1, day), 'dd/MM/yyyy')}
-            </CardDescription>
-          </div>
+          <div className="font-bold">{day}</div>
+          <div className="text-xs">{weekday}</div>
         </div>
       </CardHeader>
-      <CardContent className="px-3 py-3 space-y-3">
-        {/* Polícia Mais Forte */}
-        <div>
-          <div className="flex items-center space-x-1 mb-1">
-            <Shield className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-semibold text-blue-800">Polícia Mais Forte</span>
-          </div>
-          
-          <div className="space-y-1">
-            {isPMFVazio ? (
-              <div className="text-xs text-gray-400 italic">Sem escalas para este dia</div>
-            ) : (
-              pmfOfficers.map((officer, index) => (
-                officer && (
-                  <div key={`pmf-${index}`} className="flex items-center">
-                    <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                      {officer}
-                    </Badge>
-                  </div>
-                )
-              ))
-            )}
-          </div>
+      <CardContent className="p-3">
+        <div className="mb-2">
+          <Badge variant={countOfficers === maxOfficers ? "default" : countOfficers > 0 ? "secondary" : "outline"}>
+            {statusText}
+          </Badge>
         </div>
-
-        {/* Escola Segura */}
-        <div>
-          <div className="flex items-center space-x-1 mb-1">
-            <School className="h-4 w-4 text-green-600" />
-            <span className="text-xs font-semibold text-green-800">Escola Segura</span>
-          </div>
-          
-          <div className="space-y-1">
-            {isEscolaSeguraVazio ? (
-              <div className="text-xs text-gray-400 italic">Sem escalas para este dia</div>
-            ) : (
-              escolaSeguraOfficers.map((officer, index) => (
-                officer && (
-                  <div key={`es-${index}`} className="flex items-center">
-                    <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                      {officer}
-                    </Badge>
-                  </div>
-                )
-              ))
-            )}
-          </div>
+        <div className="space-y-1">
+          {oficiais.map((oficial, index) => (
+            <div key={index} className="text-sm p-1 rounded bg-gray-50">
+              {oficial || <span className="text-gray-400">Não escalado</span>}
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
   );
 }
 
-// Componente para visualizar escalas por oficial
+// Componente de visualização por oficial
 function VisualizacaoPorOficial({ 
   combinedSchedules, 
-  officers, 
   currentDate 
 }: { 
   combinedSchedules: CombinedSchedules; 
-  officers: string[]; 
   currentDate: Date 
 }) {
-  // Função para obter todos os dias em que um militar está escalado
-  const getDiasEscalados = (militar: string) => {
-    const diasPMF: number[] = [];
-    const diasEscolaSegura: number[] = [];
+  // Ordenar oficiais por nome
+  const oficiais = new Set<string>();
+  
+  // Obter todos os oficiais únicos
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1;
+  
+  // PMF
+  if (combinedSchedules.pmf[year]?.[month]) {
+    Object.values(combinedSchedules.pmf[year][month]).forEach(dayOfficers => {
+      dayOfficers.forEach(officer => {
+        if (officer) oficiais.add(officer);
+      });
+    });
+  }
+  
+  // Escola Segura
+  if (combinedSchedules.escolaSegura[year]?.[month]) {
+    Object.values(combinedSchedules.escolaSegura[year][month]).forEach(dayOfficers => {
+      dayOfficers.forEach(officer => {
+        if (officer) oficiais.add(officer);
+      });
+    });
+  }
+  
+  const listaOficiais = Array.from(oficiais).sort();
+  
+  // Para cada oficial, listar os dias de PMF e Escola Segura
+  const diasPorOficial: Record<string, { pmf: number[], escolaSegura: number[] }> = {};
+  
+  listaOficiais.forEach(oficial => {
+    diasPorOficial[oficial] = {
+      pmf: [],
+      escolaSegura: []
+    };
     
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentYear = currentDate.getFullYear();
-    const monthKey = `${currentYear}-${currentMonth}`;
-    
-    // Verificar em PMF
-    if (combinedSchedules.pmf[monthKey]) {
-      Object.entries(combinedSchedules.pmf[monthKey]).forEach(([dia, oficiais]) => {
-        if (oficiais.includes(militar)) {
-          diasPMF.push(parseInt(dia));
+    // PMF
+    if (combinedSchedules.pmf[year]?.[month]) {
+      Object.entries(combinedSchedules.pmf[year][month]).forEach(([day, officers]) => {
+        if (officers.includes(oficial)) {
+          diasPorOficial[oficial].pmf.push(parseInt(day));
         }
       });
     }
     
-    // Verificar em Escola Segura
-    if (combinedSchedules.escolaSegura[monthKey]) {
-      Object.entries(combinedSchedules.escolaSegura[monthKey]).forEach(([dia, oficiais]) => {
-        if (oficiais.includes(militar)) {
-          diasEscolaSegura.push(parseInt(dia));
+    // Escola Segura
+    if (combinedSchedules.escolaSegura[year]?.[month]) {
+      Object.entries(combinedSchedules.escolaSegura[year][month]).forEach(([day, officers]) => {
+        if (officers.includes(oficial)) {
+          diasPorOficial[oficial].escolaSegura.push(parseInt(day));
         }
       });
     }
-    
-    return { diasPMF, diasEscolaSegura };
-  };
-
+  });
+  
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center">
-            <Users className="h-5 w-5 mr-2 text-gray-600" />
-            Visualização por Militar
-          </CardTitle>
-          <CardDescription>
-            Escalas de {formatMonthYear(currentDate)}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {officers.map((oficial) => {
-              const { diasPMF, diasEscolaSegura } = getDiasEscalados(oficial);
-              const totalEscalas = diasPMF.length + diasEscolaSegura.length;
+      {listaOficiais.map(oficial => (
+        <Card key={oficial} className="shadow-lg hover:shadow-xl transition-all duration-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-bold">{oficial}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Polícia Mais Forte */}
+              <div>
+                <div className="flex items-center mb-2">
+                  <Shield className="mr-2 h-4 w-4 text-blue-600" />
+                  <h4 className="font-semibold">Polícia Mais Forte</h4>
+                  <Badge variant="outline" className="ml-2">
+                    {diasPorOficial[oficial].pmf.length} dias
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {diasPorOficial[oficial].pmf.length > 0 ? (
+                    diasPorOficial[oficial].pmf.sort((a, b) => a - b).map(dia => (
+                      <Badge key={`pmf-${dia}`} variant="secondary">
+                        {dia}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 text-sm">Nenhuma escala</span>
+                  )}
+                </div>
+              </div>
               
-              // Pular militares sem escala
-              if (totalEscalas === 0) return null;
+              {/* Escola Segura */}
+              <div>
+                <div className="flex items-center mb-2">
+                  <BookOpen className="mr-2 h-4 w-4 text-green-600" />
+                  <h4 className="font-semibold">Escola Segura</h4>
+                  <Badge variant="outline" className="ml-2">
+                    {diasPorOficial[oficial].escolaSegura.length} dias
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {diasPorOficial[oficial].escolaSegura.length > 0 ? (
+                    diasPorOficial[oficial].escolaSegura.sort((a, b) => a - b).map(dia => (
+                      <Badge key={`es-${dia}`} variant="secondary">
+                        {dia}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-gray-500 text-sm">Nenhuma escala</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Total de escalas */}
+            <div className="mt-4 pt-2 border-t flex items-center">
+              <Badge variant="outline" className="bg-gray-50">
+                Total: {diasPorOficial[oficial].pmf.length + diasPorOficial[oficial].escolaSegura.length} escalas
+              </Badge>
               
-              return (
-                <Card key={oficial} className="shadow-sm">
-                  <CardHeader className="py-3 px-4">
-                    <CardTitle className="text-sm font-bold">{oficial}</CardTitle>
-                    <CardDescription className="text-xs">
-                      Total de escalas: {totalEscalas}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="py-2 px-4">
-                    <div className="space-y-2">
-                      {diasPMF.length > 0 && (
-                        <div>
-                          <div className="flex items-center space-x-1 mb-1">
-                            <Shield className="h-4 w-4 text-blue-600" />
-                            <span className="text-xs font-semibold text-blue-800">Polícia Mais Forte</span>
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {diasPMF.sort((a, b) => a - b).map((dia) => (
-                              <Badge key={`pmf-${dia}`} variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
-                                Dia {dia}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {diasEscolaSegura.length > 0 && (
-                        <div>
-                          <div className="flex items-center space-x-1 mb-1">
-                            <School className="h-4 w-4 text-green-600" />
-                            <span className="text-xs font-semibold text-green-800">Escola Segura</span>
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {diasEscolaSegura.sort((a, b) => a - b).map((dia) => (
-                              <Badge key={`es-${dia}`} variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                                Dia {dia}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+              {diasPorOficial[oficial].pmf.length + diasPorOficial[oficial].escolaSegura.length >= 12 && (
+                <Badge variant="destructive" className="ml-2">
+                  Limite atingido
+                </Badge>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }
 
-export default function VisualizacaoPublica() {
-  const [currentDate] = useState<Date>(new Date());
-  const [selectedTab, setSelectedTab] = useState("calendario");
+// Componente principal de visualização
+export default function Visualizacao() {
+  const { toast } = useToast();
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [refreshKey, setRefreshKey] = useState(0);
   
-  // Obter oficiais
-  const { data: officersData } = useQuery<OfficersResponse>({
-    queryKey: ["/api/officers"],
-  });
-
-  // Obter agendas combinadas
+  // Configurar atualização automática a cada 30 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+    }, 30000); // 30 segundos
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Obter dados das escalas combinadas
   const { data: combinedSchedulesData, isLoading } = useQuery<{ schedules: CombinedSchedules }>({
-    queryKey: ["/api/combined-schedules", currentDate.getFullYear(), currentDate.getMonth() + 1],
-    refetchInterval: 30000, // Atualiza automaticamente a cada 30 segundos
+    queryKey: ['/api/combined-schedules', refreshKey, { year: currentDate.getFullYear(), month: currentDate.getMonth() + 1 }],
+    queryFn: async () => {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const res = await fetch(`/api/combined-schedules?year=${year}&month=${month}`);
+      
+      if (!res.ok) {
+        throw new Error('Falha ao buscar escalas');
+      }
+      
+      return res.json();
+    }
   });
-
-  const officers = officersData?.officers || [];
+  
   const combinedSchedules = combinedSchedulesData?.schedules || { pmf: {}, escolaSegura: {} };
   
-  // Month data
-  const monthData = getMonthData(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1
-  );
-
-  // Construir dias para visualização
-  const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
-  const pmfSchedule = combinedSchedules.pmf[monthKey] || {};
-  const escolaSeguraSchedule = combinedSchedules.escolaSegura[monthKey] || {};
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1;
   
-  const days = Array.from({ length: monthData.days }, (_, i) => {
-    const day = i + 1;
-    return {
-      day,
-      weekday: getWeekdayName(day, currentDate.getMonth() + 1, currentDate.getFullYear()),
-      pmfOfficers: pmfSchedule[day] || Array(3).fill(null),
-      escolaSeguraOfficers: escolaSeguraSchedule[day] || Array(2).fill(null)
-    };
-  });
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  // Calcular dias do mês
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+    toast({
+      title: "Atualizado",
+      description: "Os dados de escala foram atualizados.",
+      duration: 3000,
+    });
+  };
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      <header className="bg-gradient-to-r from-blue-900 to-blue-800 p-4 shadow-md">
-        <div className="container mx-auto text-center">
-          <h1 className="text-xl font-bold text-white">20ª CIPM - Sistema de Escalas</h1>
+    <div className="container mx-auto py-6 px-4 sm:px-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
+        <div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-purple-700 text-transparent bg-clip-text">
+            Escalas de Operações - {formatMonthYear(currentDate)}
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Visualize as escalas de Polícia Mais Forte e Escola Segura
+          </p>
         </div>
-      </header>
+        
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={handleRefresh}
+            className="flex items-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm transition-colors"
+          >
+            <RefreshCw className="mr-1 h-4 w-4" />
+            <span>Atualizar</span>
+          </button>
+        </div>
+      </div>
       
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Visualização de Escalas</h1>
-          <p className="text-gray-600">Consulta de Operações</p>
-          <p className="text-amber-600 font-semibold mt-2">{formatMonthYear(currentDate)}</p>
-          
-          <div className="mt-2 inline-flex px-4 py-2 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-sm text-blue-700">
-              <span className="font-semibold">Atualização automática</span> – Esta página é apenas para consulta.
-            </p>
-          </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-20">
+          <RefreshCw className="animate-spin h-8 w-8 text-blue-500" />
+          <span className="ml-3 text-gray-500">Carregando escalas...</span>
         </div>
-
-        {/* Tabs para alternar visualizações */}
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="calendario" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
-              <Calendar className="h-4 w-4 mr-2" />
-              Calendário
-            </TabsTrigger>
-            <TabsTrigger value="por-oficial" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
-              <Users className="h-4 w-4 mr-2" />
-              Por Militar
-            </TabsTrigger>
-          </TabsList>
+      ) : (
+        <Tabs defaultValue="pmf">
+          <div className="flex justify-between items-center mb-4">
+            <TabsList>
+              <TabsTrigger value="pmf" className="flex items-center">
+                <Shield className="mr-1 h-4 w-4" />
+                <span>Polícia Mais Forte</span>
+              </TabsTrigger>
+              <TabsTrigger value="escolaSegura" className="flex items-center">
+                <BookOpen className="mr-1 h-4 w-4" />
+                <span>Escola Segura</span>
+              </TabsTrigger>
+              <TabsTrigger value="porOficial" className="flex items-center">
+                <List className="mr-1 h-4 w-4" />
+                <span>Por Oficial</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
           
-          {/* Visualização por calendário */}
-          <TabsContent value="calendario" className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {days.map((dayInfo) => (
-                <VisualizacaoCard
-                  key={dayInfo.day}
-                  day={dayInfo.day}
-                  month={currentDate.getMonth() + 1}
-                  year={currentDate.getFullYear()}
-                  weekday={dayInfo.weekday}
-                  pmfOfficers={dayInfo.pmfOfficers}
-                  escolaSeguraOfficers={dayInfo.escolaSeguraOfficers}
-                />
-              ))}
+          <TabsContent value="pmf">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-4">
+              {days.map(day => {
+                const weekday = new Date(year, month - 1, day).toLocaleDateString('pt-BR', { weekday: 'short' });
+                const officers = combinedSchedules.pmf[year]?.[month]?.[day] || [null, null, null];
+                
+                return (
+                  <VisualizacaoCard 
+                    key={`pmf-${day}`}
+                    day={day}
+                    month={month}
+                    year={year}
+                    weekday={weekday}
+                    oficiais={officers}
+                    tipo="pmf"
+                  />
+                );
+              })}
             </div>
           </TabsContent>
           
-          {/* Visualização por oficial */}
-          <TabsContent value="por-oficial" className="space-y-6">
-            <VisualizacaoPorOficial
+          <TabsContent value="escolaSegura">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-4">
+              {days.map(day => {
+                const weekday = new Date(year, month - 1, day).toLocaleDateString('pt-BR', { weekday: 'short' });
+                const officers = combinedSchedules.escolaSegura[year]?.[month]?.[day] || [null, null];
+                
+                return (
+                  <VisualizacaoCard 
+                    key={`es-${day}`}
+                    day={day}
+                    month={month}
+                    year={year}
+                    weekday={weekday}
+                    oficiais={officers}
+                    tipo="escolaSegura"
+                  />
+                );
+              })}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="porOficial">
+            <VisualizacaoPorOficial 
               combinedSchedules={combinedSchedules}
-              officers={officers}
               currentDate={currentDate}
             />
           </TabsContent>
         </Tabs>
-        
-        {/* Informações adicionais */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            © 2025 20ª CIPM - Atualizado automaticamente
-          </p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
