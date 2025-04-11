@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Save, Printer } from "lucide-react";
 import CalendarCard from "@/components/calendar/CalendarCard";
 import MonthSelector from "@/components/calendar/MonthSelector";
+import ResumoEscala from "@/components/calendar/ResumoEscala";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 
@@ -161,6 +162,11 @@ export default function Home() {
               <Save className="h-5 w-5 mr-1" />
               Salvar
             </Button>
+            
+            <ResumoEscala
+              schedule={schedule}
+              currentDate={currentDate}
+            />
             
             <Button
               variant="outline"
