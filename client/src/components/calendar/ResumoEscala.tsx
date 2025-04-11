@@ -630,13 +630,6 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
                 <span className="inline-block h-3 w-3 bg-green-600 rounded-full mr-1"></span>
                 <span>Dentro do limite (abaixo de 12 dias)</span>
               </div>
-              <Button
-                onClick={handlePrint}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-3 py-1 flex items-center text-xs"
-              >
-                <Printer className="h-3 w-3 mr-1" />
-                Imprimir Resumo
-              </Button>
             </div>
             <div className="text-center text-blue-200 border-t border-blue-700 pt-2 mt-1">
               <Calendar className="inline-block h-4 w-4 mr-1 mb-1" />
