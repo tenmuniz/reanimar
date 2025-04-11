@@ -292,37 +292,92 @@ export default function CalendarCard({
   const dayTextClasses = `font-medium ${dayTextColor}`;
 
   return (
-    <div className="day-card bg-white rounded-lg shadow-sm overflow-hidden" id={`dia-${day}`}>
-      <div className={headerClasses}>
-        <h3 className={dayTextClasses}>Dia {day}</h3>
-        <span className={`text-xs font-medium ${weekdayBadgeClass} px-2 py-1 rounded`}>
+    <div 
+      className={`day-card relative bg-white rounded-xl overflow-hidden transform transition-all duration-200 hover:scale-[1.02]
+        ${assignedCount === 0 ? 'shadow-md hover:shadow-lg' : 'shadow-lg hover:shadow-xl'}`} 
+      id={`dia-${day}`}
+      style={{
+        boxShadow: assignedCount === 3 
+          ? '0 10px 25px -5px rgba(16, 185, 129, 0.25), 0 8px 10px -6px rgba(16, 185, 129, 0.2)' 
+          : assignedCount > 0 
+            ? '0 10px 25px -5px rgba(239, 68, 68, 0.25), 0 8px 10px -6px rgba(239, 68, 68, 0.2)'
+            : ''
+      }}
+    >
+      {/* Corner fold effect */}
+      <div className={`absolute top-0 right-0 w-8 h-8 ${headerBgColor} shadow-sm transform rotate-90 origin-top-right z-10 opacity-60`}></div>
+      
+      {/* Status bar lateral indicando completo/incompleto */}
+      <div className={`absolute left-0 top-0 bottom-0 w-1.5 
+        ${assignedCount === 3 
+          ? 'bg-gradient-to-b from-green-400 to-green-600' 
+          : assignedCount > 0 
+            ? 'bg-gradient-to-b from-red-400 to-red-600' 
+            : 'bg-gradient-to-b from-gray-300 to-gray-400'}`
+        }></div>
+      
+      {/* Header melhorado e mais destacado */}
+      <div className={`${headerClasses} relative overflow-hidden border-b-2 border-opacity-70 shadow-md`}>
+        {/* Efeito de brilho no header */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+RG90czwvdGl0bGU+PHBhdGggZD0iTTY0IDY0SDBWMGg2NHY2NHpNNCAxaDJ2MkgzVjFoMXptOCAwaDJWM2gtMnptOCAwaDF2Mkg5VjFoMTF6bTgtMXYyaC0yVjBoMnptOCAwaDJ2MmgtMnptOCAwaDJWM2gtMlY5em04IDBoMnYyaC0yem04IDBWMmgtMnYyaC0ydjJoNHYtNHptLThWNGgtMnYyaC0ydjJoNFY0ek40VjIuNDIyaDJWMmgtMnptMTIgMGgyVjJoLTJ6bTI4IDBoMlY1NGgtMnoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')]"
+          style={{ opacity: 0.15 }}></div>
+          
+        <h3 className={`${dayTextClasses} text-xl font-extrabold drop-shadow-sm`}>
+          Dia {day}
+        </h3>
+        <span className={`text-xs font-bold ${weekdayBadgeClass} px-3 py-1.5 rounded-md shadow-md`}>
           {weekday}
         </span>
       </div>
-      <div className="p-4 space-y-3">
-        {[0, 1, 2].map((position) => (
-          <OfficerSelect
-            key={`day-${day}-position-${position}`}
-            position={position + 1}
-            officers={officers}
-            selectedOfficer={selections[position]}
-            disabledOfficers={[
-              ...selectedOfficers.filter((officer) => officer !== selections[position]),
-              ...disabledOfficers
-            ]}
-            limitReachedOfficers={limitReachedOfficers}
-            onChange={(value) => handleOfficerChange(position, value)}
-          />
-        ))}
+      
+      {/* Corpo do card com um fundo mais elaborado */}
+      <div className="p-5 space-y-4 relative bg-gradient-to-b from-white to-gray-50">
+        {/* Padrão decorativo para adicionar mais textura */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white opacity-50"></div>
+          
+        {/* Counter badge - número de policiais selecionados */}
+        <div className="absolute top-3 right-3">
+          <span className={`inline-flex items-center justify-center h-7 w-7 text-sm font-bold rounded-full 
+            ${assignedCount === 3 
+              ? 'bg-green-500 text-white ring-2 ring-green-200' 
+              : assignedCount > 0 
+                ? 'bg-amber-500 text-white' 
+                : 'bg-gray-200 text-gray-500'}`}>
+            {assignedCount}/3
+          </span>
+        </div>
         
-        {/* Alerta destacado de limite atingido */}
+        {/* Officer selects com maior espaçamento e bordas mais suaves */}
+        <div className="space-y-4 pt-2">
+          {[0, 1, 2].map((position) => (
+            <OfficerSelect
+              key={`day-${day}-position-${position}`}
+              position={position + 1}
+              officers={officers}
+              selectedOfficer={selections[position]}
+              disabledOfficers={[
+                ...selectedOfficers.filter((officer) => officer !== selections[position]),
+                ...disabledOfficers
+              ]}
+              limitReachedOfficers={limitReachedOfficers}
+              onChange={(value) => handleOfficerChange(position, value)}
+            />
+          ))}
+        </div>
+        
+        {/* Alerta destacado de limite atingido com maior destaque */}
         {showLimitWarning && (
-          <Alert className="mt-3 bg-red-200 border-red-400 text-red-900">
-            <AlertCircle className="h-5 w-5 text-red-700" />
-            <AlertDescription className="text-sm font-bold">
-              ⚠️ LIMITE ATINGIDO: Um ou mais militares neste dia já atingiram 12 escalas no mês.
-              <br/><span className="text-xs">REGRA DE NEGÓCIO: É PROIBIDO ESCALAR UM MILITAR MAIS DE 12 VEZES NO MÊS.</span>
-            </AlertDescription>
+          <Alert className="mt-4 bg-gradient-to-r from-red-100 to-red-200 border-l-4 border-red-500 text-red-900 shadow-md">
+            <div className="flex">
+              <AlertCircle className="h-7 w-7 text-red-600 mr-2" strokeWidth={2} />
+              <AlertDescription className="text-sm font-bold">
+                ⚠️ <span className="underline decoration-red-500">LIMITE ATINGIDO</span>: Um ou mais militares neste dia já atingiram 12 escalas no mês.
+                <br/>
+                <span className="text-xs bg-red-200 px-2 py-1 mt-1 inline-block rounded">
+                  REGRA DE NEGÓCIO: É PROIBIDO ESCALAR UM MILITAR MAIS DE 12 VEZES NO MÊS.
+                </span>
+              </AlertDescription>
+            </div>
           </Alert>
         )}
       </div>

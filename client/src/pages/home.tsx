@@ -229,35 +229,88 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6 flex flex-col items-center">
-          <div className="flex items-center mb-4 justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-              />
-            </svg>
+      {/* Header - Versão melhorada com mais impacto visual */}
+      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white border-b-4 border-yellow-500 shadow-2xl relative overflow-hidden">
+        {/* Padrões de fundo para dar sensação de profundidade */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R3JpZDwvdGl0bGU+PHBhdGggZD0iTTYwIDYwSDBWMGg2MHY2MHptLTI2LThIMjZ2LTRoOHY0em0tOC0yNGg4djRoLTh2LTR6bTI0IDE2aC00djhoLTh2NGg4djhoNHYtOGg4di00aC04di04em0wLTE2djRoLTR2LTRoNHptLTI0LThWNGg4djRoLThWOHptMjQtNGgtOHY4aDR2NGg0VjR6bS0yNCAyMGg4djRoLTh2LTR6bTAgMTZ2LTRoOHY0aC04eiIgZmlsbD0iIzIwMzQ3YiIgZmlsbC1vcGFjaXR5PSIwLjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg==')]"
+          style={{ opacity: 0.1 }}></div>
+        
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/40"></div>
+        
+        {/* Efeito de brilho no topo */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-white to-blue-400 opacity-50"></div>
+        
+        <div className="container mx-auto px-4 py-8 flex flex-col items-center relative z-10">
+          <div className="flex flex-col items-center mb-6 justify-center relative">
+            {/* Badge com efeito 3D */}
+            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-500 text-blue-900 text-xs font-bold px-4 py-1 rounded-full shadow-lg border-2 border-yellow-400 rotate-2">
+              OFICIAL
+            </div>
+
+            {/* Emblema policial estilizado */}
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-900 rounded-full p-3 mb-4 shadow-lg border-2 border-blue-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-full w-full drop-shadow-lg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4Z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 8L9.5 6L12 4L14.5 6L12 8Z"
+                  fill="currentColor"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 12V21M6 19L12 21L18 19"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 6L2 8L5 10"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 6L22 8L19 10"
+                />
+              </svg>
+            </div>
+            
             <div className="text-center">
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-1">
-                POLÍCIA MAIS FORTE
+              {/* Título principal com efeito de brilho e sombra */}
+              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-yellow-300 to-white">
+                  POLÍCIA MAIS FORTE
+                </span>
               </h1>
-              <div className="text-xl sm:text-2xl font-bold">
-                SISTEMA DE ESCALA PMF
+              
+              {/* Subtítulo com efeito de profundidade */}
+              <div className="relative px-6 py-2 mb-2 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 opacity-50 rounded-lg shadow-inner transform skew-x-2"></div>
+                <h2 className="relative text-2xl sm:text-3xl font-bold tracking-wide text-shadow-lg">
+                  SISTEMA DE ESCALA PMF
+                </h2>
               </div>
+              
+              {/* Frase motivacional */}
+              <p className="text-sm text-blue-200 italic mt-1 shadow-inner">
+                Ordem e Progresso nas Escalas Operacionais
+              </p>
             </div>
           </div>
           
-          <div className="bg-blue-900 px-6 py-3 rounded-lg shadow-inner w-full max-w-md mx-auto mt-2">
+          {/* Seletor de mês com efeito neomórfico */}
+          <div className="bg-gradient-to-b from-blue-800 to-blue-950 px-6 py-4 rounded-lg border border-blue-700 shadow-[inset_0_1px_4px_rgba(0,0,0,0.6),0_10px_20px_rgba(0,0,0,0.2)] w-full max-w-md mx-auto mt-2">
             <MonthSelector
               currentDate={currentDate}
               onPreviousMonth={handlePreviousMonth}
@@ -269,28 +322,47 @@ export default function Home() {
       
       {/* Main content */}
       <main className="container mx-auto px-4 py-6">
-        {/* Calendar controls */}
-        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <div className="flex space-x-3">
-            <Button
+        {/* Calendar controls - Versão melhorada com efeitos 3D */}
+        <div className="mb-8 relative">
+          {/* Barra decorativa para agrupar os controles */}
+          <div className="absolute -left-4 -right-4 h-20 bg-gradient-to-r from-blue-800/10 via-blue-700/10 to-blue-800/10 rounded-lg -z-10 shadow-inner"></div>
+          
+          <div className="flex flex-wrap gap-3 justify-center sm:justify-start items-center py-3">
+            {/* Botão de salvar com efeito 3D */}
+            <button
               onClick={saveSchedule}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center shadow-sm transition"
+              className="relative group overflow-hidden bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 
+                text-white font-bold px-5 py-3 rounded-lg flex items-center transform transition-all duration-200 
+                border border-green-400 shadow-[0_8px_0_rgb(22,101,52),0_15px_20px_rgba(0,0,0,0.3)]
+                hover:shadow-[0_4px_0_rgb(22,101,52),0_8px_15px_rgba(0,0,0,0.3)]
+                active:translate-y-4 active:shadow-[0_0px_0_rgb(22,101,52),0_0px_10px_rgba(0,0,0,0.2)]"
             >
-              <Save className="h-5 w-5 mr-1" />
-              Salvar
-            </Button>
+              {/* Efeito de brilho no hover */}
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/30 to-white/0 
+                transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              
+              <Save className="h-5 w-5 mr-2 drop-shadow-lg" />
+              <span>Salvar Escala</span>
+            </button>
             
-            <ResumoEscala
-              schedule={schedule}
-              currentDate={currentDate}
-              combinedSchedules={combinedSchedules}
-            />
-            
-            <ResumoGuarnicao 
-              schedule={schedule}
-              currentDate={currentDate}
-              combinedSchedules={combinedSchedules}
-            />
+            {/* Botões para os diálogos com estilo neomórfico */}
+            <div className="flex gap-3 ml-2">
+              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-200">
+                <ResumoEscala
+                  schedule={schedule}
+                  currentDate={currentDate}
+                  combinedSchedules={combinedSchedules}
+                />
+              </div>
+              
+              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-200">
+                <ResumoGuarnicao 
+                  schedule={schedule}
+                  currentDate={currentDate}
+                  combinedSchedules={combinedSchedules}
+                />
+              </div>
+            </div>
           </div>
         </div>
         
