@@ -104,8 +104,18 @@ export default function OfficerSelect({
       {/* Exibição do policial selecionado com opção para mudar/remover */}
       {selectedOfficer ? (
         <div className="flex items-center">
-          <div className="border border-gray-300 rounded-md shadow-sm p-2 bg-white text-sm flex-1 truncate">
-            {selectedOfficer}
+          <div className={`border ${limitReachedOfficers.includes(selectedOfficer) 
+              ? 'border-red-500 bg-red-50 text-red-700' 
+              : 'border-gray-300 bg-white'} 
+              rounded-md shadow-sm p-2 text-sm flex-1 truncate`}>
+            <span className={limitReachedOfficers.includes(selectedOfficer) ? 'line-through' : ''}>
+              {selectedOfficer}
+            </span>
+            {limitReachedOfficers.includes(selectedOfficer) && (
+              <span className="ml-1 text-red-600 text-xs font-bold inline-block">
+                [LIMITE 12]
+              </span>
+            )}
           </div>
           <button 
             className="ml-2 px-2 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded"

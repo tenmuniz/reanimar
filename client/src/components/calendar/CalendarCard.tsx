@@ -82,9 +82,18 @@ export default function CalendarCard({
     }
     
     // Encontrar oficiais que já atingiram o limite de 12 dias no mês
+    // IMPORTANTE: Aqui é onde aplicamos a regra de negócio que limita a 12 escalas
     const officersAtLimit = officers.filter(
       officer => officerDaysCount[officer] >= 12
     );
+    
+    // DEBUG: Para verificação do limite
+    if (officersAtLimit.length > 0) {
+      console.log(`LIMITE 12 ATINGIDO por: ${officersAtLimit.join(', ')}`);
+      console.log(`Contagem atual: `, 
+        officersAtLimit.map(o => `${o}: ${officerDaysCount[o]} escalas`)
+      );
+    }
     
     // Atualizar estado dos oficiais que atingiram o limite
     setLimitReachedOfficers(officersAtLimit);
@@ -114,11 +123,21 @@ export default function CalendarCard({
     // Remover duplicações
     disabledOfficersList = Array.from(new Set(disabledOfficersList));
     
-    // Remover do limite os oficiais já escalados para este dia neste card específico
-    // para que possam ser desescalados mesmo se já atingiram limite
-    const disabledForNewSelections = disabledOfficersList.filter(
+    // Preparar lista final de oficiais desabilitados para seleção
+    // Dividimos em dois grupos:
+    
+    // 1. Oficiais que atingiram o limite de 12 - sempre desabilitados para novas seleções
+    const limitReachedForSelection = officersAtLimit.filter(
       officer => !savedSelections.includes(officer)
     );
+    
+    // 2. Oficiais já selecionados em outro lugar neste dia - desabilitados somente para seleção
+    const alreadyUsedInDay = disabledOfficersList.filter(
+      officer => !officersAtLimit.includes(officer) && !savedSelections.includes(officer)
+    );
+    
+    // Combinamos os dois grupos na lista final de desabilitados
+    const disabledForNewSelections = [...limitReachedForSelection, ...alreadyUsedInDay];
     
     setDisabledOfficers(disabledForNewSelections);
   }, [combinedSchedules, officers, savedSelections, year, month, day]);
@@ -241,10 +260,11 @@ export default function CalendarCard({
         
         {/* Alerta de limite atingido */}
         {showLimitWarning && (
-          <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
+          <Alert className="mt-3 bg-red-100 border-red-300 text-red-800">
             <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-xs">
-              Este oficial já atingiu o limite de 12 escalas extras no mês.
+            <AlertDescription className="text-xs font-semibold">
+              ATENÇÃO: Um ou mais militares neste dia já atingiram o limite de 12 escalas extras no mês. 
+              É possível remover um policial (✕), mas não é possível adicionar mais serviços para ele.
             </AlertDescription>
           </Alert>
         )}
