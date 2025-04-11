@@ -1,6 +1,11 @@
 export interface Officer {
   id: string;
   name: string;
+  rank?: string;
+}
+
+export interface OfficersResponse {
+  officers: string[];
 }
 
 export interface DaySchedule {
@@ -10,7 +15,9 @@ export interface DaySchedule {
 }
 
 export interface MonthSchedule {
-  [key: string]: (string | null)[];
+  [key: string]: {
+    [day: string]: (string | null)[];
+  };
 }
 
 export interface MonthData {

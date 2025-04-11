@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { getMonthData, getWeekdayName, getLocalStorageSchedule, saveLocalStorageSchedule } from "@/lib/utils";
-import { MonthSchedule } from "@/lib/types";
+import { MonthSchedule, OfficersResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Save, Printer } from "lucide-react";
 import CalendarCard from "@/components/calendar/CalendarCard";
@@ -9,7 +9,7 @@ import MonthSelector from "@/components/calendar/MonthSelector";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 
-// Mock API endpoint for officers (this would be a real API in production)
+// API endpoint for officers
 const OFFICERS_ENDPOINT = "/api/officers";
 const STORAGE_KEY = "pmfSchedule";
 
@@ -17,16 +17,13 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [schedule, setSchedule] = useState<MonthSchedule>({});
   
-  // Initial officers list - would come from API in production
-  const defaultOfficers = ["Sd Silva", "Cb Almeida", "Sd Costa", "Sgt Souza", "Sd Lima"];
-  
-  // In a real app, use this to fetch officers from API
-  const { data: officersData, isLoading } = useQuery({
+  // Buscar oficiais da API
+  const { data: officersData, isLoading } = useQuery<OfficersResponse>({
     queryKey: [OFFICERS_ENDPOINT],
-    enabled: false, // Disabled for this MVP
+    enabled: true,
   });
   
-  const officers = officersData?.officers || defaultOfficers;
+  const officers = officersData?.officers || [];
   
   // Get current month data
   const monthData = getMonthData(currentDate.getFullYear(), currentDate.getMonth());
@@ -86,7 +83,7 @@ export default function Home() {
       
       toast({
         title: "Escala salva com sucesso!",
-        variant: "success",
+        description: "Suas alterações foram salvas",
       });
     } catch (error) {
       toast({

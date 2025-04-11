@@ -9,6 +9,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/officers", async (req, res) => {
     try {
       const officers = await storage.getAllOfficers();
+      // Retorna apenas os nomes para manter compatibilidade com o frontend atual
       res.json({ officers: officers.map(officer => officer.name) });
     } catch (error) {
       res.status(500).json({ message: "Error fetching officers" });

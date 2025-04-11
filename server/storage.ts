@@ -30,16 +30,46 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentOfficerId = 1;
     
-    // Initialize with default officers for testing
-    const defaultOfficers = [
-      { id: 1, name: "Sd Silva", rank: "Soldado" },
-      { id: 2, name: "Cb Almeida", rank: "Cabo" },
-      { id: 3, name: "Sd Costa", rank: "Soldado" },
-      { id: 4, name: "Sgt Souza", rank: "Sargento" },
-      { id: 5, name: "Sd Lima", rank: "Soldado" }
+    // Inicializa com os oficiais reais da PMF
+    const realOfficers = [
+      // Grupo ALFA
+      { id: 1, name: "2º SGT PM PEIXOTO", rank: "ALFA" },
+      { id: 2, name: "3º SGT PM RODRIGO", rank: "ALFA" },
+      { id: 3, name: "3º SGT PM LEDO", rank: "ALFA" },
+      { id: 4, name: "3º SGT PM NUNES", rank: "ALFA" },
+      { id: 5, name: "3º SGT AMARAL", rank: "ALFA" },
+      { id: 6, name: "CB CARLA", rank: "ALFA" },
+      { id: 7, name: "CB PM FELIPE", rank: "ALFA" },
+      { id: 8, name: "CB PM BARROS", rank: "ALFA" },
+      { id: 9, name: "CB PM A. SILVA", rank: "ALFA" },
+      { id: 10, name: "SD PM LUAN", rank: "ALFA" },
+      { id: 11, name: "SD PM NAVARRO", rank: "ALFA" },
+      
+      // Grupo BRAVO
+      { id: 12, name: "1º SGT PM OLIMAR", rank: "BRAVO" },
+      { id: 13, name: "2º SGT PM FÁBIO", rank: "BRAVO" },
+      { id: 14, name: "3º SGT PM ANA CLEIDE", rank: "BRAVO" },
+      { id: 15, name: "3º SGT PM GLEIDSON", rank: "BRAVO" },
+      { id: 16, name: "3º SGT PM CARLOS EDUARDO", rank: "BRAVO" },
+      { id: 17, name: "3º SGT PM NEGRÃO", rank: "BRAVO" },
+      { id: 18, name: "CB PM BRASIL", rank: "BRAVO" },
+      { id: 19, name: "SD PM MARVÃO", rank: "BRAVO" },
+      { id: 20, name: "SD PM IDELVAN", rank: "BRAVO" },
+      
+      // Grupo CHARLIE
+      { id: 21, name: "2º SGT PM PINHEIRO", rank: "CHARLIE" },
+      { id: 22, name: "3º SGT PM RAFAEL", rank: "CHARLIE" },
+      { id: 23, name: "CB PM MIQUEIAS", rank: "CHARLIE" },
+      { id: 24, name: "CB PM M. PAIXÃO", rank: "CHARLIE" },
+      { id: 25, name: "SD PM CHAGAS", rank: "CHARLIE" },
+      { id: 26, name: "SD PM CARVALHO", rank: "CHARLIE" },
+      { id: 27, name: "SD PM GOVEIA", rank: "CHARLIE" },
+      { id: 28, name: "SD PM ALMEIDA", rank: "CHARLIE" },
+      { id: 29, name: "SD PM PATRIK", rank: "CHARLIE" },
+      { id: 30, name: "SD PM GUIMARÃES", rank: "CHARLIE" }
     ];
     
-    defaultOfficers.forEach(officer => {
+    realOfficers.forEach(officer => {
       this.officersMap.set(officer.id, officer as Officer);
       this.currentOfficerId = Math.max(this.currentOfficerId, officer.id + 1);
     });
