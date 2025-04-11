@@ -69,11 +69,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Year and month are required" });
       }
       
-      const schedules = await storage.getCombinedSchedules(
-        parseInt(year as string), 
-        parseInt(month as string)
-      );
+      // Converter para números
+      const yearNum = parseInt(year as string);
+      const monthNum = parseInt(month as string);
       
+      // Buscar dados do banco
+      const schedules = await storage.getCombinedSchedules(yearNum, monthNum);
+      
+      // Log para depuração
+      console.log("Dados obtidos do banco:", JSON.stringify(schedules));
+      
+      // Garantir que não tem cache
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
+      // Retornar dados
       res.json({ schedules });
     } catch (error) {
       console.error("Erro ao buscar escalas combinadas:", error);
