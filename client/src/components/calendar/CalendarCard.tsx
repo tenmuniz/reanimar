@@ -81,25 +81,26 @@ export default function CalendarCard({
       });
     }
     
-    // Encontrar oficiais que já atingiram o limite de 12 dias no mês
+    // Encontrar todos os militares que já atingiram o limite de 12 dias no mês
     // IMPORTANTE: Aqui é onde aplicamos a regra de negócio que limita a 12 escalas
-    const officersAtLimit = officers.filter(
+    // para todos os tipos de militares, não apenas oficiais
+    const militaresAtLimit = officers.filter(
       officer => officerDaysCount[officer] >= 12
     );
     
     // DEBUG: Para verificação do limite
-    if (officersAtLimit.length > 0) {
-      console.log(`LIMITE 12 ATINGIDO por: ${officersAtLimit.join(', ')}`);
+    if (militaresAtLimit.length > 0) {
+      console.log(`LIMITE 12 ATINGIDO por: ${militaresAtLimit.join(', ')}`);
       console.log(`Contagem atual: `, 
-        officersAtLimit.map(o => `${o}: ${officerDaysCount[o]} escalas`)
+        militaresAtLimit.map(o => `${o}: ${officerDaysCount[o]} escalas`)
       );
     }
     
-    // Atualizar estado dos oficiais que atingiram o limite
-    setLimitReachedOfficers(officersAtLimit);
+    // Atualizar estado dos militares que atingiram o limite
+    setLimitReachedOfficers(militaresAtLimit);
     
     // Adicionar à lista de desabilitados
-    disabledOfficersList = [...disabledOfficersList, ...officersAtLimit];
+    disabledOfficersList = [...disabledOfficersList, ...militaresAtLimit];
     
     // 2. Verificar se o oficial já está escalado no mesmo dia
     const currentDayKey = `${day}`;
@@ -126,14 +127,14 @@ export default function CalendarCard({
     // Preparar lista final de oficiais desabilitados para seleção
     // Dividimos em dois grupos:
     
-    // 1. Oficiais que atingiram o limite de 12 - sempre desabilitados para novas seleções
-    const limitReachedForSelection = officersAtLimit.filter(
-      officer => !savedSelections.includes(officer)
+    // 1. Militares que atingiram o limite de 12 - sempre desabilitados para novas seleções
+    const limitReachedForSelection = militaresAtLimit.filter(
+      (officer: string) => !savedSelections.includes(officer)
     );
     
-    // 2. Oficiais já selecionados em outro lugar neste dia - desabilitados somente para seleção
+    // 2. Militares já selecionados em outro lugar neste dia - desabilitados somente para seleção
     const alreadyUsedInDay = disabledOfficersList.filter(
-      officer => !officersAtLimit.includes(officer) && !savedSelections.includes(officer)
+      (officer: string) => !militaresAtLimit.includes(officer) && !savedSelections.includes(officer)
     );
     
     // Combinamos os dois grupos na lista final de desabilitados
@@ -142,9 +143,9 @@ export default function CalendarCard({
     setDisabledOfficers(disabledForNewSelections);
   }, [combinedSchedules, officers, savedSelections, year, month, day]);
 
-  // Função para verificar se um oficial já está escalado em 12 dias
+  // Função para verificar se um militar já está escalado em 12 dias
   const checkOfficerLimit = (officer: string | null): boolean => {
-    // Se não houver oficial selecionado, não há limite a verificar
+    // Se não houver militar selecionado, não há limite a verificar
     if (!officer) return true;
     
     // Verificação rigorosa de limite: nunca deixar escalar além de 12 dias
@@ -152,7 +153,7 @@ export default function CalendarCard({
       return false;
     }
     
-    // Se o oficial estiver na lista de desabilitados, não permitir
+    // Se o militar estiver na lista de desabilitados, não permitir
     if (disabledOfficers.includes(officer)) {
       return false;
     }
@@ -161,7 +162,7 @@ export default function CalendarCard({
   };
 
   const handleOfficerChange = (position: number, officer: string | null) => {
-    // Caso 1: Remover um oficial (substituir por null) - sempre permitido
+    // Caso 1: Remover um militar (substituir por null) - sempre permitido
     if (!officer) {
       const newSelections = [...selections];
       newSelections[position] = null;
@@ -170,7 +171,7 @@ export default function CalendarCard({
       return;
     }
     
-    // Caso 2: Verificação rigorosa de limite (bloquear oficial com 12+ escalas)
+    // Caso 2: Verificação rigorosa de limite (bloquear militar com 12+ escalas)
     if (limitReachedOfficers.includes(officer)) {
       toast({
         title: "LIMITE MÁXIMO ATINGIDO",
@@ -187,7 +188,7 @@ export default function CalendarCard({
       setSelections(newSelections);
       onOfficerChange(day, position, officer);
     } else {
-      // Oficial já está escalado neste dia ou outra regra de negócio impede
+      // Militar já está escalado neste dia ou outra regra de negócio impede
       toast({
         title: "Operação não permitida",
         description: `${officer} não pode ser escalado nesta posição.`,
