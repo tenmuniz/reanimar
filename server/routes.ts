@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import path from "path";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for the application
@@ -82,6 +83,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error: error instanceof Error ? error.message : String(error) 
       });
     }
+  });
+
+  // Rota para página de visualização pública
+  app.get("/visualizacao-publica", (req, res) => {
+    res.sendFile(path.resolve(process.cwd(), "client/src/pages/visualizacao-publica-link.html"));
   });
 
   const httpServer = createServer(app);

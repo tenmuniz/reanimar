@@ -3,99 +3,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>20ª CIPM - Visualização de Escalas</title>
+  <title>20ª CIPM - Visualização Pública de Escalas</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf5 100%);
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      text-align: center;
+      justify-content: center;
+      background-color: #f0f4f8;
+      color: #1e293b;
     }
+    
     .container {
-      max-width: 800px;
-      padding: 40px 20px;
-    }
-    h1 {
-      color: #2d3748;
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-    }
-    p {
-      color: #4a5568;
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
-    .button {
-      display: inline-block;
-      background: linear-gradient(to right, #1a365d, #2c5282);
-      color: white;
-      font-weight: 600;
-      padding: 14px 24px;
+      width: 90%;
+      max-width: 1000px;
+      padding: 2rem;
+      background-color: white;
       border-radius: 8px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
-    .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
-      background: linear-gradient(to right, #2c5282, #3182ce);
-    }
-    .logo {
-      width: 120px;
-      height: 120px;
-      margin-bottom: 2rem;
-      background-color: #e2e8f0;
-      border-radius: 50%;
+    
+    .header {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
-      color: #2c5282;
-      font-weight: bold;
+      margin-bottom: 2rem;
+      flex-direction: column;
     }
-    .note {
-      font-size: 0.9rem;
-      color: #718096;
-      margin-top: 2rem;
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
     }
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-      h1 {
-        font-size: 1.8rem;
-      }
+    
+    h1 {
+      font-size: 1.8rem;
+      margin: 0 0 0.5rem 0;
+      color: #1e40af;
+      text-align: center;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      margin: 0 0 1.5rem 0;
+      line-height: 1.6;
+      text-align: center;
+    }
+    
+    .button {
+      display: inline-block;
+      background-color: #1e40af;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 6px rgba(30, 64, 175, 0.2);
+    }
+    
+    .button:hover {
+      background-color: #1e3a8a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(30, 64, 175, 0.3);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">20ª</div>
-    <h1>20ª CIPM - Sistema de Visualização de Escalas</h1>
-    <p>Este link permite acessar a página de visualização das escalas de operações. Clique no botão para visualizar as escalas atuais.</p>
-    
-    <a href="/visualizacao" class="button">
-      Ver Escalas
-    </a>
-    
-    <p class="note">Esta página é apenas para visualização, sem possibilidade de edição.<br>As escalas são atualizadas automaticamente.</p>
+    <div class="header">
+      <svg class="logo" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="38" fill="#1e40af" />
+        <text x="40" y="46" text-anchor="middle" fill="white" font-size="14" font-weight="bold">20ª CIPM</text>
+      </svg>
+      <h1>Sistema de Visualização de Escalas</h1>
+    </div>
+    <p>
+      Bem-vindo ao sistema de visualização de escalas operacionais da 20ª CIPM. 
+      Este portal permite a consulta das escalas de Polícia Mais Forte e Escola Segura.
+    </p>
+    <p>
+      Clique no botão abaixo para visualizar a escala atual:
+    </p>
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="/visualizacao" class="button">Visualizar Escala</a>
+    </div>
   </div>
-
-  <script>
-    // Redirecionar automaticamente após um breve atraso
-    setTimeout(function() {
-      window.location.href = "/visualizacao";
-    }, 2000);
-  </script>
 </body>
 </html>
