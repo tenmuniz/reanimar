@@ -118,8 +118,7 @@ export default function VerificadorInconsistencias() {
             nome.includes("MIQUEIAS") || nome.includes("M. PAIXÃO") || 
             nome.includes("CHAGAS") || nome.includes("CARVALHO") || 
             nome.includes("GOVEIA") || nome.includes("ALMEIDA") || 
-            nome.includes("PATRIK") || nome.includes("GUIMARÃES") ||
-            nome.includes("MONTEIRO")) { // Adicionado MONTEIRO ao CHARLIE
+            nome.includes("PATRIK") || nome.includes("GUIMARÃES")) {
       return "CHARLIE";
     }
     // EXPEDIENTE e outros
@@ -154,7 +153,31 @@ export default function VerificadorInconsistencias() {
         setCombinedSchedules(combinedData.schedules);
         
         // Após carregar as agendas, verificar inconsistências
-        verificarInconsistencias(combinedData.schedules);
+        console.log("Dados de agendas combinadas recebidos:", combinedData.schedules);
+        
+        // Carregar também os dados de escala do PMF para o mês
+        const pmfResponse = await fetch(`/api/schedule?operation=pmf&year=${year}&month=${month}`);
+        if (!pmfResponse.ok) throw new Error("Erro ao buscar agenda PMF");
+        const pmfData = await pmfResponse.json();
+        
+        // Carregar os dados da Escola Segura para o mês
+        const esResponse = await fetch(`/api/schedule?operation=escolaSegura&year=${year}&month=${month}`);
+        if (!esResponse.ok) throw new Error("Erro ao buscar agenda Escola Segura");
+        const esData = await esResponse.json();
+        
+        // Criar um objeto schedules com os dados mais recentes
+        const schedules = {
+          pmf: { [`${year}-${month}`]: pmfData.schedule },
+          escolaSegura: { [`${year}-${month}`]: esData.schedule }
+        };
+        
+        console.log("Dados de schedules construídos manualmente:", schedules);
+        
+        // Salvar os dados
+        setCombinedSchedules(schedules);
+        
+        // Verificar inconsistências com os dados atualizados
+        verificarInconsistencias(schedules);
         
         setIsLoading(false);
       } catch (error) {
