@@ -87,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Rota para página de visualização pública
   app.get("/visualizacao-publica", (req, res) => {
-    res.sendFile(path.resolve(process.cwd(), "client/src/pages/visualizacao-publica-link.html"));
+    res.sendFile(path.resolve(process.cwd(), "public/visualizacao.html"));
   });
 
   const httpServer = createServer(app);

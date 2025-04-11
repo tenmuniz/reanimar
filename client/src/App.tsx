@@ -2,7 +2,7 @@ import { Switch, Route, Link, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, AlertTriangle, Eye } from "lucide-react";
+import { Shield, BookOpen, AlertTriangle, Eye, ExternalLink } from "lucide-react";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorInconsistencias from "@/pages/verificador";
@@ -18,9 +18,9 @@ function NavBar() {
       <div className="container mx-auto flex flex-wrap items-center justify-between">
         <div className="text-white font-bold text-xl">20ª CIPM - Sistema de Escalas</div>
         
-        <div className="flex space-x-3">
+        <div className="flex flex-wrap space-x-2 sm:space-x-3">
           <Link href="/">
-            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+            <a className={`px-3 sm:px-4 py-2 rounded-lg flex items-center text-sm ${
               location === "/" 
                 ? "bg-blue-600 text-white shadow-lg border border-blue-500" 
                 : "bg-blue-700/80 text-white/90 hover:bg-blue-700 hover:text-white transition-colors"
@@ -31,7 +31,7 @@ function NavBar() {
           </Link>
           
           <Link href="/escola-segura">
-            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+            <a className={`px-3 sm:px-4 py-2 rounded-lg flex items-center text-sm ${
               location === "/escola-segura" 
                 ? "bg-green-600 text-white shadow-lg border border-green-500" 
                 : "bg-green-700/80 text-white/90 hover:bg-green-700 hover:text-white transition-colors"
@@ -42,7 +42,7 @@ function NavBar() {
           </Link>
           
           <Link href="/verificador">
-            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+            <a className={`px-3 sm:px-4 py-2 rounded-lg flex items-center text-sm ${
               location === "/verificador" 
                 ? "bg-amber-600 text-white shadow-lg border border-amber-500" 
                 : "bg-amber-700/80 text-white/90 hover:bg-amber-700 hover:text-white transition-colors"
@@ -53,7 +53,7 @@ function NavBar() {
           </Link>
           
           <Link href="/visualizacao">
-            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+            <a className={`px-3 sm:px-4 py-2 rounded-lg flex items-center text-sm ${
               location === "/visualizacao" 
                 ? "bg-purple-600 text-white shadow-lg border border-purple-500" 
                 : "bg-purple-700/80 text-white/90 hover:bg-purple-700 hover:text-white transition-colors"
@@ -62,6 +62,16 @@ function NavBar() {
               <span>Visualizar</span>
             </a>
           </Link>
+          
+          <a 
+            href="/visualizacao-publica" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-3 sm:px-4 py-2 rounded-lg flex items-center text-sm bg-teal-700/80 text-white/90 hover:bg-teal-700 hover:text-white transition-colors shadow-md"
+          >
+            <ExternalLink className="mr-1 h-4 w-4" />
+            <span>Link Público</span>
+          </a>
         </div>
       </div>
     </nav>
