@@ -135,12 +135,11 @@ export default function OfficerSelect({
             )}
           </div>
           <button 
-            className="ml-2 px-3 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md shadow-sm hover:from-red-600 hover:to-red-700 transition-all duration-200 hover:shadow-md flex items-center justify-center transform hover:scale-105 active:scale-95"
+            className="ml-2 p-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full shadow-sm hover:from-red-600 hover:to-red-700 transition-all duration-200 hover:shadow-md flex items-center justify-center transform hover:scale-110 active:scale-95"
             onClick={() => onChange(null)}
             title="Remover policial da escala"
           >
-            <Trash2 className="h-4 w-4 mr-1" strokeWidth={2.5} />
-            <span className="font-medium text-xs">Remover</span>
+            <Trash2 className="h-4 w-4" strokeWidth={2.5} />
           </button>
         </div>
       ) : (
