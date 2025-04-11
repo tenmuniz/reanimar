@@ -341,31 +341,6 @@ export default function EscolaSegura() {
           </div>
         </div>
         
-        {/* Informação sobre a Operação Escola Segura */}
-        <div className="mb-8">
-          <div className="relative bg-gradient-to-r from-green-100 to-green-50 border-l-4 border-green-500 rounded-lg p-4 shadow-md overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -mr-16 -mt-16 shadow-inner"></div>
-            
-            <div className="flex items-start">
-              <div className="bg-green-100 p-2 rounded-full shadow-inner mr-4 flex-shrink-0">
-                <BookOpen className="h-6 w-6 text-green-700" />
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-bold text-green-900 mb-1">Operação Escola Segura</h3>
-                <p className="text-green-800">
-                  Esta operação permite escalar até <strong>2 policiais por dia</strong>, diferente da operação PMF regular.
-                </p>
-                <div className="mt-2 p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded-r-md">
-                  <p className="text-yellow-800 font-medium text-sm">
-                    Importante: O limite de <span className="font-bold">12 escalas extras no mês</span> é compartilhado entre PMF e Escola Segura.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
         {/* Calendar grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {isLoadingSchedules || isLoading ? (
