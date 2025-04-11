@@ -9,6 +9,9 @@ interface OfficerSelectProps {
   onChange: (value: string | null) => void;
 }
 
+// Define a special placeholder constant
+const PLACEHOLDER_VALUE = "placeholder";
+
 export default function OfficerSelect({
   position,
   officers,
@@ -17,7 +20,7 @@ export default function OfficerSelect({
   onChange,
 }: OfficerSelectProps) {
   const handleChange = (value: string) => {
-    onChange(value === "" ? null : value);
+    onChange(value === PLACEHOLDER_VALUE ? null : value);
   };
 
   return (
@@ -26,14 +29,14 @@ export default function OfficerSelect({
         Policial {position}
       </Label>
       <Select
-        value={selectedOfficer || ""}
+        value={selectedOfficer || PLACEHOLDER_VALUE}
         onValueChange={handleChange}
       >
         <SelectTrigger className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 focus:ring-opacity-50 text-sm">
           <SelectValue placeholder="-- Selecione um policial --" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">-- Selecione um policial --</SelectItem>
+          <SelectItem value={PLACEHOLDER_VALUE}>-- Selecione um policial --</SelectItem>
           {officers.map((officer) => (
             <SelectItem
               key={officer}
