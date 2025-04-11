@@ -502,23 +502,15 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
             </DialogTitle>
           </DialogHeader>
           
-          {/* Estatísticas gerais */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-blue-700 p-4 rounded-lg shadow-inner flex flex-col items-center">
+          {/* Estatística centralizada apenas do Militar Mais Escalado */}
+          <div className="flex justify-center mb-6">
+            <div className="bg-blue-700 p-4 rounded-lg shadow-inner flex flex-col items-center w-2/3">
               <span className="text-blue-200 font-medium flex items-center">
                 <Award className="h-4 w-4 mr-1" />
                 Militar Mais Escalado
               </span>
-              <span className="text-2xl font-bold text-white my-1">{militarMaisEscalado.nome !== "Nenhum" ? militarMaisEscalado.nome.split(' ').slice(-1)[0] : "Nenhum"}</span>
+              <span className="text-2xl font-bold text-white my-1">{militarMaisEscalado.nome !== "Nenhum" ? militarMaisEscalado.nome : "Nenhum"}</span>
               <span className="text-yellow-300 text-sm font-medium">{militarMaisEscalado.total} dias</span>
-            </div>
-            <div className="bg-blue-700 p-4 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-blue-200 font-medium flex items-center">
-                <Users className="h-4 w-4 mr-1" />
-                Guarnição Mais Escalada
-              </span>
-              <span className="text-2xl font-bold text-white my-1">{grupoMaisEscalado.nome}</span>
-              <span className="text-yellow-300 text-sm font-medium">{grupoMaisEscalado.total} escalas</span>
             </div>
           </div>
           
@@ -559,14 +551,13 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
                     }`}
                   >
                     <div className="w-[50%] font-medium text-white">
-                      {limiteExcedido ? (
-                        <div className="flex items-center">
-                          <span className="text-red-400 line-through mr-1">{militar}</span>
-                          <span className="bg-red-800 text-red-100 text-[9px] px-1 py-0.5 rounded">LIMITE EXCEDIDO</span>
-                        </div>
-                      ) : (
-                        militar
-                      )}
+                      {/* Sempre mostramos o nome do militar normalmente, já que bloqueamos antes os que excedem o limite */}
+                      <div className="flex items-center">
+                        {militar}
+                        {dados.total >= 12 && (
+                          <span className="ml-1 bg-yellow-600 text-white text-[9px] px-1 py-0.5 rounded">LIMITE ATINGIDO</span>
+                        )}
+                      </div>
                     </div>
                     <div className="w-[35%] flex flex-wrap">
                       {dados.dias.sort((a, b) => a - b).map((dia, idx) => {
@@ -602,18 +593,14 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
           
           {/* Legenda e informações sobre limite */}
           <div className="bg-blue-800/40 p-3 rounded-lg text-xs">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-around mb-2">
               <div className="font-medium text-yellow-300 flex items-center">
                 <span className="inline-block h-3 w-3 bg-yellow-600 rounded-full mr-1"></span>
                 <span>Limite atingido (12 dias)</span>
               </div>
-              <div className="font-medium text-yellow-300 flex items-center">
+              <div className="font-medium text-green-300 flex items-center">
                 <span className="inline-block h-3 w-3 bg-green-600 rounded-full mr-1"></span>
                 <span>Dentro do limite (abaixo de 12 dias)</span>
-              </div>
-              <div className="font-medium text-red-300 flex items-center">
-                <span className="inline-block h-3 w-3 bg-red-600 rounded-full mr-1"></span>
-                <span>LIMITE EXCEDIDO (ERRO!)</span>
               </div>
               <Button
                 onClick={handlePrint}
