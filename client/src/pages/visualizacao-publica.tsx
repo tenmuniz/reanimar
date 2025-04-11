@@ -113,20 +113,32 @@ function VisualizacaoPorOficial({
       escolaSegura: []
     };
     
-    // PMF
-    if (combinedSchedules.pmf[year]?.[month]) {
-      Object.entries(combinedSchedules.pmf[year][month]).forEach(([day, officers]) => {
-        if (officers.includes(oficial)) {
-          diasPorOficial[oficial].pmf.push(parseInt(day));
+    // PMF - formato simples (acesso direto aos dias)
+    if (combinedSchedules.pmf) {
+      // Registrar estrutura completa para debug
+      console.log("Estrutura PMF completa:", combinedSchedules.pmf);
+      
+      Object.entries(combinedSchedules.pmf).forEach(([day, dayOfficers]) => {
+        // Verificar se o dia é um número (índice de dia válido)
+        if (!isNaN(Number(day)) && Array.isArray(dayOfficers)) {
+          if (dayOfficers.includes(oficial)) {
+            diasPorOficial[oficial].pmf.push(parseInt(day));
+          }
         }
       });
     }
     
-    // Escola Segura
-    if (combinedSchedules.escolaSegura[year]?.[month]) {
-      Object.entries(combinedSchedules.escolaSegura[year][month]).forEach(([day, officers]) => {
-        if (officers.includes(oficial)) {
-          diasPorOficial[oficial].escolaSegura.push(parseInt(day));
+    // Escola Segura - formato simples (acesso direto aos dias)
+    if (combinedSchedules.escolaSegura) {
+      // Registrar estrutura completa para debug
+      console.log("Estrutura Escola Segura completa:", combinedSchedules.escolaSegura);
+      
+      Object.entries(combinedSchedules.escolaSegura).forEach(([day, dayOfficers]) => {
+        // Verificar se o dia é um número (índice de dia válido)
+        if (!isNaN(Number(day)) && Array.isArray(dayOfficers)) {
+          if (dayOfficers.includes(oficial)) {
+            diasPorOficial[oficial].escolaSegura.push(parseInt(day));
+          }
         }
       });
     }
@@ -305,7 +317,13 @@ export default function Visualizacao() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-4">
               {days.map(day => {
                 const weekday = new Date(year, month - 1, day).toLocaleDateString('pt-BR', { weekday: 'short' });
-                const officers = combinedSchedules.pmf[year]?.[month]?.[day] || [null, null, null];
+                // Acesso direto à estrutura simplificada ou estrutura aninhada
+                const officers = combinedSchedules.pmf[day] || 
+                                combinedSchedules.pmf[year]?.[month]?.[day] || 
+                                [null, null, null];
+                
+                // Log para debug
+                console.log(`PMF Dia ${day} - Formato dos dados:`, { officers });
                 
                 return (
                   <VisualizacaoCard 
@@ -326,7 +344,13 @@ export default function Visualizacao() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-4">
               {days.map(day => {
                 const weekday = new Date(year, month - 1, day).toLocaleDateString('pt-BR', { weekday: 'short' });
-                const officers = combinedSchedules.escolaSegura[year]?.[month]?.[day] || [null, null];
+                // Acesso direto à estrutura simplificada ou estrutura aninhada
+                const officers = combinedSchedules.escolaSegura[day] || 
+                                combinedSchedules.escolaSegura[year]?.[month]?.[day] || 
+                                [null, null];
+                
+                // Log para debug
+                console.log(`ES Dia ${day} - Formato dos dados:`, { officers });
                 
                 return (
                   <VisualizacaoCard 
