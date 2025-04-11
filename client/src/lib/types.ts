@@ -20,6 +20,19 @@ export interface MonthSchedule {
   };
 }
 
+export interface OperationType {
+  id: string;
+  name: string;
+  color: string;
+  positions: number;
+  icon: string;
+}
+
+export interface CombinedSchedules {
+  pmf: MonthSchedule;
+  escolaSegura: MonthSchedule;
+}
+
 export interface MonthData {
   year: number;
   month: number;

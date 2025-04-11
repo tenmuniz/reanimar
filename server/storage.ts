@@ -12,8 +12,9 @@ export interface IStorage {
   getOfficer(id: number): Promise<Officer | undefined>;
   createOfficer(officer: InsertOfficer): Promise<Officer>;
   
-  saveSchedule(schedule: any): Promise<void>;
-  getSchedule(year: number, month: number): Promise<any>;
+  saveSchedule(operation: string, year: number, month: number, data: any): Promise<void>;
+  getSchedule(operation: string, year: number, month: number): Promise<any>;
+  getCombinedSchedules(year: number, month: number): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -123,16 +124,24 @@ export class MemStorage implements IStorage {
     return officer;
   }
   
-  async saveSchedule(schedule: any): Promise<void> {
-    // For each month in the schedule, create a key and store the data
-    Object.keys(schedule).forEach(monthKey => {
-      this.scheduleMap.set(monthKey, schedule[monthKey]);
-    });
+  async saveSchedule(operation: string, year: number, month: number, data: any): Promise<void> {
+    const key = `${operation}-${year}-${month}`;
+    this.scheduleMap.set(key, data);
   }
   
-  async getSchedule(year: number, month: number): Promise<any> {
-    const key = `${year}-${month}`;
+  async getSchedule(operation: string, year: number, month: number): Promise<any> {
+    const key = `${operation}-${year}-${month}`;
     return this.scheduleMap.get(key) || {};
+  }
+  
+  async getCombinedSchedules(year: number, month: number): Promise<any> {
+    const pmfKey = `pmf-${year}-${month}`;
+    const escolaSeguraKey = `escolaSegura-${year}-${month}`;
+    
+    return {
+      pmf: this.scheduleMap.get(pmfKey) || {},
+      escolaSegura: this.scheduleMap.get(escolaSeguraKey) || {}
+    };
   }
 }
 

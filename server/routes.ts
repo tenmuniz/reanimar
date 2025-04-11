@@ -19,24 +19,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Save schedule
   app.post("/api/schedule", async (req, res) => {
     try {
-      const schedule = req.body;
-      await storage.saveSchedule(schedule);
+      const { operation, year, month, data } = req.body;
+      
+      if (!operation || !year || !month || !data) {
+        return res.status(400).json({ message: "Operation, year, month, and data are required" });
+      }
+      
+      await storage.saveSchedule(
+        operation,
+        parseInt(year as string), 
+        parseInt(month as string),
+        data
+      );
+      
       res.json({ message: "Schedule saved successfully" });
     } catch (error) {
       res.status(500).json({ message: "Error saving schedule" });
     }
   });
 
-  // Get schedule
+  // Get schedule for a specific operation
   app.get("/api/schedule", async (req, res) => {
     try {
-      const { year, month } = req.query;
+      const { operation, year, month } = req.query;
       
-      if (!year || !month) {
-        return res.status(400).json({ message: "Year and month are required" });
+      if (!operation || !year || !month) {
+        return res.status(400).json({ message: "Operation, year, and month are required" });
       }
       
       const schedule = await storage.getSchedule(
+        operation as string,
         parseInt(year as string), 
         parseInt(month as string)
       );
@@ -44,6 +56,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ schedule });
     } catch (error) {
       res.status(500).json({ message: "Error fetching schedule" });
+    }
+  });
+  
+  // Get combined schedules
+  app.get("/api/combined-schedules", async (req, res) => {
+    try {
+      const { year, month } = req.query;
+      
+      if (!year || !month) {
+        return res.status(400).json({ message: "Year and month are required" });
+      }
+      
+      const schedules = await storage.getCombinedSchedules(
+        parseInt(year as string), 
+        parseInt(month as string)
+      );
+      
+      res.json({ schedules });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching combined schedules" });
     }
   });
 
