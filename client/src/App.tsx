@@ -2,10 +2,11 @@ import { Switch, Route, Link, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, AlertTriangle } from "lucide-react";
+import { Shield, BookOpen, AlertTriangle, Eye } from "lucide-react";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorInconsistencias from "@/pages/verificador";
+import Visualizacao from "@/pages/visualizacao";
 import NotFound from "@/pages/not-found";
 
 // Componente de navegação
@@ -50,6 +51,17 @@ function NavBar() {
               <span>Verificador</span>
             </a>
           </Link>
+          
+          <Link href="/visualizacao">
+            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+              location === "/visualizacao" 
+                ? "bg-purple-600 text-white shadow-lg border border-purple-500" 
+                : "bg-purple-700/80 text-white/90 hover:bg-purple-700 hover:text-white transition-colors"
+            }`}>
+              <Eye className="mr-1 h-4 w-4" />
+              <span>Visualizar</span>
+            </a>
+          </Link>
         </div>
       </div>
     </nav>
@@ -65,6 +77,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/escola-segura" component={EscolaSegura} />
           <Route path="/verificador" component={VerificadorInconsistencias} />
+          <Route path="/visualizacao" component={Visualizacao} />
           <Route component={NotFound} />
         </Switch>
       </main>
