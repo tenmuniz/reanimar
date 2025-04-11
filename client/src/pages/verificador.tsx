@@ -603,7 +603,7 @@ export default function VerificadorInconsistencias() {
               </TabsTrigger>
               <TabsTrigger value="pmf" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                 <Shield className="h-4 w-4 mr-2" />
-                PMF
+                Polícia Mais Forte
               </TabsTrigger>
               <TabsTrigger value="escola-segura" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
                 <School className="h-4 w-4 mr-2" />
@@ -828,7 +828,7 @@ export default function VerificadorInconsistencias() {
                               <td className="py-2 px-4">{item.guarnicaoOrdinaria}</td>
                               <td className="py-2 px-4">
                                 <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
-                                  Escalado no serviço ordinário e PMF
+                                  Escalado no serviço ordinário e Polícia Mais Forte
                                 </Badge>
                               </td>
                             </tr>
