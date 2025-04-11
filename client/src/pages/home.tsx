@@ -17,9 +17,10 @@ const STORAGE_KEY = "pmfSchedule";
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [schedule, setSchedule] = useState<MonthSchedule>({});
+  // Simplificamos para usar apenas PMF
   const [combinedSchedules, setCombinedSchedules] = useState<CombinedSchedules>({
     pmf: {},
-    escolaSegura: {}
+    escolaSegura: {} // Mantemos por compatibilidade, mas não será usado
   });
   const [isLoadingSchedules, setIsLoadingSchedules] = useState(true);
   

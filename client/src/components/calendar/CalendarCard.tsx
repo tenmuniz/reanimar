@@ -108,14 +108,7 @@ export default function CalendarCard({
       disabledOfficersList = [...disabledOfficersList, ...alreadySelectedInThisDay];
     }
     
-    // Verificar Escola Segura para o mesmo dia
-    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura] && 
-        combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey]) {
-      const officersInEscolaSegura = combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey]
-        .filter(o => o !== null) as string[];
-      
-      disabledOfficersList = [...disabledOfficersList, ...officersInEscolaSegura];
-    }
+    // A operação Escola Segura foi removida, então não precisamos mais verificar
     
     // Remover duplicações
     disabledOfficersList = Array.from(new Set(disabledOfficersList));
