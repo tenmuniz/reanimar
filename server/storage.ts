@@ -1,8 +1,9 @@
-import { users, officers, schedules, type User, type InsertUser, type Officer, type InsertOfficer } from "@shared/schema";
+// Importações necessárias
+import { db } from './db';
+import { and, eq } from 'drizzle-orm';
+import { users, officers, schedules, type User, type InsertUser, type Officer, type InsertOfficer } from '@shared/schema';
 
-// modify the interface with any CRUD methods
-// you might need
-
+// Interface de armazenamento
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -17,6 +18,7 @@ export interface IStorage {
   getCombinedSchedules(year: number, month: number): Promise<any>;
 }
 
+// Implementação com armazenamento em memória
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private officersMap: Map<number, Officer>;
@@ -80,10 +82,6 @@ export class MemStorage implements IStorage {
       { id: 38, name: "SD PM ALMEIDA", rank: "CHARLIE" },
       { id: 39, name: "SD PM PATRIK", rank: "CHARLIE" },
       { id: 40, name: "SD PM GUIMARÃES", rank: "CHARLIE" }
-      
-      // Militares de férias em Abril (não incluídos na lista):
-      // CB PM ALAX (BRAVO)
-      // CB PM VELOSO (BRAVO)
     ];
     
     realOfficers.forEach(officer => {
@@ -138,13 +136,228 @@ export class MemStorage implements IStorage {
     const pmfKey = `pmf-${year}-${month}`;
     const escolaSeguraKey = `escolaSegura-${year}-${month}`;
     
-    // Mantemos escolaSegura como um objeto vazio por compatibilidade, 
-    // já que a funcionalidade foi removida
     return {
       pmf: this.scheduleMap.get(pmfKey) || {},
-      escolaSegura: {}
+      escolaSegura: this.scheduleMap.get(escolaSeguraKey) || {}
     };
   }
 }
 
-export const storage = new MemStorage();
+// Implementação com banco de dados PostgreSQL
+export class DatabaseStorage implements IStorage {
+  // Armazena mapeamentos entre IDs internos usados no aplicativo e UUIDs do banco de dados
+  private userIdMap: Map<number, string> = new Map();
+  private officerIdMap: Map<number, string> = new Map();
+  
+  constructor() {
+    // A inicialização da lista de oficiais será feita sob demanda
+  }
+  
+  async getUser(id: number): Promise<User | undefined> {
+    // Se temos o mapeamento do ID, use-o para buscar diretamente
+    const dbId = this.userIdMap.get(id);
+    if (dbId) {
+      const [user] = await db.select().from(users).where(eq(users.id, parseInt(dbId)));
+      if (user) return { ...user, id };
+    }
+    
+    // Fallback: buscar todos os usuários e usar o primeiro
+    const allUsers = await db.select().from(users);
+    if (allUsers.length > 0) {
+      // Armazenar o mapeamento para próximas consultas
+      this.userIdMap.set(id, allUsers[0].id.toString());
+      return { ...allUsers[0], id };
+    }
+    
+    return undefined;
+  }
+  
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    if (user) {
+      const internalId = 1; // Para simplificar, usamos ID 1 para o usuário
+      this.userIdMap.set(internalId, user.id.toString());
+      return { ...user, id: internalId };
+    }
+    return undefined;
+  }
+  
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    const internalId = 1;
+    this.userIdMap.set(internalId, user.id.toString());
+    return { ...user, id: internalId };
+  }
+  
+  async getAllOfficers(): Promise<Officer[]> {
+    // Verificar se já temos oficiais no banco de dados
+    const existingOfficers = await db.select().from(officers);
+    
+    // Se não temos oficiais, inicializar com a lista padrão
+    if (existingOfficers.length === 0) {
+      await this.initializeOfficers();
+      return this.getAllOfficers(); // Chamar novamente após inicialização
+    }
+    
+    // Mapear oficiais para o formato esperado pela aplicação
+    return existingOfficers.map((officer, index) => {
+      const internalId = index + 1;
+      this.officerIdMap.set(internalId, officer.id.toString());
+      return { ...officer, id: internalId };
+    });
+  }
+  
+  private async initializeOfficers(): Promise<void> {
+    // Lista de oficiais a serem inicializados no banco
+    const defaultOfficers = [
+      // Oficiais - EXPEDIENTE
+      { name: "CAP QOPM MUNIZ", rank: "EXPEDIENTE" },
+      { name: "1º TEN QOPM MONTEIRO", rank: "EXPEDIENTE" },
+      { name: "TEN VANILSON", rank: "EXPEDIENTE" },
+      { name: "SUB TEN ANDRÉ", rank: "EXPEDIENTE" },
+      { name: "3º SGT PM CUNHA", rank: "EXPEDIENTE" },
+      { name: "3º SGT PM CARAVELAS", rank: "EXPEDIENTE" },
+      { name: "CB PM TONI", rank: "EXPEDIENTE" },
+      { name: "SD PM S. CORREA", rank: "EXPEDIENTE" },
+      { name: "SD PM RODRIGUES", rank: "EXPEDIENTE" },
+      { name: "2º SGT PM A. TAVARES", rank: "EXPEDIENTE" },
+      
+      // Grupo ALFA
+      { name: "2º SGT PM PEIXOTO", rank: "ALFA" },
+      { name: "3º SGT PM RODRIGO", rank: "ALFA" },
+      { name: "3º SGT PM LEDO", rank: "ALFA" },
+      { name: "3º SGT PM NUNES", rank: "ALFA" },
+      { name: "3º SGT AMARAL", rank: "ALFA" },
+      { name: "CB CARLA", rank: "ALFA" },
+      { name: "CB PM FELIPE", rank: "ALFA" },
+      { name: "CB PM BARROS", rank: "ALFA" },
+      { name: "CB PM A. SILVA", rank: "ALFA" },
+      { name: "SD PM LUAN", rank: "ALFA" },
+      { name: "SD PM NAVARRO", rank: "ALFA" },
+      
+      // Grupo BRAVO
+      { name: "1º SGT PM OLIMAR", rank: "BRAVO" },
+      { name: "2º SGT PM FÁBIO", rank: "BRAVO" },
+      { name: "3º SGT PM ANA CLEIDE", rank: "BRAVO" },
+      { name: "3º SGT PM GLEIDSON", rank: "BRAVO" },
+      { name: "3º SGT PM CARLOS EDUARDO", rank: "BRAVO" },
+      { name: "3º SGT PM NEGRÃO", rank: "BRAVO" },
+      { name: "CB PM BRASIL", rank: "BRAVO" },
+      { name: "SD PM MARVÃO", rank: "BRAVO" },
+      { name: "SD PM IDELVAN", rank: "BRAVO" },
+      
+      // Grupo CHARLIE
+      { name: "2º SGT PM PINHEIRO", rank: "CHARLIE" },
+      { name: "3º SGT PM RAFAEL", rank: "CHARLIE" },
+      { name: "CB PM MIQUEIAS", rank: "CHARLIE" },
+      { name: "CB PM M. PAIXÃO", rank: "CHARLIE" },
+      { name: "SD PM CHAGAS", rank: "CHARLIE" },
+      { name: "SD PM CARVALHO", rank: "CHARLIE" },
+      { name: "SD PM GOVEIA", rank: "CHARLIE" },
+      { name: "SD PM ALMEIDA", rank: "CHARLIE" },
+      { name: "SD PM PATRIK", rank: "CHARLIE" },
+      { name: "SD PM GUIMARÃES", rank: "CHARLIE" }
+    ];
+    
+    // Inserir todos os oficiais no banco de dados
+    await db.insert(officers).values(defaultOfficers);
+  }
+  
+  async getOfficer(id: number): Promise<Officer | undefined> {
+    // Obter o ID do banco de dados mapeado
+    const dbId = this.officerIdMap.get(id);
+    if (!dbId) {
+      // Se não temos o mapeamento, tentar obter todos os oficiais primeiro
+      await this.getAllOfficers();
+      return this.getOfficer(id); // Tentar novamente após buscar todos
+    }
+    
+    // Buscar o oficial pelo ID do banco
+    const [officer] = await db.select().from(officers).where(eq(officers.id, parseInt(dbId)));
+    if (officer) return { ...officer, id };
+    
+    return undefined;
+  }
+  
+  async createOfficer(insertOfficer: InsertOfficer): Promise<Officer> {
+    const [officer] = await db.insert(officers).values(insertOfficer).returning();
+    const internalId = (await this.getAllOfficers()).length + 1;
+    this.officerIdMap.set(internalId, officer.id.toString());
+    return { ...officer, id: internalId };
+  }
+  
+  async saveSchedule(operation: string, year: number, month: number, data: any): Promise<void> {
+    // Verificar se já existe uma escala para esta operação/ano/mês
+    const [existingSchedule] = await db.select()
+      .from(schedules)
+      .where(
+        and(
+          eq(schedules.operation, operation),
+          eq(schedules.year, year),
+          eq(schedules.month, month)
+        )
+      );
+    
+    if (existingSchedule) {
+      // Atualizar escala existente
+      await db.update(schedules)
+        .set({ data: JSON.stringify(data) })
+        .where(eq(schedules.id, existingSchedule.id));
+    } else {
+      // Inserir nova escala
+      await db.insert(schedules).values({
+        operation,
+        year,
+        month,
+        data: JSON.stringify(data)
+      });
+    }
+  }
+  
+  async getSchedule(operation: string, year: number, month: number): Promise<any> {
+    const [schedule] = await db.select()
+      .from(schedules)
+      .where(
+        and(
+          eq(schedules.operation, operation),
+          eq(schedules.year, year),
+          eq(schedules.month, month)
+        )
+      );
+    
+    return schedule ? JSON.parse(schedule.data) : {};
+  }
+  
+  async getCombinedSchedules(year: number, month: number): Promise<any> {
+    // Buscar a escala PMF
+    const [pmfSchedule] = await db.select()
+      .from(schedules)
+      .where(
+        and(
+          eq(schedules.operation, 'pmf'),
+          eq(schedules.year, year),
+          eq(schedules.month, month)
+        )
+      );
+    
+    // Buscar a escala Escola Segura
+    const [escolaSeguraSchedule] = await db.select()
+      .from(schedules)
+      .where(
+        and(
+          eq(schedules.operation, 'escolaSegura'),
+          eq(schedules.year, year),
+          eq(schedules.month, month)
+        )
+      );
+    
+    // Retornar as escalas combinadas
+    return {
+      pmf: pmfSchedule ? JSON.parse(pmfSchedule.data) : {},
+      escolaSegura: escolaSeguraSchedule ? JSON.parse(escolaSeguraSchedule.data) : {}
+    };
+  }
+}
+
+// Usar a implementação de banco de dados para persistência
+export const storage = new DatabaseStorage();

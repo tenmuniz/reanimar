@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -14,13 +14,13 @@ export const officers = pgTable("officers", {
   rank: text("rank").notNull(),
 });
 
+// Tabela de escalas atualizada para formato JSON
 export const schedules = pgTable("schedules", {
   id: serial("id").primaryKey(),
+  operation: text("operation").notNull(),
   year: integer("year").notNull(),
   month: integer("month").notNull(),
-  day: integer("day").notNull(),
-  position: integer("position").notNull(),
-  officerId: integer("officer_id").references(() => officers.id),
+  data: jsonb("data").notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -34,11 +34,10 @@ export const insertOfficerSchema = createInsertSchema(officers).pick({
 });
 
 export const insertScheduleSchema = createInsertSchema(schedules).pick({
+  operation: true,
   year: true,
   month: true,
-  day: true,
-  position: true,
-  officerId: true,
+  data: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
