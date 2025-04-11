@@ -242,28 +242,26 @@ export default function Home() {
         
         <div className="container mx-auto px-4 py-6 flex flex-row items-center justify-between relative z-10">
           <div className="mr-4">
-            {/* Título e subtítulo */}
-            <div className="mb-1">
-              {/* Título principal com efeito de brilho e sombra */}
+            {/* Destaque para 20ª CIPM com maior importância */}
+            <div className="flex items-baseline mb-2">
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-yellow-300 to-white">
-                  POLÍCIA MAIS FORTE
+                  20ª CIPM
                 </span>
               </h1>
+              <span className="ml-2 bg-blue-700 text-white font-bold px-3 py-1 rounded-md shadow-lg text-xs">
+                POLÍCIA MAIS FORTE
+              </span>
             </div>
             
             {/* Subtítulo com efeito de profundidade */}
-            <div className="bg-blue-800/50 px-4 py-1 rounded-lg shadow-inner transform skew-x-2">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg">
-                SISTEMA DE ESCALA <span className="text-yellow-300">PMF</span>
+            <div className="bg-blue-800/50 px-4 py-2 rounded-lg shadow-inner transform skew-x-2">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg flex items-center">
+                SISTEMA DE ESCALA 
+                <span className="ml-2 bg-yellow-500 text-blue-900 font-bold text-sm px-2 py-0.5 rounded-full shadow-md border border-yellow-400">
+                  PMF
+                </span>
               </h2>
-            </div>
-            
-            {/* Badge 20ª CIPM */}
-            <div className="mt-2">
-              <span className="bg-yellow-500 text-blue-900 font-bold px-4 py-1 rounded-full shadow-md border border-yellow-400">
-                20ª CIPM
-              </span>
             </div>
           </div>
           
