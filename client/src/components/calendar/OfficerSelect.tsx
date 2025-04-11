@@ -130,7 +130,7 @@ export default function OfficerSelect({
             {limitReachedOfficers.includes(selectedOfficer) && (
               <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded flex items-center">
                 <AlertTriangle className="h-3 w-3 mr-1" />
-                LIMITE MÁXIMO ATINGIDO
+                LIMITE ATINGIDO
               </span>
             )}
           </div>
