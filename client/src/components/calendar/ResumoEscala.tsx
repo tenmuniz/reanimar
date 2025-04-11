@@ -237,24 +237,12 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
         
         <div class="resumo">
           <div class="resumo-item">
-            <div class="resumo-valor" style="font-size: ${militaresMaisEscalados.length > 2 ? '18px' : '24px'}">
-              ${militaresMaisEscalados.length > 0 
-                ? militaresMaisEscalados.map(m => m.nome).join('<br />') 
-                : "Nenhum"
-              }
-            </div>
-            <div class="resumo-label">
-              ${militaresMaisEscalados.length === 1 ? "Militar Mais Escalado" : "Militares Mais Escalados"}
-              ${militaresMaisEscalados.length > 0 ? `(${militaresMaisEscalados[0].total} dias)` : ""}
-            </div>
+            <div class="resumo-valor">${totalEscalas}</div>
+            <div class="resumo-label">Total de GCJOs</div>
           </div>
           <div class="resumo-item">
             <div class="resumo-valor">${totalMilitares}</div>
             <div class="resumo-label">Militares Escalados</div>
-          </div>
-          <div class="resumo-item">
-            <div class="resumo-valor">${totalEscalas}</div>
-            <div class="resumo-label">Total de Escalas</div>
           </div>
         </div>
         
