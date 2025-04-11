@@ -38,9 +38,22 @@ export default function CalendarCard({
 
   useEffect(() => {
     if (savedSelections) {
+      // Verificar se algum dos oficiais selecionados já atingiu o limite de 12 escalas
+      // Mas permitimos sua exibição caso já esteja salvo (para evitar dados corrompidos)
+      const containsLimitReachedOfficers = savedSelections.some(
+        officer => officer && limitReachedOfficers.includes(officer)
+      );
+      
+      // Se algum dos oficiais já atingiu o limite, mostrar alerta visual
+      if (containsLimitReachedOfficers) {
+        setShowLimitWarning(true);
+      } else {
+        setShowLimitWarning(false);
+      }
+      
       setSelections(savedSelections);
     }
-  }, [savedSelections]);
+  }, [savedSelections, limitReachedOfficers]);
   
   // Verificar limites de serviço e atualizar oficiais desabilitados
   useEffect(() => {
@@ -115,6 +128,11 @@ export default function CalendarCard({
     // Se não houver oficial selecionado, não há limite a verificar
     if (!officer) return true;
     
+    // Verificação rigorosa de limite: nunca deixar escalar além de 12 dias
+    if (limitReachedOfficers.includes(officer)) {
+      return false;
+    }
+    
     // Se o oficial estiver na lista de desabilitados, não permitir
     if (disabledOfficers.includes(officer)) {
       return false;
@@ -124,17 +142,36 @@ export default function CalendarCard({
   };
 
   const handleOfficerChange = (position: number, officer: string | null) => {
-    // Se está removendo um oficial (null) ou se está dentro do limite, permite a troca
-    if (!officer || checkOfficerLimit(officer)) {
+    // Caso 1: Remover um oficial (substituir por null) - sempre permitido
+    if (!officer) {
+      const newSelections = [...selections];
+      newSelections[position] = null;
+      setSelections(newSelections);
+      onOfficerChange(day, position, null);
+      return;
+    }
+    
+    // Caso 2: Verificação rigorosa de limite (bloquear oficial com 12+ escalas)
+    if (limitReachedOfficers.includes(officer)) {
+      toast({
+        title: "LIMITE MÁXIMO ATINGIDO",
+        description: `${officer} já está escalado em 12 dias. Impossível adicionar mais escalas.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Caso 3: Verificação geral de regras de negócio
+    if (checkOfficerLimit(officer)) {
       const newSelections = [...selections];
       newSelections[position] = officer;
       setSelections(newSelections);
       onOfficerChange(day, position, officer);
     } else {
-      // Oficial já atingiu o limite de 12 dias
+      // Oficial já está escalado neste dia ou outra regra de negócio impede
       toast({
-        title: "Limite de escala atingido",
-        description: `${officer} já está escalado em 12 dias neste mês.`,
+        title: "Operação não permitida",
+        description: `${officer} não pode ser escalado nesta posição.`,
         variant: "destructive",
       });
     }
