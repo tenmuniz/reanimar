@@ -5,230 +5,693 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>20ª CIPM - Visualização de Escalas</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <style>
+    :root {
+      --primary-color: #005aff;
+      --primary-darker: #0046cc;
+      --secondary-color: #00b26b;
+      --secondary-darker: #008e55;
+      --highlight-color: #ff3e00;
+      --shadow-color: rgba(0, 90, 255, 0.2);
+      --card-hover-transform: translateY(-5px);
+    }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       margin: 0;
       padding: 0;
       min-height: 100vh;
-      background-color: #f0f4f8;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf5 100%);
+      color: #333;
     }
+    
+    /* Cabeçalho */
     .header {
-      background: linear-gradient(to right, #0f2b5b, #1a4b8c);
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-darker));
       color: white;
-      padding: 1rem 0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2rem;
+      padding: 1.2rem 0;
+      box-shadow: 0 4px 20px var(--shadow-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
     .logo {
-      height: 60px;
-      margin-right: 1rem;
+      height: 70px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      animation: pulse 2s infinite;
     }
-    .card {
-      border-radius: 8px;
-      border: none;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+    
+    .logo-shield {
+      fill: white;
+      stroke: var(--primary-darker);
+      stroke-width: 1;
+    }
+    
+    .title-container h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(to right, #ffffff, #f0f0f0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: -0.5px;
+    }
+    
+    .title-container p {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin: 0;
+      font-weight: 300;
+    }
+
+    /* Abas de navegação */
+    .nav-container {
+      background: white;
+      padding: 0.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       margin-bottom: 1.5rem;
+      position: sticky;
+      top: 90px;
+      z-index: 990;
     }
-    .card:hover {
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    
+    .navbar-tabs {
+      gap: 0.5rem;
+      border: none !important;
+    }
+    
+    .navbar-tabs .nav-item {
+      margin: 0.25rem;
+    }
+    
+    .navbar-tabs .nav-link {
+      color: #444;
+      background: #f8f9fa;
+      border-radius: 10px !important;
+      border: none !important;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .navbar-tabs .nav-link.active {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 5px 12px var(--shadow-color);
       transform: translateY(-2px);
     }
-    .card-header {
-      border-radius: 8px 8px 0 0 !important;
-      font-weight: bold;
+    
+    .navbar-tabs .nav-link:hover:not(.active) {
+      background: #edf0f5;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.07);
     }
-    .dia-semana {
-      font-size: 0.8rem;
-      color: #666;
+    
+    .navbar-tabs .nav-link[data-bs-target="#pmf"].active {
+      background: var(--primary-color);
     }
-    .badge-completo {
-      background-color: #4caf50;
-      color: white;
-      padding: 0.35em 0.65em;
-      border-radius: 0.25rem;
-      font-size: 85%;
+    
+    .navbar-tabs .nav-link[data-bs-target="#es"].active {
+      background: var(--secondary-color);
     }
-    .badge-incompleto {
-      background-color: #ff9800;
-      color: white;
-      padding: 0.35em 0.65em;
-      border-radius: 0.25rem;
-      font-size: 85%;
+    
+    .navbar-tabs .nav-link[data-bs-target="#resumo"].active {
+      background: var(--highlight-color);
     }
-    .badge-sem-escala {
-      background-color: #e0e0e0;
-      color: #666;
-      padding: 0.35em 0.65em;
-      border-radius: 0.25rem;
-      font-size: 85%;
+    
+    /* Cards e conteúdo */
+    .section-header {
+      margin-bottom: 1.5rem;
+      position: relative;
+      display: inline-block;
+      padding-bottom: 0.5rem;
     }
-    .navbar-tabs {
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+    .section-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 4px;
+      width: 100px;
+      background: var(--primary-color);
+      border-radius: 2px;
     }
-    .navbar-tabs .nav-link {
-      color: #495057;
+    
+    #pmfTitle::after {
+      background: var(--primary-color);
+    }
+    
+    #esTitle::after {
+      background: var(--secondary-color);
+    }
+    
+    #resumoTitle::after {
+      background: var(--highlight-color);
+    }
+    
+    .card {
       border: none;
-      padding: 0.75rem 1.5rem;
-      transition: all 0.2s ease;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      margin-bottom: 1.5rem;
+      background: white;
     }
-    .navbar-tabs .nav-link.active {
-      background-color: #1a4b8c;
+    
+    .card:hover {
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      transform: var(--card-hover-transform);
+    }
+    
+    .card-header {
+      background: white;
+      border-bottom: none;
+      padding: 1rem 1.25rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .data-dia {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    
+    .dia-semana {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 400;
+    }
+    
+    .domingo .data-dia, .domingo .dia-semana {
+      color: #e53935;
+    }
+    
+    .sábado .data-dia, .sábado .dia-semana {
+      color: #1e88e5;
+    }
+    
+    /* Badges de status */
+    .badge {
+      padding: 0.5em 0.85em;
+      font-weight: 500;
+      border-radius: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    
+    .badge-completo {
+      background: linear-gradient(135deg, #4caf50, #43a047);
       color: white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    .tab-content {
-      padding-top: 2rem;
+    
+    .badge-incompleto {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: white;
     }
+    
+    .badge-sem-escala {
+      background: linear-gradient(135deg, #e0e0e0, #bdbdbd);
+      color: #333;
+    }
+    
+    /* Cartões de policiais */
+    .policial-card {
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      position: relative;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: all 0.3s;
+    }
+    
+    .policial-card::before {
+      content: '👮‍♂️';
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+    
+    .policial-card:hover {
+      background: #f1f6ff;
+      transform: translateX(3px);
+    }
+    
+    .policial-card.vazio {
+      color: #9e9e9e;
+      border-left-color: #ddd;
+      background: #f5f5f5;
+      font-style: italic;
+    }
+    
+    .policial-card.vazio::before {
+      content: '🚫';
+      opacity: 0.5;
+    }
+    
+    /* Resumos */
+    .officer-summary {
+      border-radius: 15px;
+      border: none;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+      margin-bottom: 1.25rem;
+      transform-origin: center;
+      transition: all 0.3s ease;
+    }
+    
+    .officer-summary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .officer-summary .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .officer-summary .card-title::before {
+      content: '👮‍♂️';
+      margin-right: 8px;
+      font-size: 1.3rem;
+    }
+    
+    .tag-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .escola-segura-tag {
+      background: var(--secondary-color);
+      color: white;
+      border-radius: 20px;
+      padding: 0.35em 0.75em;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0, 178, 107, 0.2);
+    }
+    
+    .policia-mais-forte-tag {
+      background: var(--primary-color);
+      color: white;
+      border-radius: 20px;
+      padding: 0.35em 0.75em;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    
+    .days-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 0.5rem;
+    }
+    
+    .day-badge {
+      background: #e0e7ff;
+      color: var(--primary-color);
+      border-radius: 5px;
+      padding: 0.35em 0.65em;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+    
+    .day-badge:hover {
+      transform: scale(1.15);
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    /* Loading e feedback */
     #loadingSpinner {
       display: flex;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
       padding: 3rem 0;
     }
-    .domingo { background-color: #ffebee; }
-    .segunda { background-color: #ffffff; }
-    .terça { background-color: #ffffff; }
-    .quarta { background-color: #ffffff; }
-    .quinta { background-color: #ffffff; }
-    .sexta { background-color: #ffffff; }
-    .sábado { background-color: #e3f2fd; }
+    
+    .spinner-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .loading-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #666;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    
     .escala-container {
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: all 0.5s ease;
     }
+    
     .escala-container.show {
       opacity: 1;
     }
-    .policial-card {
-      font-size: 0.9rem;
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-      background-color: #f5f5f5;
-      border-radius: 4px;
-    }
-    .policial-card.vazio {
-      color: #9e9e9e;
-      font-style: italic;
-    }
+    
     .atualizado-em {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       color: #666;
-      margin-top: 2rem;
+      margin-top: 3rem;
+      margin-bottom: 2rem;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    #refreshButton {
+    
+    .refresh-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: white;
+      color: var(--primary-color);
+      box-shadow: 0 3px 8px var(--shadow-color);
       cursor: pointer;
-      transition: transform 0.3s ease;
+      margin-left: 10px;
+      transition: all 0.3s ease;
     }
-    #refreshButton:hover {
+    
+    .refresh-icon:hover {
       transform: rotate(180deg);
+      background: var(--primary-color);
+      color: white;
     }
-    .officer-summary {
-      border-left: 4px solid #1a4b8c;
+    
+    /* Animations */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.03);
+      }
+      100% {
+        transform: scale(1);
+      }
     }
-    .escola-segura-tag {
-      background-color: #4caf50;
+    
+    /* Responsiveness */
+    @media (max-width: 767px) {
+      .section-header {
+        font-size: 1.4rem;
+      }
+      
+      .navbar-tabs .nav-link {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      
+      .card-header {
+        padding: 0.75rem 1rem;
+      }
+      
+      .policial-card {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+      }
+      
+      .title-container h1 {
+        font-size: 1.4rem;
+      }
+      
+      .logo {
+        height: 50px;
+      }
     }
-    .policia-mais-forte-tag {
-      background-color: #1a73e8;
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #ccd0d5;
+      border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #bcc0c5;
+    }
+    
+    /* Status counter */
+    .status-counter {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: white;
+      border-radius: 15px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .counter-item {
+      text-align: center;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+    
+    .counter-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .counter-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+    
+    .counter-label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .complete .counter-value {
+      color: #4caf50;
+    }
+    
+    .incomplete .counter-value {
+      color: #ff9800;
+    }
+    
+    .empty .counter-value {
+      color: #9e9e9e;
+    }
+    
+    /* Mais cores para diferentes dias da semana */
+    .domingo {
+      background: linear-gradient(135deg, #ffedf0, #ffe6e6);
+    }
+    
+    .segunda {
+      background: white;
+    }
+    
+    .terça {
+      background: linear-gradient(135deg, #f8feff, #f0fcff);
+    }
+    
+    .quarta {
+      background: white;
+    }
+    
+    .quinta {
+      background: linear-gradient(135deg, #f9f9ff, #f1f1ff);
+    }
+    
+    .sexta {
+      background: white;
+    }
+    
+    .sábado {
+      background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <header class="header">
     <div class="container">
       <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
+        <div class="logo-container">
           <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="48" fill="#fff" />
-            <text x="50" y="58" text-anchor="middle" fill="#0f2b5b" font-size="24" font-weight="bold">20ª CIPM</text>
+            <path class="logo-shield" d="M50 10 L20 25 L20 55 C20 70 35 85 50 90 C65 85 80 70 80 55 L80 25 Z" fill="#fff" />
+            <text x="50" y="58" text-anchor="middle" fill="#0046cc" font-size="24" font-weight="bold">20ª</text>
+            <text x="50" y="75" text-anchor="middle" fill="#0046cc" font-size="16" font-weight="bold">CIPM</text>
           </svg>
-          <div>
-            <h1 class="mb-0 fw-bold">Sistema de Escalas</h1>
-            <p class="mb-0 text-light">Visualização Pública</p>
+          <div class="title-container">
+            <h1>Sistema de Escalas</h1>
+            <p>Visualização Pública • 20ª CIPM</p>
           </div>
-        </div>
-        <div>
-          <span id="refreshButton" title="Atualizar dados" onclick="carregarDados()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-              <path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
-            </svg>
-          </span>
         </div>
       </div>
     </div>
   </header>
 
-  <div class="container">
-    <ul class="nav nav-tabs navbar-tabs mb-4" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="pmf-tab" data-bs-toggle="tab" data-bs-target="#pmf" type="button" role="tab" aria-controls="pmf" aria-selected="true">
-          <span class="d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
-              <path d="M16.7 8a3 3 0 0 0-2.7-3H3a1 1 0 0 0 0 2h1a1 1 0 0 1 1 1v8a2 2 0 0 0 4 0V4a2 2 0 0 1 2-2h4a4 4 0 0 1 3.8 2.8"></path>
-              <path d="M16 3h4v4"></path>
-              <path d="M14 15c2.5-2.5 4-5 4-8h4c0 4-2 8-5 11"></path>
-            </svg>
-            Polícia Mais Forte
-          </span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="es-tab" data-bs-toggle="tab" data-bs-target="#es" type="button" role="tab" aria-controls="es" aria-selected="false">
-          <span class="d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-            </svg>
-            Escola Segura
-          </span>
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="resumo-tab" data-bs-toggle="tab" data-bs-target="#resumo" type="button" role="tab" aria-controls="resumo" aria-selected="false">
-          <span class="d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-            Por Policial
-          </span>
-        </button>
-      </li>
-    </ul>
-
+  <div class="container mt-4">
+    <div class="nav-container animate__animated animate__fadeInDown">
+      <ul class="nav nav-tabs navbar-tabs mb-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="pmf-tab" data-bs-toggle="tab" data-bs-target="#pmf" type="button" role="tab" aria-controls="pmf" aria-selected="true">
+            <span class="d-flex align-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                <path d="M16.7 8a3 3 0 0 0-2.7-3H3a1 1 0 0 0 0 2h1a1 1 0 0 1 1 1v8a2 2 0 0 0 4 0V4a2 2 0 0 1 2-2h4a4 4 0 0 1 3.8 2.8"></path>
+                <path d="M16 3h4v4"></path>
+                <path d="M14 15c2.5-2.5 4-5 4-8h4c0 4-2 8-5 11"></path>
+              </svg>
+              Polícia Mais Forte
+            </span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="es-tab" data-bs-toggle="tab" data-bs-target="#es" type="button" role="tab" aria-controls="es" aria-selected="false">
+            <span class="d-flex align-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+              Escola Segura
+            </span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="resumo-tab" data-bs-toggle="tab" data-bs-target="#resumo" type="button" role="tab" aria-controls="resumo" aria-selected="false">
+            <span class="d-flex align-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+              Por Policial
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+    
     <div id="loadingSpinner">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Carregando...</span>
+      <div class="spinner-container animate__animated animate__pulse animate__infinite">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Carregando...</span>
+        </div>
       </div>
-      <span class="ms-3">Carregando escalas...</span>
+      <div class="loading-text">
+        <p>Carregando escalas...</p>
+      </div>
     </div>
 
-    <div class="tab-content escala-container" id="myTabContent">
+    <div class="tab-content escala-container animate__animated animate__fadeIn" id="myTabContent">
       <div class="tab-pane fade show active" id="pmf" role="tabpanel" aria-labelledby="pmf-tab">
-        <h3 class="mb-4" id="pmfTitle">Polícia Mais Forte - <span id="mesAnoAtual">Abril 2025</span></h3>
+        <h2 class="section-header" id="pmfTitle">Polícia Mais Forte • <span id="mesAnoAtual">Abril 2025</span></h2>
+        
+        <div class="status-counter" id="pmf-counter">
+          <div class="counter-item complete">
+            <div class="counter-value" id="pmf-complete-count">0</div>
+            <div class="counter-label">Dias completos</div>
+          </div>
+          <div class="counter-item incomplete">
+            <div class="counter-value" id="pmf-incomplete-count">0</div>
+            <div class="counter-label">Dias incompletos</div>
+          </div>
+          <div class="counter-item empty">
+            <div class="counter-value" id="pmf-empty-count">0</div>
+            <div class="counter-label">Dias sem escala</div>
+          </div>
+        </div>
+        
         <div class="row" id="pmfContainer"></div>
       </div>
+      
       <div class="tab-pane fade" id="es" role="tabpanel" aria-labelledby="es-tab">
-        <h3 class="mb-4" id="esTitle">Escola Segura - <span id="mesAnoAtualES">Abril 2025</span></h3>
+        <h2 class="section-header" id="esTitle">Escola Segura • <span id="mesAnoAtualES">Abril 2025</span></h2>
+        
+        <div class="status-counter" id="es-counter">
+          <div class="counter-item complete">
+            <div class="counter-value" id="es-complete-count">0</div>
+            <div class="counter-label">Dias completos</div>
+          </div>
+          <div class="counter-item incomplete">
+            <div class="counter-value" id="es-incomplete-count">0</div>
+            <div class="counter-label">Dias incompletos</div>
+          </div>
+          <div class="counter-item empty">
+            <div class="counter-value" id="es-empty-count">0</div>
+            <div class="counter-label">Dias sem escala</div>
+          </div>
+        </div>
+        
         <div class="row" id="esContainer"></div>
       </div>
+      
       <div class="tab-pane fade" id="resumo" role="tabpanel" aria-labelledby="resumo-tab">
-        <h3 class="mb-4" id="resumoTitle">Resumo por Policial - <span id="mesAnoAtualResumo">Abril 2025</span></h3>
+        <h2 class="section-header" id="resumoTitle">Resumo por Policial • <span id="mesAnoAtualResumo">Abril 2025</span></h2>
         <div id="resumoContainer"></div>
       </div>
     </div>
 
-    <p class="atualizado-em" id="atualizadoEm">Atualizado em: <span id="ultimaAtualizacao"></span></p>
+    <div class="atualizado-em" id="atualizadoEm">
+      Atualizado em: <span id="ultimaAtualizacao">--/--/---- --:--</span>
+      <div class="refresh-icon" id="refreshButton" title="Atualizar agora" onclick="carregarDados(true)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+          <path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+        </svg>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -239,48 +702,77 @@
 
     const ano = dataAtual.getFullYear();
     const mes = dataAtual.getMonth() + 1;
+    
+    let ultimaAtualizacao = null;
+    let dadosCache = null;
 
     document.addEventListener('DOMContentLoaded', function() {
       carregarDados();
       
-      // Auto-refresh a cada 5 minutos
+      // Auto-refresh a cada 2 minutos
       setInterval(() => {
         carregarDados();
-      }, 300000); // 300000ms = 5 minutos
+      }, 120000); // 120000ms = 2 minutos
     });
 
-    function carregarDados() {
+    async function carregarDados(forcarAtualizacao = false) {
       const loadingSpinner = document.getElementById('loadingSpinner');
       const escalaContainer = document.querySelector('.escala-container');
+      
+      // Se temos dados em cache e não estamos forçando atualização
+      if (dadosCache && !forcarAtualizacao) {
+        renderizarDados(dadosCache);
+        return;
+      }
       
       loadingSpinner.style.display = 'flex';
       escalaContainer.classList.remove('show');
       
-      fetch(`/api/combined-schedules?year=${ano}&month=${mes}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Falha ao carregar escalas');
-          }
-          return response.json();
-        })
-        .then(data => {
-          const schedules = data.schedules;
-          
-          atualizarTextoMesAno();
-          renderizarPMF(schedules.pmf);
-          renderizarES(schedules.escolaSegura);
-          renderizarResumo(schedules);
-          
-          document.getElementById('ultimaAtualizacao').textContent = new Date().toLocaleString('pt-BR');
-          
-          loadingSpinner.style.display = 'none';
-          escalaContainer.classList.add('show');
-        })
-        .catch(error => {
-          console.error('Erro ao carregar dados:', error);
-          loadingSpinner.style.display = 'none';
+      try {
+        const cacheBuster = new Date().getTime();
+        const response = await fetch(`/api/combined-schedules?year=${ano}&month=${mes}&_=${cacheBuster}`);
+        
+        if (!response.ok) {
+          throw new Error('Falha ao carregar escalas');
+        }
+        
+        const data = await response.json();
+        
+        // Salvar no cache
+        dadosCache = data;
+        ultimaAtualizacao = new Date();
+        
+        renderizarDados(data);
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        loadingSpinner.style.display = 'none';
+        
+        // Se temos dados em cache, usar os dados antigos
+        if (dadosCache) {
+          renderizarDados(dadosCache);
+          alert('Não foi possível obter dados atualizados. Exibindo última versão disponível.');
+        } else {
           alert('Erro ao carregar escalas. Por favor, tente novamente mais tarde.');
-        });
+        }
+      }
+    }
+    
+    function renderizarDados(data) {
+      const schedules = data.schedules;
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const escalaContainer = document.querySelector('.escala-container');
+      
+      atualizarTextoMesAno();
+      renderizarPMF(schedules.pmf);
+      renderizarES(schedules.escolaSegura);
+      renderizarResumo(schedules);
+      
+      document.getElementById('ultimaAtualizacao').textContent = ultimaAtualizacao ? 
+        ultimaAtualizacao.toLocaleString('pt-BR') : 
+        new Date().toLocaleString('pt-BR');
+      
+      loadingSpinner.style.display = 'none';
+      escalaContainer.classList.add('show');
     }
 
     function atualizarTextoMesAno() {
@@ -296,6 +788,10 @@
       
       const diasNoMes = new Date(ano, mes, 0).getDate();
       
+      let completosCount = 0;
+      let incompletosCount = 0;
+      let vaziosCount = 0;
+      
       for (let dia = 1; dia <= diasNoMes; dia++) {
         const dataDia = new Date(ano, mes-1, dia);
         const diaSemana = diasSemana[dataDia.getDay()].toLowerCase();
@@ -305,12 +801,20 @@
         const totalPoliciais = policiais.filter(Boolean).length;
         
         let statusBadge = '';
+        let statusClass = '';
+        
         if (totalPoliciais === 0) {
           statusBadge = '<span class="badge badge-sem-escala">Sem escala</span>';
+          statusClass = 'vazio';
+          vaziosCount++;
         } else if (totalPoliciais < 3) {
           statusBadge = '<span class="badge badge-incompleto">Incompleto</span>';
+          statusClass = 'incompleto';
+          incompletosCount++;
         } else {
           statusBadge = '<span class="badge badge-completo">Completo</span>';
+          statusClass = 'completo';
+          completosCount++;
         }
         
         let policiaisHtml = '';
@@ -325,10 +829,10 @@
         }
         
         const cardHtml = `
-          <div class="col-md-4 col-lg-3 mb-4">
-            <div class="card h-100">
+          <div class="col-md-4 col-lg-3 mb-4 animate__animated animate__fadeIn" style="animation-delay: ${dia * 30}ms">
+            <div class="card h-100 ${statusClass}">
               <div class="card-header ${diaSemana} d-flex justify-content-between align-items-center">
-                <span class="fw-bold">${dia}</span>
+                <span class="data-dia">${dia}</span>
                 <span class="dia-semana">${nomeDiaSemana}</span>
               </div>
               <div class="card-body">
@@ -343,6 +847,11 @@
         
         container.innerHTML += cardHtml;
       }
+      
+      // Atualizar contadores
+      document.getElementById('pmf-complete-count').textContent = completosCount;
+      document.getElementById('pmf-incomplete-count').textContent = incompletosCount;
+      document.getElementById('pmf-empty-count').textContent = vaziosCount;
     }
 
     function renderizarES(esData) {
@@ -350,6 +859,10 @@
       container.innerHTML = '';
       
       const diasNoMes = new Date(ano, mes, 0).getDate();
+      
+      let completosCount = 0;
+      let incompletosCount = 0;
+      let vaziosCount = 0;
       
       for (let dia = 1; dia <= diasNoMes; dia++) {
         const dataDia = new Date(ano, mes-1, dia);
@@ -360,12 +873,20 @@
         const totalPoliciais = policiais.filter(Boolean).length;
         
         let statusBadge = '';
+        let statusClass = '';
+        
         if (totalPoliciais === 0) {
           statusBadge = '<span class="badge badge-sem-escala">Sem escala</span>';
+          statusClass = 'vazio';
+          vaziosCount++;
         } else if (totalPoliciais < 2) {
           statusBadge = '<span class="badge badge-incompleto">Incompleto</span>';
+          statusClass = 'incompleto';
+          incompletosCount++;
         } else {
           statusBadge = '<span class="badge badge-completo">Completo</span>';
+          statusClass = 'completo';
+          completosCount++;
         }
         
         let policiaisHtml = '';
@@ -380,10 +901,10 @@
         }
         
         const cardHtml = `
-          <div class="col-md-4 col-lg-3 mb-4">
-            <div class="card h-100">
+          <div class="col-md-4 col-lg-3 mb-4 animate__animated animate__fadeIn" style="animation-delay: ${dia * 30}ms">
+            <div class="card h-100 ${statusClass}">
               <div class="card-header ${diaSemana} d-flex justify-content-between align-items-center">
-                <span class="fw-bold">${dia}</span>
+                <span class="data-dia">${dia}</span>
                 <span class="dia-semana">${nomeDiaSemana}</span>
               </div>
               <div class="card-body">
@@ -398,6 +919,11 @@
         
         container.innerHTML += cardHtml;
       }
+      
+      // Atualizar contadores
+      document.getElementById('es-complete-count').textContent = completosCount;
+      document.getElementById('es-incomplete-count').textContent = incompletosCount;
+      document.getElementById('es-empty-count').textContent = vaziosCount;
     }
 
     function renderizarResumo(schedules) {
@@ -412,36 +938,59 @@
       
       // Adicionar policiais da PMF
       Object.values(pmfData).forEach(diaOfficers => {
-        diaOfficers.forEach(officer => {
-          if (officer) todosOsPoliciais.add(officer);
-        });
+        if (Array.isArray(diaOfficers)) {
+          diaOfficers.forEach(officer => {
+            if (officer) todosOsPoliciais.add(officer);
+          });
+        }
       });
       
       // Adicionar policiais da Escola Segura
       Object.values(esData).forEach(diaOfficers => {
-        diaOfficers.forEach(officer => {
-          if (officer) todosOsPoliciais.add(officer);
-        });
+        if (Array.isArray(diaOfficers)) {
+          diaOfficers.forEach(officer => {
+            if (officer) todosOsPoliciais.add(officer);
+          });
+        }
       });
       
       // Converter para array e ordenar
       const policiais = Array.from(todosOsPoliciais).sort();
       
+      if (policiais.length === 0) {
+        container.innerHTML = `
+          <div class="alert alert-info p-4 animate__animated animate__fadeIn">
+            <div class="d-flex align-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-3">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <div>
+                <h4 class="alert-heading mb-1">Nenhum policial escalado</h4>
+                <p class="mb-0">Não há policiais escalados no período selecionado.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
       // Para cada policial, listar os dias de PMF e ES
-      policiais.forEach(policial => {
+      policiais.forEach((policial, index) => {
         const diasPMF = [];
         const diasES = [];
         
         // Coletar dias de PMF
         Object.entries(pmfData).forEach(([dia, officers]) => {
-          if (officers.includes(policial)) {
+          if (Array.isArray(officers) && officers.includes(policial)) {
             diasPMF.push(parseInt(dia));
           }
         });
         
         // Coletar dias de ES
         Object.entries(esData).forEach(([dia, officers]) => {
-          if (officers.includes(policial)) {
+          if (Array.isArray(officers) && officers.includes(policial)) {
             diasES.push(parseInt(dia));
           }
         });
@@ -459,7 +1008,7 @@
         if (diasPMF.length > 0) {
           diasPMF.sort((a, b) => a - b);
           diasPMF.forEach(dia => {
-            diasPMFHtml += `<span class="badge bg-primary me-1">${dia}</span>`;
+            diasPMFHtml += `<span class="day-badge">${dia}</span>`;
           });
         } else {
           diasPMFHtml = '<span class="text-muted fst-italic">Nenhum dia</span>';
@@ -469,41 +1018,46 @@
         if (diasES.length > 0) {
           diasES.sort((a, b) => a - b);
           diasES.forEach(dia => {
-            diasESHtml += `<span class="badge bg-success me-1">${dia}</span>`;
+            diasESHtml += `<span class="day-badge">${dia}</span>`;
           });
         } else {
           diasESHtml = '<span class="text-muted fst-italic">Nenhum dia</span>';
         }
         
         const cardHtml = `
-          <div class="card mb-3 officer-summary">
+          <div class="officer-summary animate__animated animate__fadeIn" style="animation-delay: ${index * 50}ms">
             <div class="card-body">
-              <h5 class="card-title">${policial}</h5>
+              <h5 class="card-title mb-3">${policial}</h5>
               <div class="row g-3 mt-2">
                 <div class="col-md-6">
                   <div class="d-flex align-items-center mb-2">
-                    <span class="badge policia-mais-forte-tag me-2">PMF</span>
+                    <span class="policia-mais-forte-tag me-2">PMF</span>
                     <span class="fw-bold">Polícia Mais Forte</span>
                     <span class="badge bg-light text-dark ms-2">${diasPMF.length} dias</span>
                   </div>
-                  <div class="d-flex flex-wrap gap-1 mt-2">
+                  <div class="days-badges">
                     ${diasPMFHtml}
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="d-flex align-items-center mb-2">
-                    <span class="badge escola-segura-tag me-2">ES</span>
+                    <span class="escola-segura-tag me-2">ES</span>
                     <span class="fw-bold">Escola Segura</span>
                     <span class="badge bg-light text-dark ms-2">${diasES.length} dias</span>
                   </div>
-                  <div class="d-flex flex-wrap gap-1 mt-2">
+                  <div class="days-badges">
                     ${diasESHtml}
                   </div>
                 </div>
               </div>
               <div class="mt-3 pt-2 border-top">
-                <span class="badge bg-light text-dark">Total: ${totalEscalas} escalas</span>
-                ${badgeLimite}
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1" style="height: 8px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: ${Math.min(100, (totalEscalas/12)*100)}%" aria-valuenow="${totalEscalas}" aria-valuemin="0" aria-valuemax="12"></div>
+                  </div>
+                  <span class="badge ${excedeuLimite ? 'bg-danger' : 'bg-primary'}">${totalEscalas}/12</span>
+                  ${badgeLimite}
+                </div>
               </div>
             </div>
           </div>
@@ -511,11 +1065,6 @@
         
         container.innerHTML += cardHtml;
       });
-      
-      // Se não houver policiais
-      if (policiais.length === 0) {
-        container.innerHTML = '<div class="alert alert-info">Nenhum policial escalado no período.</div>';
-      }
     }
   </script>
 </body>
