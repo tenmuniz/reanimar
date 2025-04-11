@@ -215,13 +215,8 @@ function VisualizacaoPorOficial({
   );
 }
 
-// Função para imprimir a página
-function handlePrint() {
-  window.print();
-}
-
 export default function Visualizacao() {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [currentDate] = useState<Date>(new Date());
   const [selectedTab, setSelectedTab] = useState("calendario");
   
   // Obter oficiais
@@ -232,6 +227,7 @@ export default function Visualizacao() {
   // Obter agendas combinadas
   const { data: combinedSchedulesData, isLoading } = useQuery<{ schedules: CombinedSchedules }>({
     queryKey: ["/api/combined-schedules", currentDate.getFullYear(), currentDate.getMonth() + 1],
+    refetchInterval: 30000, // Atualiza automaticamente a cada 30 segundos
   });
 
   const officers = officersData?.officers || [];
@@ -242,19 +238,6 @@ export default function Visualizacao() {
     currentDate.getFullYear(),
     currentDate.getMonth() + 1
   );
-
-  // Handler para navegação entre meses
-  const handlePreviousMonth = () => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() - 1);
-    setCurrentDate(newDate);
-  };
-
-  const handleNextMonth = () => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() + 1);
-    setCurrentDate(newDate);
-  };
 
   // Construir dias para visualização
   const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
@@ -285,21 +268,12 @@ export default function Visualizacao() {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">20ª CIPM - Visualização de Escalas</h1>
         <p className="text-gray-600">Sistema de Consulta de Operações</p>
+        <p className="text-amber-600 font-semibold mt-2">{formatMonthYear(currentDate)}</p>
         
-        <div className="mt-4 flex flex-col md:flex-row justify-between items-center">
-          <MonthSelector
-            currentDate={currentDate}
-            onPreviousMonth={handlePreviousMonth}
-            onNextMonth={handleNextMonth}
-          />
-          
-          <Button
-            onClick={handlePrint}
-            className="mt-2 md:mt-0 bg-amber-600 hover:bg-amber-700 text-white"
-          >
-            <Printer className="h-4 w-4 mr-2" />
-            Imprimir Escala
-          </Button>
+        <div className="mt-2 inline-flex px-4 py-2 bg-blue-50 rounded-lg border border-blue-100">
+          <p className="text-sm text-blue-700">
+            <span className="font-semibold">Atualização automática</span> – Esta página é apenas para consulta.
+          </p>
         </div>
       </div>
 
