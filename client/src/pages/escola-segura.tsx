@@ -175,30 +175,49 @@ export default function EscolaSegura() {
 
   // Gerar cards do calendário
   const generateCalendarCards = () => {
-    const cards = [];
-    const emptyStartDays = monthData.firstDayOfWeek;
+    const cards: React.ReactNode[] = [];
     const monthKey = `${monthData.year}-${monthData.month}`;
     const currentMonthSchedule = schedule[monthKey] || {};
     
-    // Dias vazios no início (para alinhar o calendário)
-    for (let i = 0; i < emptyStartDays; i++) {
-      cards.push(
-        <div key={`empty-start-${i}`} className="h-28 md:h-36"></div>
-      );
-    }
+    // Armazenar as posições de grid para dias úteis
+    let gridPositions: { day: number; position: number; weekday: string }[] = [];
     
-    // Dias do mês
+    // Calcular posições de grid para apenas dias úteis
+    let currentGridPos = 0;
     for (let day = 1; day <= monthData.days; day++) {
       const weekday = getWeekdayName(day, monthData.month, monthData.year);
       
-      // Verificar se é final de semana e pular se for
-      if (weekday === 'Dom' || weekday === 'Sáb') {
-        continue; // Pula a iteração para finais de semana
+      // Se for o primeiro dia do mês, adicione os espaços vazios iniciais
+      if (day === 1) {
+        currentGridPos = monthData.firstDayOfWeek;
       }
       
+      // Verificar se é dia útil (não é final de semana)
+      if (weekday !== 'Dom' && weekday !== 'Sáb') {
+        gridPositions.push({
+          day,
+          position: currentGridPos,
+          weekday
+        });
+      }
+      
+      // Avançar para o próximo dia da semana
+      currentGridPos = (currentGridPos + 1) % 7;
+    }
+    
+    // Criar array de tamanho 7 x (número de semanas necessárias)
+    const totalWeeks = Math.ceil((gridPositions.length > 0 ? 
+      gridPositions[gridPositions.length - 1].position + 1 : 0) / 7);
+    const totalCells = totalWeeks * 7;
+    
+    // Inicializar todas as células como vazias
+    const allCells = Array(totalCells).fill(null);
+    
+    // Adicionar os dias úteis nas posições corretas
+    gridPositions.forEach(({ day, position, weekday }) => {
       const savedSelections = currentMonthSchedule[day] || Array(2).fill(null);
       
-      cards.push(
+      allCells[position] = (
         <CalendarCardEscolaSegura
           key={`day-${day}`}
           day={day}
@@ -211,7 +230,16 @@ export default function EscolaSegura() {
           combinedSchedules={combinedSchedules}
         />
       );
-    }
+    });
+    
+    // Converter as células para o layout final
+    allCells.forEach((cell, index) => {
+      if (cell === null) {
+        cards.push(<div key={`empty-${index}`} className="h-28 md:h-36"></div>);
+      } else {
+        cards.push(cell);
+      }
+    });
     
     return cards;
   };
@@ -281,16 +309,20 @@ export default function EscolaSegura() {
           </AlertDescription>
         </Alert>
       
-        <div className="grid grid-cols-5 gap-4">
-          {/* Apenas dias úteis: Segunda a Sexta */}
-          {["Seg", "Ter", "Qua", "Qui", "Sex"].map((day) => (
-            <div key={day} className="text-center font-medium text-sm text-gray-500">
+        <div className="grid grid-cols-7 gap-4">
+          {/* Cabeçalhos dos dias da semana - destacando dias úteis */}
+          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
+            <div key={day} className={`text-center font-medium text-sm ${
+              day === "Dom" || day === "Sáb" 
+                ? "text-gray-300" // Finais de semana em cinza claro
+                : "text-gray-700" // Dias úteis em cinza escuro
+            }`}>
               {day}
             </div>
           ))}
           
           {loading ? (
-            <div className="col-span-5 py-12 text-center text-gray-500">
+            <div className="col-span-7 py-12 text-center text-gray-500">
               Carregando calendário...
             </div>
           ) : (

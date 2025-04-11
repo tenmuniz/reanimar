@@ -99,10 +99,19 @@ export default function OfficerSelect({
         Policial {position}
       </Label>
       
-      {/* Solução customizada para exibição do nome completo */}
+      {/* Exibição do policial selecionado com opção para mudar/remover */}
       {selectedOfficer ? (
-        <div className="border border-gray-300 rounded-md shadow-sm p-2 bg-white text-sm">
-          {selectedOfficer}
+        <div className="flex items-center">
+          <div className="border border-gray-300 rounded-md shadow-sm p-2 bg-white text-sm flex-1 truncate">
+            {selectedOfficer}
+          </div>
+          <button 
+            className="ml-2 px-2 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+            onClick={() => onChange(null)}
+            title="Remover policial da escala"
+          >
+            ✕
+          </button>
         </div>
       ) : (
         <Select
