@@ -700,18 +700,20 @@
     const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     const dataAtual = new Date();
 
-    const ano = dataAtual.getFullYear();
-    const mes = dataAtual.getMonth() + 1;
+    // Usar ano e mês fixos para 2025/4 (Abril 2025) para desenvolvimento
+    const ano = 2025;
+    const mes = 4;
     
     let ultimaAtualizacao = null;
     let dadosCache = null;
 
     document.addEventListener('DOMContentLoaded', function() {
-      carregarDados();
+      // Forçar atualização dos dados quando a página carrega
+      carregarDados(true);
       
       // Auto-refresh a cada 2 minutos
       setInterval(() => {
-        carregarDados();
+        carregarDados(true);
       }, 120000); // 120000ms = 2 minutos
     });
 
@@ -816,19 +818,24 @@
         const diaSemana = diasSemana[dataDia.getDay()].toLowerCase();
         const nomeDiaSemana = diasSemana[dataDia.getDay()];
         
-        // Log para debug
-        console.log(`Dia ${dia} - Dados: `, 
-          pmfData["2025"]?.[4]?.[dia] || 
-          pmfData[2025]?.[4]?.[dia] || 
-          pmfData?.[dia] || 
-          "Não encontrado"
-        );
+        // Log para debug de todos os possíveis formatos
+        const dadosPMF1 = pmfData?.["2025"]?.["4"]?.[dia];
+        const dadosPMF2 = pmfData?.["2025"]?.[4]?.[dia];
+        const dadosPMF3 = pmfData?.[2025]?.["4"]?.[dia];
+        const dadosPMF4 = pmfData?.[2025]?.[4]?.[dia];
+        const dadosPMF5 = pmfData?.[dia];
+        
+        console.log(`Dia ${dia} - Formato dos dados:`, {
+          "pmfData?.['2025']?.['4']?.[dia]": dadosPMF1,
+          "pmfData?.['2025']?.[4]?.[dia]": dadosPMF2,
+          "pmfData?.[2025]?.['4']?.[dia]": dadosPMF3,
+          "pmfData?.[2025]?.[4]?.[dia]": dadosPMF4,
+          "pmfData?.[dia]": dadosPMF5
+        });
         
         // Tenta encontrar os dados em todos os formatos possíveis
         const policiais = 
-          pmfData["2025"]?.[4]?.[dia] || 
-          pmfData[2025]?.[4]?.[dia] || 
-          pmfData?.[dia] || 
+          dadosPMF1 || dadosPMF2 || dadosPMF3 || dadosPMF4 || dadosPMF5 || 
           [null, null, null];
         
         const totalPoliciais = policiais.filter(Boolean).length;
@@ -903,19 +910,24 @@
         const diaSemana = diasSemana[dataDia.getDay()].toLowerCase();
         const nomeDiaSemana = diasSemana[dataDia.getDay()];
         
-        // Log para debug
-        console.log(`ES Dia ${dia} - Dados: `, 
-          esData["2025"]?.[4]?.[dia] || 
-          esData[2025]?.[4]?.[dia] || 
-          esData?.[dia] || 
-          "Não encontrado"
-        );
+        // Log para debug de todos os possíveis formatos
+        const dadosES1 = esData?.["2025"]?.["4"]?.[dia];
+        const dadosES2 = esData?.["2025"]?.[4]?.[dia];
+        const dadosES3 = esData?.[2025]?.["4"]?.[dia];
+        const dadosES4 = esData?.[2025]?.[4]?.[dia];
+        const dadosES5 = esData?.[dia];
+        
+        console.log(`ES Dia ${dia} - Formato dos dados:`, {
+          "esData?.['2025']?.['4']?.[dia]": dadosES1,
+          "esData?.['2025']?.[4]?.[dia]": dadosES2,
+          "esData?.[2025]?.['4']?.[dia]": dadosES3,
+          "esData?.[2025]?.[4]?.[dia]": dadosES4,
+          "esData?.[dia]": dadosES5
+        });
         
         // Tenta encontrar os dados em todos os formatos possíveis
         const policiais = 
-          esData["2025"]?.[4]?.[dia] || 
-          esData[2025]?.[4]?.[dia] || 
-          esData?.[dia] || 
+          dadosES1 || dadosES2 || dadosES3 || dadosES4 || dadosES5 || 
           [null, null];
         const totalPoliciais = policiais.filter(Boolean).length;
         
@@ -978,9 +990,25 @@
       const container = document.getElementById('resumoContainer');
       container.innerHTML = '';
       
+      // Registrar todos os formatos disponíveis
+      console.log("Estrutura PMF completa:", schedules.pmf);
+      console.log("Estrutura Escola Segura completa:", schedules.escolaSegura);
+      
       // Extrair dados nos possíveis formatos
-      const pmfData = schedules.pmf["2025"]?.[4] || schedules.pmf[2025]?.[4] || schedules.pmf[ano]?.[mes] || {};
-      const esData = schedules.escolaSegura["2025"]?.[4] || schedules.escolaSegura[2025]?.[4] || schedules.escolaSegura[ano]?.[mes] || {};
+      const pmfData = 
+          schedules.pmf?.["2025"]?.["4"] || 
+          schedules.pmf?.["2025"]?.[4] || 
+          schedules.pmf?.[2025]?.["4"] || 
+          schedules.pmf?.[2025]?.[4] || 
+          schedules.pmf || 
+          {}; 
+      const esData = 
+          schedules.escolaSegura?.["2025"]?.["4"] || 
+          schedules.escolaSegura?.["2025"]?.[4] || 
+          schedules.escolaSegura?.[2025]?.["4"] || 
+          schedules.escolaSegura?.[2025]?.[4] || 
+          schedules.escolaSegura || 
+          {};
       
       // Coletar todos os policiais únicos
       const todosOsPoliciais = new Set();

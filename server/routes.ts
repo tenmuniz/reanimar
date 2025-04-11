@@ -97,8 +97,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Rota para página de visualização pública
+  // Rota para página de visualização pública - com cabeçalhos anti-cache
   app.get("/visualizacao-publica", (req, res) => {
+    // Configurar cabeçalhos anti-cache
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    
+    // Enviar o arquivo HTML
     res.sendFile(path.resolve(process.cwd(), "public/visualizacao.html"));
   });
 
