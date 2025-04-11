@@ -304,7 +304,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
     }> = {};
     
     // Função para processar um schedule e popular militaresDias
-    const processSchedule = (scheduleData: any, operacao: 'pmf' | 'escolaSegura') => {
+    const processSchedule = (scheduleData: any, operacao: 'pmf') => {
       if (!scheduleData) return;
       
       Object.entries(scheduleData).forEach(([day, officers]) => {
@@ -319,7 +319,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
                 posto: getPosto(officer),
                 operacoes: {
                   pmf: 0
-                }
+                } as { pmf: number }
               };
             }
             

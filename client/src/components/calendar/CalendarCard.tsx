@@ -34,6 +34,7 @@ export default function CalendarCard({
   );
   const [showLimitWarning, setShowLimitWarning] = useState(false);
   const [disabledOfficers, setDisabledOfficers] = useState<string[]>([]);
+  const [limitReachedOfficers, setLimitReachedOfficers] = useState<string[]>([]);
 
   useEffect(() => {
     if (savedSelections) {
@@ -68,12 +69,15 @@ export default function CalendarCard({
     }
     
     // Encontrar oficiais que já atingiram o limite de 12 dias no mês
-    const limitReachedOfficers = officers.filter(
+    const officersAtLimit = officers.filter(
       officer => officerDaysCount[officer] >= 12
     );
     
+    // Atualizar estado dos oficiais que atingiram o limite
+    setLimitReachedOfficers(officersAtLimit);
+    
     // Adicionar à lista de desabilitados
-    disabledOfficersList = [...disabledOfficersList, ...limitReachedOfficers];
+    disabledOfficersList = [...disabledOfficersList, ...officersAtLimit];
     
     // 2. Verificar se o oficial já está escalado no mesmo dia
     const currentDayKey = `${day}`;
@@ -193,6 +197,7 @@ export default function CalendarCard({
               ...selectedOfficers.filter((officer) => officer !== selections[position]),
               ...disabledOfficers
             ]}
+            limitReachedOfficers={limitReachedOfficers}
             onChange={(value) => handleOfficerChange(position, value)}
           />
         ))}
