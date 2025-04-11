@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BarChart3, Calendar, FileText, Printer, Award, Users } from "lucide-react";
+import { BarChart3, Calendar, FileText, Printer, Award, Users, Search } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 interface ResumoEscalaProps {
   schedule: MonthSchedule;
@@ -22,7 +23,15 @@ interface MilitarEscalaData {
 export default function ResumoEscala({ schedule, currentDate, combinedSchedules }: ResumoEscalaProps) {
   const [open, setOpen] = useState(false);
   const [resumoData, setResumoData] = useState<Record<string, MilitarEscalaData>>({});
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  
+  // Função para filtrar militares com base no termo de busca
+  const filteredMilitares = () => {
+    return Object.entries(resumoData).filter(([militar]) => 
+      searchTerm === "" || militar.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
   
   // HOOK CRÍTICO: Atualizar o resumo sempre que schedule mudar ou o modal for aberto
   useEffect(() => {
@@ -36,6 +45,9 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
       
       // Importante: regenerar sempre que abrir o modal ou quando os dados mudarem
       generateResumo();
+    } else {
+      // Limpar o termo de busca quando o modal for fechado
+      setSearchTerm("");
     }
   }, [open, schedule, currentDate]);
   
@@ -542,6 +554,19 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
             </div>
           </div>
           
+          {/* Campo de busca de militar */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-blue-300" />
+              <Input
+                placeholder="Buscar militar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8 bg-blue-700/30 border-blue-600 text-white placeholder:text-blue-300"
+              />
+            </div>
+          </div>
+          
           {/* Lista de militares */}
           <div className="bg-blue-700/50 rounded-lg p-2 mb-4 max-h-[350px] overflow-auto">
             <div className="flex font-bold text-sm text-blue-100 px-2 py-1 mb-1 border-b border-blue-500">
@@ -554,8 +579,12 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
               <div className="p-4 text-center text-blue-200">
                 Nenhum militar escalado para este mês
               </div>
+            ) : filteredMilitares().length === 0 ? (
+              <div className="p-4 text-center text-blue-200">
+                Nenhum militar encontrado com o termo &quot;{searchTerm}&quot;
+              </div>
             ) : (
-              Object.entries(resumoData).map(([militar, dados], index) => {
+              filteredMilitares().map(([militar, dados], index) => {
                 // Classe do background com base na paridade
                 const bgClass = index % 2 === 0 
                   ? 'bg-blue-800/40' 
