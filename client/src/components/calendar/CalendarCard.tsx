@@ -49,6 +49,10 @@ export default function CalendarCard({
   // Verificar se pelo menos um oficial está escalado (mas não todos)
   const hasAnyOfficer = selectedOfficers.length > 0;
   
+  console.log(`Dia ${day} - seleções:`, selections, 
+              `hasAnyOfficer: ${hasAnyOfficer}`,
+              `allPositionsFilled: ${allPositionsFilled}`);
+  
   // Definir as classes do cabeçalho com base no estado de preenchimento
   let headerClasses = "px-4 py-2 border-b flex justify-between items-center";
   let dayTextClass = "font-medium";
