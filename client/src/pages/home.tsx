@@ -100,10 +100,77 @@ export default function Home() {
     setCurrentDate(newDate);
   };
   
+  // BLOQUEIO TOTAL: esta função é o último ponto de controle antes de adicionar um militar à escala
   const handleOfficerChange = (day: number, position: number, officer: string | null) => {
     const dayKey = `${day}`;
     const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
     
+    // Se estiver removendo um militar (officer = null), sempre permitimos
+    if (officer === null) {
+      setSchedule((prev) => {
+        const newSchedule = { ...prev };
+        
+        if (!newSchedule[currentMonthKey]) {
+          newSchedule[currentMonthKey] = {};
+        }
+        
+        if (!newSchedule[currentMonthKey][dayKey]) {
+          newSchedule[currentMonthKey][dayKey] = [null, null, null];
+        }
+        
+        newSchedule[currentMonthKey][dayKey][position] = null;
+        
+        return newSchedule;
+      });
+      return;
+    }
+    
+    // VERIFICAÇÃO CRÍTICA DE LIMITE: Este é o último ponto de verificação
+    // Vamos calcular o total de escalas do militar no mês inteiro
+    
+    // 1. Calcular total atual do militar em todos os dias
+    const pmfSchedule = combinedSchedules?.pmf?.[currentMonthKey] || {};
+    let totalEscalas = 0;
+    
+    // Contar em todos os dias do mês
+    Object.values(pmfSchedule).forEach((dayOfficers: any) => {
+      if (Array.isArray(dayOfficers)) {
+        // Adiciona +1 para cada aparição do militar
+        dayOfficers.forEach(off => {
+          if (off === officer) {
+            totalEscalas++;
+          }
+        });
+      }
+    });
+    
+    // Verificar também na agenda local que ainda não foi salva no servidor
+    // Exceto o próprio dia atual que estamos modificando
+    const localSchedule = schedule[currentMonthKey] || {};
+    Object.entries(localSchedule).forEach(([checkDay, dayOfficers]) => {
+      // Ignorar o dia atual que estamos modificando para evitar contagem dupla
+      if (checkDay !== dayKey && Array.isArray(dayOfficers)) {
+        dayOfficers.forEach(off => {
+          if (off === officer) {
+            totalEscalas++;
+          }
+        });
+      }
+    });
+    
+    // BLOQUEIO CRÍTICO: Impedir completamente a adição se já atingiu o limite
+    if (totalEscalas >= 12) {
+      // PROIBIDO: Já atingiu o limite máximo!
+      console.error(`🚫 BLOQUEIO TOTAL: ${officer} já atingiu o limite de 12 serviços (${totalEscalas} serviços)`);
+      toast({
+        variant: "destructive",
+        title: "⛔ LIMITE MÁXIMO DE 12 SERVIÇOS",
+        description: `${officer} já possui ${totalEscalas} serviços no mês e está BLOQUEADO para novas escalas!`
+      });
+      return; // Interrompe aqui - não permite de forma alguma
+    }
+    
+    // Se passou pela verificação, podemos adicionar o militar
     setSchedule((prev) => {
       const newSchedule = { ...prev };
       

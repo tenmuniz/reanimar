@@ -1,4 +1,5 @@
 import { Label } from "@/components/ui/label";
+import { AlertTriangle } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface OfficerSelectProps {
@@ -120,15 +121,16 @@ export default function OfficerSelect({
       {selectedOfficer ? (
         <div className="flex items-center">
           <div className={`border ${limitReachedOfficers.includes(selectedOfficer) 
-              ? 'border-red-500 bg-red-50 text-red-700' 
+              ? 'border-red-500 bg-red-50 text-red-700 border-l-4 border-l-red-600' 
               : 'border-gray-300 bg-white'} 
               rounded-md shadow-sm p-2 text-sm flex-1 truncate`}>
             <span className={limitReachedOfficers.includes(selectedOfficer) ? 'line-through' : ''}>
               {selectedOfficer}
             </span>
             {limitReachedOfficers.includes(selectedOfficer) && (
-              <span className="ml-1 text-red-600 text-xs font-bold inline-block">
-                [LIMITE 12]
+              <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded flex items-center">
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                LIMITE MÁXIMO ATINGIDO
               </span>
             )}
           </div>
@@ -151,6 +153,19 @@ export default function OfficerSelect({
           <SelectContent className="max-h-[300px] overflow-y-auto w-[300px]">
             <SelectItem value={PLACEHOLDER_VALUE}>-- Selecione um policial --</SelectItem>
             
+            {/* AVISO DE LIMITE NO TOPO QUANDO HÁ MILITARES BLOQUEADOS */}
+            {limitReachedOfficers.length > 0 && (
+              <div className="px-2 py-1 bg-red-100 border-l-4 border-red-600 my-1 text-xs">
+                <p className="font-bold text-red-800 flex items-center">
+                  <AlertTriangle className="h-3 w-3 mr-1 text-red-600" />
+                  MILITARES BLOQUEADOS
+                </p>
+                <p className="text-red-600">
+                  {limitReachedOfficers.length} {limitReachedOfficers.length === 1 ? 'militar atingiu' : 'militares atingiram'} o limite de 12 serviços
+                </p>
+              </div>
+            )}
+            
             {/* Grupo EXPEDIENTE */}
             {groupedOfficers.EXPEDIENTE.length > 0 && (
               <SelectGroup>
@@ -162,12 +177,14 @@ export default function OfficerSelect({
                       key={officer}
                       value={officer}
                       disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                      className={hasReachedLimit 
+                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
+                        : ""}
                     >
                       {officer}
                       {hasReachedLimit && (
-                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
-                          [LIMITE 12]
+                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
+                          ⛔ BLOQUEADO (12)
                         </span>
                       )}
                     </SelectItem>
@@ -187,12 +204,14 @@ export default function OfficerSelect({
                       key={officer}
                       value={officer}
                       disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                      className={hasReachedLimit 
+                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
+                        : ""}
                     >
                       {officer}
                       {hasReachedLimit && (
-                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
-                          [LIMITE 12]
+                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
+                          ⛔ BLOQUEADO (12)
                         </span>
                       )}
                     </SelectItem>
@@ -212,12 +231,14 @@ export default function OfficerSelect({
                       key={officer}
                       value={officer}
                       disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                      className={hasReachedLimit 
+                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
+                        : ""}
                     >
                       {officer}
                       {hasReachedLimit && (
-                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
-                          [LIMITE 12]
+                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
+                          ⛔ BLOQUEADO (12)
                         </span>
                       )}
                     </SelectItem>
@@ -237,12 +258,14 @@ export default function OfficerSelect({
                       key={officer}
                       value={officer}
                       disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                      className={hasReachedLimit 
+                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
+                        : ""}
                     >
                       {officer}
                       {hasReachedLimit && (
-                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
-                          [LIMITE 12]
+                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
+                          ⛔ BLOQUEADO (12)
                         </span>
                       )}
                     </SelectItem>
@@ -262,12 +285,14 @@ export default function OfficerSelect({
                       key={officer}
                       value={officer}
                       disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                      className={hasReachedLimit 
+                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
+                        : ""}
                     >
                       {officer}
                       {hasReachedLimit && (
-                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
-                          [LIMITE 12]
+                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
+                          ⛔ BLOQUEADO (12)
                         </span>
                       )}
                     </SelectItem>
