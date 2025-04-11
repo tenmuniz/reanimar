@@ -329,33 +329,43 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getCombinedSchedules(year: number, month: number): Promise<any> {
-    // Buscar a escala PMF
-    const [pmfSchedule] = await db.select()
-      .from(schedules)
-      .where(
-        and(
-          eq(schedules.operation, 'pmf'),
-          eq(schedules.year, year),
-          eq(schedules.month, month)
-        )
-      );
-    
-    // Buscar a escala Escola Segura
-    const [escolaSeguraSchedule] = await db.select()
-      .from(schedules)
-      .where(
-        and(
-          eq(schedules.operation, 'escolaSegura'),
-          eq(schedules.year, year),
-          eq(schedules.month, month)
-        )
-      );
-    
-    // Retornar as escalas combinadas
-    return {
-      pmf: pmfSchedule ? JSON.parse(pmfSchedule.data) : {},
-      escolaSegura: escolaSeguraSchedule ? JSON.parse(escolaSeguraSchedule.data) : {}
-    };
+    try {
+      // Buscar a escala PMF
+      const pmfSchedules = await db.select()
+        .from(schedules)
+        .where(
+          and(
+            eq(schedules.operation, 'pmf'),
+            eq(schedules.year, year),
+            eq(schedules.month, month)
+          )
+        );
+      
+      // Buscar a escala Escola Segura
+      const escolaSeguraSchedules = await db.select()
+        .from(schedules)
+        .where(
+          and(
+            eq(schedules.operation, 'escolaSegura'),
+            eq(schedules.year, year),
+            eq(schedules.month, month)
+          )
+        );
+      
+      // Extrair os dados ou usar objeto vazio se não houver nada
+      const pmfSchedule = pmfSchedules.length > 0 ? pmfSchedules[0] : null;
+      const escolaSeguraSchedule = escolaSeguraSchedules.length > 0 ? escolaSeguraSchedules[0] : null;
+      
+      // Retornar as escalas combinadas com tratamento de erro ao fazer parse do JSON
+      return {
+        pmf: pmfSchedule && pmfSchedule.data ? JSON.parse(pmfSchedule.data) : {},
+        escolaSegura: escolaSeguraSchedule && escolaSeguraSchedule.data ? JSON.parse(escolaSeguraSchedule.data) : {}
+      };
+    } catch (error) {
+      console.error("Erro ao buscar ou processar escalas combinadas:", error);
+      // Retornar objeto vazio em caso de erro para evitar quebra da aplicação
+      return { pmf: {}, escolaSegura: {} };
+    }
   }
 }
 
