@@ -342,27 +342,8 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
       });
     };
     
-    // Primeiro, processa o schedule da operação atual
-    processSchedule(monthSchedule, schedule === combinedSchedules?.pmf ? 'pmf' : 'escolaSegura');
-    
-    // Se temos dados combinados, processamos também a outra operação
-    if (combinedSchedules) {
-      // Determinar se estamos na página PMF ou Escola Segura
-      const isCurrentPMF = schedule === combinedSchedules.pmf;
-      
-      // Processar a outra operação
-      if (isCurrentPMF) {
-        // Estamos em PMF, então processamos também Escola Segura
-        if (combinedSchedules.escolaSegura && combinedSchedules.escolaSegura[currentMonthKey]) {
-          processSchedule(combinedSchedules.escolaSegura[currentMonthKey], 'escolaSegura');
-        }
-      } else {
-        // Estamos em Escola Segura, então processamos também PMF
-        if (combinedSchedules.pmf && combinedSchedules.pmf[currentMonthKey]) {
-          processSchedule(combinedSchedules.pmf[currentMonthKey], 'pmf');
-        }
-      }
-    }
+    // Processa o schedule PMF
+    processSchedule(monthSchedule, 'pmf');
     
     // Ordenar por antiguidade (posto/graduação) e depois por total de dias
     const ordenado = Object.fromEntries(

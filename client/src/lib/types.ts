@@ -30,6 +30,7 @@ export interface OperationType {
 
 export interface CombinedSchedules {
   pmf: MonthSchedule;
+  // Mantemos a propriedade escolaSegura apenas para compatibilidade com o código existente
   escolaSegura: MonthSchedule;
 }
 

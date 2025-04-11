@@ -138,9 +138,11 @@ export class MemStorage implements IStorage {
     const pmfKey = `pmf-${year}-${month}`;
     const escolaSeguraKey = `escolaSegura-${year}-${month}`;
     
+    // Mantemos escolaSegura como um objeto vazio por compatibilidade, 
+    // já que a funcionalidade foi removida
     return {
       pmf: this.scheduleMap.get(pmfKey) || {},
-      escolaSegura: this.scheduleMap.get(escolaSeguraKey) || {}
+      escolaSegura: {}
     };
   }
 }
