@@ -42,51 +42,46 @@ export default function CalendarCard({
   // Get the selected officers for this day to disable them in other dropdowns
   const selectedOfficers = selections.filter(Boolean) as string[];
 
+  // Obter a classe de cor base para o dia da semana
   const weekdayClass = getWeekdayClass(weekday);
 
-  // Verificar se todas as 3 posições estão preenchidas
-  const allPositionsFilled = selections.every(officer => officer !== null);
-  // Verificar se pelo menos um oficial está escalado (mas não todos)
-  const hasAnyOfficer = selectedOfficers.length > 0;
+  // Verificar quantos policiais estão escalados
+  const assignedCount = selections.filter(officer => officer !== null).length;
   
-  console.log(`Dia ${day} - seleções:`, selections, 
-              `hasAnyOfficer: ${hasAnyOfficer}`,
-              `allPositionsFilled: ${allPositionsFilled}`);
+  // Para depuração
+  console.log(`Dia ${day} - ${assignedCount}/3 policiais escalados:`, selections);
   
-  // Definir as classes do cabeçalho com base no estado de preenchimento
-  let headerClasses = "px-4 py-2 border-b flex justify-between items-center";
-  let dayTextClass = "font-medium";
+  // Definir cores com base no número de policiais escalados
+  let headerBgColor = "";
+  let dayTextColor = "";
+  let weekdayBadgeClass = "";
   
-  if (allPositionsFilled) {
+  if (assignedCount === 3) {
     // Todos os 3 policiais estão escalados - verde vivo
-    headerClasses += " bg-green-500";
-    dayTextClass += " text-white";
-  } else if (hasAnyOfficer) {
-    // Há pelo menos 1 policial, mas faltam outros - vermelho
-    headerClasses += " bg-red-500";
-    dayTextClass += " text-white";
+    headerBgColor = "bg-green-500";
+    dayTextColor = "text-white";
+    weekdayBadgeClass = "bg-green-700 text-white";
+  } else if (assignedCount > 0) {
+    // Pelo menos 1 policial, mas não todos - vermelho
+    headerBgColor = "bg-red-500"; 
+    dayTextColor = "text-white";
+    weekdayBadgeClass = "bg-red-700 text-white";
   } else {
     // Nenhum policial escalado - cinza padrão
-    headerClasses += " bg-gray-50";
-    dayTextClass += " text-gray-800";
+    headerBgColor = "bg-gray-50";
+    dayTextColor = "text-gray-800";
+    weekdayBadgeClass = weekdayClass;
   }
 
-  // Definir a cor do indicador do dia da semana
-  let weekdayBgClass = "";
-  
-  if (allPositionsFilled) {
-    weekdayBgClass = "bg-green-700 text-white";
-  } else if (hasAnyOfficer) {
-    weekdayBgClass = "bg-red-700 text-white";
-  } else {
-    weekdayBgClass = weekdayClass; // Usa a cor padrão baseada no dia da semana
-  }
+  // Classes finais
+  const headerClasses = `px-4 py-2 border-b flex justify-between items-center ${headerBgColor}`;
+  const dayTextClasses = `font-medium ${dayTextColor}`;
 
   return (
     <div className="day-card bg-white rounded-lg shadow-sm overflow-hidden" id={`dia-${day}`}>
       <div className={headerClasses}>
-        <h3 className={dayTextClass}>Dia {day}</h3>
-        <span className={`text-xs font-medium ${weekdayBgClass} px-2 py-1 rounded`}>
+        <h3 className={dayTextClasses}>Dia {day}</h3>
+        <span className={`text-xs font-medium ${weekdayBadgeClass} px-2 py-1 rounded`}>
           {weekday}
         </span>
       </div>
