@@ -55,93 +55,101 @@ export default function CalendarCard({
     }
   }, [savedSelections, limitReachedOfficers]);
   
-  // Verificar limites de serviço e atualizar oficiais desabilitados
+  // IMPLEMENTAÇÃO RIGOROSA: Verificar limites de serviço e atualizar militares desabilitados
   useEffect(() => {
     if (!combinedSchedules || !officers.length) return;
     
     const monthKeyPMF = `${year}-${month}`;
-    let disabledOfficersList: string[] = [];
     
-    // 1. Contar dias de serviço para cada oficial (limite de 12)
-    const officerDaysCount: Record<string, number> = {};
+    // SOLUÇÃO DEFINITIVA: Contador global de escalas para cada militar
+    const contadorEscalas: Record<string, number> = {};
     
-    // Inicializar contador para todos os oficiais
-    officers.forEach(officer => {
-      officerDaysCount[officer] = 0;
+    // Inicializa contador zerado para todos os militares
+    officers.forEach(militar => {
+      contadorEscalas[militar] = 0;
     });
     
-    // Contar dias em PMF (agora só temos esta operação)
-    if (combinedSchedules.pmf[monthKeyPMF]) {
-      Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(daySchedule => {
-        daySchedule.forEach(officer => {
-          if (officer) {
-            officerDaysCount[officer] = (officerDaysCount[officer] || 0) + 1;
+    // Conta TODAS as escalas no mês para cada militar (contagem rigorosa)
+    if (combinedSchedules && combinedSchedules.pmf && combinedSchedules.pmf[monthKeyPMF]) {
+      // Para cada dia do mês na escala
+      Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(diaEscala => {
+        // Para cada posição do dia
+        diaEscala.forEach(militar => {
+          if (militar) {
+            contadorEscalas[militar] = (contadorEscalas[militar] || 0) + 1;
           }
         });
       });
     }
     
-    // Encontrar todos os militares que já atingiram o limite de 12 dias no mês
-    // IMPORTANTE: Aqui é onde aplicamos a regra de negócio que limita a 12 escalas
-    // para todos os tipos de militares, não apenas oficiais
-    const militaresAtLimit = officers.filter(
-      officer => officerDaysCount[officer] >= 12
+    // Conta as escalas atuais no card, caso ainda não tenham sido salvas no servidor
+    // Isto é crucial para verificar em tempo real
+    if (selections) {
+      selections.forEach(militar => {
+        if (militar) {
+          contadorEscalas[militar] = (contadorEscalas[militar] || 0) + 1;
+        }
+      });
+    }
+    
+    // LOG da contagem total de cada militar
+    console.log("CONTAGEM TOTAL DE ESCALAS:", 
+      Object.entries(contadorEscalas)
+        .filter(([_, count]) => count > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([militar, count]) => `${militar}: ${count}`)
     );
     
-    // DEBUG: Para verificação do limite
-    if (militaresAtLimit.length > 0) {
-      console.log(`LIMITE 12 ATINGIDO por: ${militaresAtLimit.join(', ')}`);
-      console.log(`Contagem atual: `, 
-        militaresAtLimit.map(o => `${o}: ${officerDaysCount[o]} escalas`)
+    // Lista de militares que já atingiram ou ultrapassaram o limite de 12
+    const militaresNoLimite = officers.filter(
+      militar => contadorEscalas[militar] >= 12
+    );
+    
+    // DEBUG de quem atingiu o limite
+    if (militaresNoLimite.length > 0) {
+      console.log(`⚠️ LIMITE 12 ATINGIDO por: ${militaresNoLimite.join(', ')}`);
+      console.log(`⚠️ Contagem atual: `, 
+        militaresNoLimite.map(m => `${m}: ${contadorEscalas[m]} escalas`)
       );
     }
     
-    // Atualizar estado dos militares que atingiram o limite
-    setLimitReachedOfficers(militaresAtLimit);
+    // Lista de militares já escalados no mesmo dia (para evitar duplicação)
+    let militaresNoDia: string[] = [];
     
-    // Adicionar à lista de desabilitados
-    disabledOfficersList = [...disabledOfficersList, ...militaresAtLimit];
-    
-    // 2. Verificar se o oficial já está escalado no mesmo dia
+    // Verifica se há militares já escalados neste mesmo dia
     const currentDayKey = `${day}`;
-    
-    // Verificar PMF para o mesmo dia (outros cards do mesmo dia)
-    if (combinedSchedules.pmf[monthKeyPMF] && combinedSchedules.pmf[monthKeyPMF][currentDayKey]) {
-      // Pegar oficiais já selecionados neste dia, EXCETO os selecionados neste card
-      const thisOfficers = new Set(savedSelections.filter(o => o !== null));
-      const officersInPMF = combinedSchedules.pmf[monthKeyPMF][currentDayKey]
-        .filter(o => o !== null && !thisOfficers.has(o)) as string[];
-      
-      // Para evitar duplicação na mesma operação, desabilite oficiais já escalados no mesmo dia
-      const alreadySelectedInThisDay = combinedSchedules.pmf[monthKeyPMF][currentDayKey]
-        .filter(o => o !== null) as string[];
-      
-      // Para o mesmo dia na operação PMF, desabilitar oficiais já selecionados
-      // para evitar duplicatas no mesmo dia
-      disabledOfficersList = [...disabledOfficersList, ...alreadySelectedInThisDay];
+    if (combinedSchedules.pmf[monthKeyPMF] && 
+        combinedSchedules.pmf[monthKeyPMF][currentDayKey]) {
+      militaresNoDia = combinedSchedules.pmf[monthKeyPMF][currentDayKey]
+        .filter(m => m !== null) as string[];
     }
     
-    // Remover duplicações
-    disabledOfficersList = Array.from(new Set(disabledOfficersList));
+    // Atualiza o estado com militares que atingiram o limite
+    setLimitReachedOfficers(militaresNoLimite);
     
-    // Preparar lista final de oficiais desabilitados para seleção
-    // Dividimos em dois grupos:
+    // Lista completa de militares desabilitados (no limite + já usados no dia)
+    const listaFinalDesabilitados = Array.from(new Set([
+      ...militaresNoLimite,
+      ...militaresNoDia
+    ]));
     
-    // 1. Militares que atingiram o limite de 12 - sempre desabilitados para novas seleções
-    const limitReachedForSelection = militaresAtLimit.filter(
-      (officer: string) => !savedSelections.includes(officer)
+    // Não desabilita militares que já estão selecionados no card atual
+    // para permitir a remoção deles
+    const desabilitadosParaSelecao = listaFinalDesabilitados.filter(
+      militar => !savedSelections.includes(militar)
     );
     
-    // 2. Militares já selecionados em outro lugar neste dia - desabilitados somente para seleção
-    const alreadyUsedInDay = disabledOfficersList.filter(
-      (officer: string) => !militaresAtLimit.includes(officer) && !savedSelections.includes(officer)
-    );
+    // Define militares desabilitados para seleção
+    setDisabledOfficers(desabilitadosParaSelecao);
     
-    // Combinamos os dois grupos na lista final de desabilitados
-    const disabledForNewSelections = [...limitReachedForSelection, ...alreadyUsedInDay];
+    // Verifica se algum dos militares selecionados já está no limite
+    if (savedSelections.some(militar => militar && militaresNoLimite.includes(militar))) {
+      setShowLimitWarning(true);
+    } else {
+      setShowLimitWarning(false);
+    }
     
-    setDisabledOfficers(disabledForNewSelections);
-  }, [combinedSchedules, officers, savedSelections, year, month, day]);
+  }, [combinedSchedules, officers, savedSelections, selections, year, month, day]);
 
   // Função para verificar se um militar já está escalado em 12 dias
   const checkOfficerLimit = (officer: string | null): boolean => {
@@ -161,6 +169,7 @@ export default function CalendarCard({
     return true;
   };
 
+  // VERIFICAÇÃO CRÍTICA: Nunca permitir um 13º serviço
   const handleOfficerChange = (position: number, officer: string | null) => {
     // Caso 1: Remover um militar (substituir por null) - sempre permitido
     if (!officer) {
@@ -168,6 +177,37 @@ export default function CalendarCard({
       newSelections[position] = null;
       setSelections(newSelections);
       onOfficerChange(day, position, null);
+      return;
+    }
+    
+    // VERIFICAÇÃO DE LIMITE ABSOLUTA
+    // Conta total de escalas do militar no mês
+    const monthKeyPMF = `${year}-${month}`;
+    let totalEscalasMilitar = 0;
+    
+    // Conta escalas salvas no servidor
+    if (combinedSchedules && combinedSchedules.pmf && combinedSchedules.pmf[monthKeyPMF]) {
+      Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(diaEscala => {
+        diaEscala.forEach(m => {
+          if (m === officer) {
+            totalEscalasMilitar++;
+          }
+        });
+      });
+    }
+    
+    // Conta escalas no card atual para não contar duas vezes o mesmo dia
+    const currentDayKey = `${day}`;
+    const cardActual = selections.filter(m => m === officer).length;
+    
+    // Se o militar já está no limite estrito de 12 escalas, NUNCA permitir adicionar mais
+    if (totalEscalasMilitar >= 12) {
+      toast({
+        title: "LIMITE MÁXIMO DE 12 ATINGIDO",
+        description: `${officer} já está com ${totalEscalasMilitar} escalas no mês. Impossível adicionar mais serviços.`,
+        variant: "destructive",
+      });
+      console.error(`🚫 BLOQUEADO: ${officer} tem ${totalEscalasMilitar} escalas e atingiu o limite!`);
       return;
     }
     
@@ -183,6 +223,8 @@ export default function CalendarCard({
     
     // Caso 3: Verificação geral de regras de negócio
     if (checkOfficerLimit(officer)) {
+      // VERIFICAÇÃO FINAL: garantir que não estamos adicionando um 13º serviço
+      // Contar quantas vezes o militar já aparece nos outros dias
       const newSelections = [...selections];
       newSelections[position] = officer;
       setSelections(newSelections);
@@ -259,13 +301,13 @@ export default function CalendarCard({
           />
         ))}
         
-        {/* Alerta de limite atingido */}
+        {/* Alerta destacado de limite atingido */}
         {showLimitWarning && (
-          <Alert className="mt-3 bg-red-100 border-red-300 text-red-800">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-xs font-semibold">
-              ATENÇÃO: Um ou mais militares neste dia já atingiram o limite de 12 escalas extras no mês. 
-              É possível remover um policial (✕), mas não é possível adicionar mais serviços para ele.
+          <Alert className="mt-3 bg-red-200 border-red-400 text-red-900">
+            <AlertCircle className="h-5 w-5 text-red-700" />
+            <AlertDescription className="text-sm font-bold">
+              ⚠️ LIMITE MÁXIMO: Um ou mais militares neste dia já atingiram 12 escalas no mês.
+              <br/><span className="text-xs">REGRA DE NEGÓCIO: É PROIBIDO ESCALAR UM MILITAR MAIS DE 12 VEZES NO MÊS.</span>
             </AlertDescription>
           </Alert>
         )}
