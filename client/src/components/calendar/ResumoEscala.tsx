@@ -292,6 +292,10 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
     // Schedules para a operação atual
     const monthSchedule = schedule[currentMonthKey] || {};
     
+    // IMPORTANTE: Verificar se temos schedules combinados para cálculo correto
+    // do limite total de 12 por militar
+    const combSchedules = combinedSchedules?.pmf?.[currentMonthKey] || {};
+    
     // Objeto para armazenar todas as escalas por militar
     const militaresDias: Record<string, { 
       dias: number[], 
@@ -304,13 +308,26 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
     }> = {};
     
     // Função para processar um schedule e popular militaresDias
+    // COMPLETAMENTE REVISTA para garantir cálculo correto do limite
     const processSchedule = (scheduleData: any, operacao: 'pmf') => {
       if (!scheduleData) return;
+      
+      // Contador preciso de escalas
+      const contadorTotal: Record<string, number> = {};
       
       Object.entries(scheduleData).forEach(([day, officers]) => {
         // Processar cada militar escalado no dia
         (officers as (string | null)[]).forEach((officer: string | null) => {
           if (officer) {
+            // Inicializar contador para este militar, se necessário
+            if (!contadorTotal[officer]) {
+              contadorTotal[officer] = 0;
+            }
+            
+            // Incrementar contador total para este militar
+            contadorTotal[officer] += 1;
+            
+            // Inicializar dados do militar, se necessário
             if (!militaresDias[officer]) {
               militaresDias[officer] = { 
                 dias: [], 
@@ -325,25 +342,38 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
             
             const dayNum = parseInt(day, 10);
             
-            // Adicionar o dia apenas se não estiver já computado para esta operação
-            const dayKey = `${operacao}-${dayNum}`;
+            // Adicionar o dia apenas se não estiver já computado
             if (!militaresDias[officer].dias.includes(dayNum)) {
               militaresDias[officer].dias.push(dayNum);
               militaresDias[officer].total += 1;
               militaresDias[officer].operacoes[operacao] += 1;
-              
-              // Verificar se atingiu o limite de 12 dias
-              if (militaresDias[officer].total >= 12) {
-                militaresDias[officer].excedeuLimite = true;
-              }
             }
           }
         });
       });
+      
+      // VERIFICAÇÃO RIGOROSA DO LIMITE
+      // Após processar todos os dias, verificar quais militares
+      // excederam o limite de 12 dias no total
+      Object.entries(contadorTotal).forEach(([militar, total]) => {
+        if (militaresDias[militar]) {
+          // Atualizar total do militar (para ter certeza)
+          militaresDias[militar].total = total;
+          
+          // Verificar se excedeu limite de 12 escalas
+          if (total > 12) {
+            console.error(`⚠️ LIMITE EXCEDIDO: ${militar} tem ${total} escalas no mês (máximo 12)!`);
+            militaresDias[militar].excedeuLimite = true;
+          } else if (total === 12) {
+            console.warn(`⚠️ LIMITE ATINGIDO: ${militar} tem ${total} escalas no mês.`);
+            militaresDias[militar].excedeuLimite = true;
+          }
+        }
+      });
     };
     
-    // Processa o schedule PMF
-    processSchedule(monthSchedule, 'pmf');
+    // Processa usando os schedules combinados para garantir cálculo preciso
+    processSchedule(combSchedules || monthSchedule, 'pmf');
     
     // Ordenar por antiguidade (posto/graduação) e depois por total de dias
     const ordenado = Object.fromEntries(
@@ -494,17 +524,31 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
                   : 'bg-blue-800/20';
                 
                 // Classe do contador com base no limite
-                const countClass = dados.total === 12
-                  ? "bg-yellow-600" // Amarelo para quem atingiu o limite exato
-                  : "bg-green-600"; // Verde para quem está abaixo do limite
+                const countClass = dados.total > 12
+                  ? "bg-red-600" // ERRO: Vermelho para quem excedeu o limite
+                  : dados.total === 12
+                    ? "bg-yellow-600" // Amarelo para quem atingiu o limite exato
+                    : "bg-green-600"; // Verde para quem está abaixo do limite
+                
+                // Flag de erro de limite excedido
+                const limiteExcedido = dados.total > 12;
                 
                 return (
                   <div 
                     key={militar} 
-                    className={`flex items-center text-sm px-2 py-3 rounded mb-1 ${bgClass}`}
+                    className={`flex items-center text-sm px-2 py-3 rounded mb-1 ${bgClass} ${
+                      limiteExcedido ? 'border-l-4 border-red-500 pl-1' : ''
+                    }`}
                   >
                     <div className="w-[50%] font-medium text-white">
-                      {militar}
+                      {limiteExcedido ? (
+                        <div className="flex items-center">
+                          <span className="text-red-400 line-through mr-1">{militar}</span>
+                          <span className="bg-red-800 text-red-100 text-[9px] px-1 py-0.5 rounded">LIMITE EXCEDIDO</span>
+                        </div>
+                      ) : (
+                        militar
+                      )}
                     </div>
                     <div className="w-[35%] flex flex-wrap">
                       {dados.dias.sort((a, b) => a - b).map((dia, idx) => {
@@ -549,6 +593,10 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
                 <span className="inline-block h-3 w-3 bg-green-600 rounded-full mr-1"></span>
                 <span>Dentro do limite (abaixo de 12 dias)</span>
               </div>
+              <div className="font-medium text-red-300 flex items-center">
+                <span className="inline-block h-3 w-3 bg-red-600 rounded-full mr-1"></span>
+                <span>LIMITE EXCEDIDO (ERRO!)</span>
+              </div>
               <Button
                 onClick={handlePrint}
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-3 py-1 flex items-center text-xs"
@@ -559,7 +607,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
             </div>
             <div className="text-center text-blue-200 border-t border-blue-700 pt-2 mt-1">
               <Calendar className="inline-block h-4 w-4 mr-1 mb-1" />
-              Dados referentes ao mês de {mesAno} | Limite máximo: 12 extras por militar
+              Dados referentes ao mês de {mesAno} | <strong className="text-white">REGRA RÍGIDA: MÁXIMO 12 SERVIÇOS POR MILITAR</strong>
             </div>
           </div>
         </DialogContent>
