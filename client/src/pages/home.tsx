@@ -103,12 +103,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Header */}
-      <header className="bg-[#1a56db] text-white shadow-md">
-        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
-          <div className="flex items-center mb-4 sm:mb-0">
+      <header className="bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-lg">
+        <div className="container mx-auto px-4 py-6 flex flex-col items-center">
+          <div className="flex items-center mb-4 justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 mr-3"
+              className="h-10 w-10 mr-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -120,14 +120,23 @@ export default function Home() {
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
               />
             </svg>
-            <h1 className="text-xl sm:text-2xl font-bold">Escala PMF</h1>
+            <div className="text-center">
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-1">
+                POLÍCIA MAIS FORTE
+              </h1>
+              <div className="text-xl sm:text-2xl font-bold">
+                SISTEMA DE ESCALA PMF
+              </div>
+            </div>
           </div>
           
-          <MonthSelector
-            currentDate={currentDate}
-            onPreviousMonth={handlePreviousMonth}
-            onNextMonth={handleNextMonth}
-          />
+          <div className="bg-blue-900 px-6 py-3 rounded-lg shadow-inner w-full max-w-md mx-auto mt-2">
+            <MonthSelector
+              currentDate={currentDate}
+              onPreviousMonth={handlePreviousMonth}
+              onNextMonth={handleNextMonth}
+            />
+          </div>
         </div>
       </header>
       
