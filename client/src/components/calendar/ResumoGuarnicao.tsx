@@ -181,8 +181,26 @@ export default function ResumoGuarnicao({
     }
   };
   
+  // Função para obter as datas em que um militar está escalado
+  const getMilitarDates = (militar: string): number[] => {
+    const dias: number[] = [];
+    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+    const monthSchedule = schedule[currentMonthKey] || {};
+    
+    Object.entries(monthSchedule).forEach(([day, oficiais]) => {
+      if ((oficiais as (string | null)[]).includes(militar)) {
+        dias.push(parseInt(day));
+      }
+    });
+    
+    return dias.sort((a, b) => a - b);
+  };
+
   // Função para impressão do relatório
   const handlePrint = () => {
+    // Guarnicao específica a ser impressa (null para todas)
+    const guarnicaoFilter = activeGuarnicao;
+    
     // Abrir uma nova janela para impressão
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
@@ -190,12 +208,57 @@ export default function ResumoGuarnicao({
       return;
     }
     
+    // Função para gerar cor CSS para cada guarnição
+    const getGuarnicaoColorCSS = (guarnicao: string): string => {
+      switch (guarnicao) {
+        case "EXPEDIENTE": return "#f97316"; // laranja-500
+        case "ALFA": return "#3b82f6"; // azul-500
+        case "BRAVO": return "#10b981"; // esmeralda-500
+        case "CHARLIE": return "#8b5cf6"; // roxo-500
+        default: return "#6b7280"; // cinza-500
+      }
+    };
+
+    // Classe CSS baseada na guarnição
+    const getRowClass = (guarnicao: string): string => {
+      return guarnicao.toLowerCase().includes('alfa') ? 'guarnicao-alpha' :
+             guarnicao.toLowerCase().includes('bravo') ? 'guarnicao-bravo' :
+             guarnicao.toLowerCase().includes('charlie') ? 'guarnicao-charlie' :
+             'guarnicao-expediente';
+    };
+    
+    // Filtrar guarnições para o relatório
+    const guarnicoesParaRelatorio = Object.entries(resumoData)
+      .filter(([nome, dados]) => 
+        dados.militares.length > 0 && 
+        (guarnicaoFilter === null || nome === guarnicaoFilter)
+      )
+      .sort((a, b) => {
+        // Se uma guarnição específica está selecionada, ela deve vir primeiro
+        if (guarnicaoFilter) {
+          if (a[0] === guarnicaoFilter) return -1;
+          if (b[0] === guarnicaoFilter) return 1;
+        }
+        // Caso contrário, ordem por total de GCJO
+        return b[1].total - a[1].total;
+      });
+    
+    // Título do relatório baseado na seleção
+    const titleGuarnicao = guarnicaoFilter 
+      ? `GUARNIÇÃO ${guarnicaoFilter}` 
+      : "TODAS AS GUARNIÇÕES";
+    
+    // Estilo especial para o cabeçalho baseado na guarnição selecionada
+    const headerStyle = guarnicaoFilter 
+      ? `background-color: ${getGuarnicaoColorCSS(guarnicaoFilter)}; color: white;` 
+      : 'background-color: #03396c; color: white;';
+    
     // Conteúdo HTML da página de impressão
     const printContent = `
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Relatório de Guarnições - PMF - ${mesAno}</title>
+        <title>Relatório de ${titleGuarnicao} - PMF - ${mesAno}</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -212,15 +275,16 @@ export default function ResumoGuarnicao({
             margin-top: 0;
             margin-bottom: 20px;
             font-size: 18px;
-            color: #005b96;
+            color: ${guarnicaoFilter ? getGuarnicaoColorCSS(guarnicaoFilter) : '#005b96'};
           }
           .resumo {
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
-            background: #f0f8ff;
-            padding: 10px;
+            background: ${guarnicaoFilter ? `${getGuarnicaoColorCSS(guarnicaoFilter)}10` : '#f0f8ff'};
+            padding: 12px;
             border-radius: 5px;
+            border: 1px solid ${guarnicaoFilter ? `${getGuarnicaoColorCSS(guarnicaoFilter)}30` : '#cce5ff'};
           }
           .resumo-item {
             text-align: center;
@@ -229,7 +293,7 @@ export default function ResumoGuarnicao({
           .resumo-valor {
             font-size: 24px;
             font-weight: bold;
-            color: #03396c;
+            color: ${guarnicaoFilter ? getGuarnicaoColorCSS(guarnicaoFilter) : '#03396c'};
           }
           .resumo-label {
             font-size: 14px;
@@ -239,10 +303,10 @@ export default function ResumoGuarnicao({
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            border: 1px solid #ddd;
           }
           th {
-            background-color: #03396c;
-            color: white;
+            ${headerStyle}
             padding: 10px;
             text-align: left;
           }
@@ -251,28 +315,62 @@ export default function ResumoGuarnicao({
             border-bottom: 1px solid #ddd;
           }
           tr:nth-child(even) {
-            background-color: #f2f7ff;
+            background-color: ${guarnicaoFilter ? `${getGuarnicaoColorCSS(guarnicaoFilter)}08` : '#f2f7ff'};
           }
           .guarnicao-row {
             font-weight: bold;
-            background-color: #e6f2ff;
+            background-color: ${guarnicaoFilter ? `${getGuarnicaoColorCSS(guarnicaoFilter)}20` : '#e6f2ff'};
           }
           .guarnicao-alpha { background-color: #dbeafe; }
           .guarnicao-bravo { background-color: #d1fae5; }
           .guarnicao-charlie { background-color: #f3e8ff; }
           .guarnicao-expediente { background-color: #fff7ed; }
+          .militar-row {
+            font-weight: normal;
+          }
+          .militar-name {
+            font-weight: bold;
+          }
+          .day-chip {
+            display: inline-block;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            background-color: ${guarnicaoFilter ? getGuarnicaoColorCSS(guarnicaoFilter) : '#03396c'};
+            color: white;
+            text-align: center;
+            font-size: 11px;
+            line-height: 22px;
+            margin: 0 2px;
+          }
+          .days-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+          }
           .total-value {
             display: inline-block;
-            background-color: #28a745;
+            background-color: ${guarnicaoFilter ? getGuarnicaoColorCSS(guarnicaoFilter) : '#28a745'};
             color: white;
             border-radius: 12px;
             padding: 2px 8px;
+            font-size: 12px;
+            font-weight: bold;
           }
           .footer {
             margin-top: 30px;
             text-align: center;
             font-size: 12px;
             color: #666;
+          }
+          .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid ${guarnicaoFilter ? getGuarnicaoColorCSS(guarnicaoFilter) : '#03396c'};
+            color: ${guarnicaoFilter ? getGuarnicaoColorCSS(guarnicaoFilter) : '#03396c'};
           }
           @media print {
             @page {
@@ -288,67 +386,71 @@ export default function ResumoGuarnicao({
       </head>
       <body>
         <h1>POLÍCIA MAIS FORTE</h1>
-        <h2>RELATÓRIO DE GUARNIÇÕES - ${mesAno.toUpperCase()}</h2>
+        <h2>RELATÓRIO DE ${titleGuarnicao} - ${mesAno.toUpperCase()}</h2>
         
         <div class="resumo">
           <div class="resumo-item">
-            <div class="resumo-valor">${totalGCJO}</div>
+            <div class="resumo-valor">${guarnicaoFilter ? 
+              resumoData[guarnicaoFilter]?.total || 0 : 
+              totalGCJO}</div>
             <div class="resumo-label">Quantidade de GCJO</div>
           </div>
           <div class="resumo-item">
-            <div class="resumo-valor">${
+            <div class="resumo-valor">${guarnicaoFilter ? 
+              resumoData[guarnicaoFilter]?.militares.length || 0 : 
               Object.values(resumoData).reduce((sum, guarnicao) => sum + guarnicao.militares.length, 0)
             }</div>
             <div class="resumo-label">Militares Escalados</div>
           </div>
+          ${guarnicaoFilter ? '' : `
+          <div class="resumo-item">
+            <div class="resumo-valor">${guarnicoesParaRelatorio.length}</div>
+            <div class="resumo-label">Guarnições Ativas</div>
+          </div>`}
         </div>
         
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 25%">Guarnição</th>
-              <th style="width: 15%">Total de GCJO</th>
-              <th style="width: 15%">Militares</th>
-              <th style="width: 45%">GCJO por Militar</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${Object.entries(resumoData)
-              .filter(([nome, dados]) => dados.militares.length > 0) // Mostrar apenas guarnições com militares
-              .sort((a, b) => b[1].total - a[1].total) // Ordenar por total de GCJO
-              .map(([guarnicao, dados]) => {
-                // Classe CSS baseada na guarnição
-                const rowClass = guarnicao.toLowerCase().includes('alfa') ? 'guarnicao-alpha' :
-                                guarnicao.toLowerCase().includes('bravo') ? 'guarnicao-bravo' :
-                                guarnicao.toLowerCase().includes('charlie') ? 'guarnicao-charlie' :
-                                'guarnicao-expediente';
-                
-                return `
-                  <tr class="guarnicao-row ${rowClass}">
-                    <td>${guarnicao}</td>
-                    <td>${dados.total}</td>
-                    <td>${dados.militares.length}</td>
-                    <td>-</td>
-                  </tr>
-                  ${ordernarPorHierarquia(dados.militares).map(militar => {
-                    // Encontrar no contador quantos serviços este militar tem
-                    const militarContador = Object.entries(schedule[`${currentDate.getFullYear()}-${currentDate.getMonth()}`] || {})
-                      .flatMap(([_, oficiais]) => oficiais)
-                      .filter(oficial => oficial === militar).length;
-                    
-                    return `
-                      <tr>
-                        <td>&nbsp; • ${militar}</td>
-                        <td>${militarContador}</td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                    `;
-                  }).join('')}
-                `;
-              }).join('')}
-          </tbody>
-        </table>
+        ${guarnicoesParaRelatorio.map(([guarnicao, dados]) => {
+          // Classe CSS baseada na guarnição
+          const rowClass = getRowClass(guarnicao);
+          
+          return `
+            <div class="section-title">${guarnicao} <span class="total-value">${dados.total} GCJO</span></div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 30%">Militar</th>
+                  <th style="width: 15%">GCJO</th>
+                  <th style="width: 55%">Dias Escalados</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ordernarPorHierarquia(dados.militares).map(militar => {
+                  // Encontrar no contador quantos serviços este militar tem
+                  const militarContador = Object.entries(schedule[`${currentDate.getFullYear()}-${currentDate.getMonth()}`] || {})
+                    .flatMap(([_, oficiais]) => oficiais)
+                    .filter(oficial => oficial === militar).length;
+                  
+                  // Obter dias em que o militar está escalado
+                  const diasEscalados = getMilitarDates(militar);
+                  
+                  return `
+                    <tr class="militar-row">
+                      <td class="militar-name">${militar}</td>
+                      <td><span class="total-value">${militarContador}</span></td>
+                      <td>
+                        <div class="days-container">
+                          ${diasEscalados.map(dia => 
+                            `<span class="day-chip">${dia}</span>`
+                          ).join('')}
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          `;
+        }).join('')}
         
         <div class="footer">
           <p>Sistema de Escalas PMF | Estatísticas por Guarnição</p>
