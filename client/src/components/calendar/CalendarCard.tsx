@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DaySchedule, MonthSchedule, CombinedSchedules } from "@/lib/types";
+import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { getWeekdayClass } from "@/lib/utils";
 import OfficerSelect from "./OfficerSelect";
 import { toast } from "@/hooks/use-toast";
@@ -15,7 +15,7 @@ interface CalendarCardProps {
   savedSelections: (string | null)[];
   onOfficerChange: (day: number, position: number, officer: string | null) => void;
   schedule?: MonthSchedule; // Agenda da PMF atual
-  combinedSchedules?: CombinedSchedules; // Agenda combinada (PMF + Escola Segura)
+  combinedSchedules?: CombinedSchedules; // Mantido por compatibilidade
 }
 
 export default function CalendarCard({
@@ -46,12 +46,9 @@ export default function CalendarCard({
     if (!combinedSchedules || !officers.length) return;
     
     const monthKeyPMF = `${year}-${month}`;
-    const monthKeyEscolaSegura = `${year}-${month}`;
-    
-    // Lista para acumular oficiais desabilitados
     let disabledOfficersList: string[] = [];
     
-    // 1. Contar dias de serviço para cada oficial em ambas operações (limite de 12)
+    // 1. Contar dias de serviço para cada oficial (limite de 12)
     const officerDaysCount: Record<string, number> = {};
     
     // Inicializar contador para todos os oficiais
@@ -59,7 +56,7 @@ export default function CalendarCard({
       officerDaysCount[officer] = 0;
     });
     
-    // Contar dias em PMF
+    // Contar dias em PMF (agora só temos esta operação)
     if (combinedSchedules.pmf[monthKeyPMF]) {
       Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(daySchedule => {
         daySchedule.forEach(officer => {
@@ -70,18 +67,7 @@ export default function CalendarCard({
       });
     }
     
-    // Contar dias em Escola Segura
-    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura]) {
-      Object.values(combinedSchedules.escolaSegura[monthKeyEscolaSegura]).forEach(daySchedule => {
-        daySchedule.forEach(officer => {
-          if (officer) {
-            officerDaysCount[officer] = (officerDaysCount[officer] || 0) + 1;
-          }
-        });
-      });
-    }
-    
-    // Encontrar oficiais que já atingiram o limite de 12 dias no mês (estritamente 12, não maior)
+    // Encontrar oficiais que já atingiram o limite de 12 dias no mês
     const limitReachedOfficers = officers.filter(
       officer => officerDaysCount[officer] >= 12
     );
@@ -89,7 +75,7 @@ export default function CalendarCard({
     // Adicionar à lista de desabilitados
     disabledOfficersList = [...disabledOfficersList, ...limitReachedOfficers];
     
-    // 2. Verificar se o oficial já está escalado no mesmo dia em outra operação
+    // 2. Verificar se o oficial já está escalado no mesmo dia
     const currentDayKey = `${day}`;
     
     // Verificar PMF para o mesmo dia (outros cards do mesmo dia)
@@ -108,8 +94,6 @@ export default function CalendarCard({
       disabledOfficersList = [...disabledOfficersList, ...alreadySelectedInThisDay];
     }
     
-    // A operação Escola Segura foi removida, então não precisamos mais verificar
-    
     // Remover duplicações
     disabledOfficersList = Array.from(new Set(disabledOfficersList));
     
@@ -123,7 +107,6 @@ export default function CalendarCard({
   }, [combinedSchedules, officers, savedSelections, year, month, day]);
 
   // Função para verificar se um oficial já está escalado em 12 dias
-  // Legacy - agora usamos o disabledOfficers do useEffect acima
   const checkOfficerLimit = (officer: string | null): boolean => {
     // Se não houver oficial selecionado, não há limite a verificar
     if (!officer) return true;

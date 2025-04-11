@@ -299,8 +299,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
       excedeuLimite: boolean,
       posto: number,
       operacoes: {
-        pmf: number,
-        escolaSegura: number
+        pmf: number
       }
     }> = {};
     
@@ -319,8 +318,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
                 excedeuLimite: false,
                 posto: getPosto(officer),
                 operacoes: {
-                  pmf: 0,
-                  escolaSegura: 0
+                  pmf: 0
                 }
               };
             }
