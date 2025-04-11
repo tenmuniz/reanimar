@@ -98,97 +98,105 @@ export default function OfficerSelect({
       <Label className="block text-sm font-medium text-gray-700 mb-1">
         Policial {position}
       </Label>
-      <Select
-        value={selectedOfficer || PLACEHOLDER_VALUE}
-        onValueChange={handleChange}
-      >
-        <SelectTrigger className="w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-200 text-sm h-auto min-h-[40px] whitespace-normal px-3 py-2">
-          <SelectValue className="whitespace-normal break-words truncate w-full" placeholder="-- Selecione um policial --" />
-        </SelectTrigger>
-        <SelectContent className="max-h-[300px] overflow-y-auto w-[300px]">
-          <SelectItem value={PLACEHOLDER_VALUE}>-- Selecione um policial --</SelectItem>
-          
-          {/* Grupo EXPEDIENTE */}
-          {groupedOfficers.EXPEDIENTE.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="font-bold text-blue-600">EXPEDIENTE</SelectLabel>
-              {groupedOfficers.EXPEDIENTE.map((officer) => (
-                <SelectItem
-                  key={officer}
-                  value={officer}
-                  disabled={disabledOfficers.includes(officer)}
-                >
-                  {officer}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          )}
-          
-          {/* Grupo ALFA */}
-          {groupedOfficers.ALFA.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="font-bold text-yellow-600">ALFA</SelectLabel>
-              {groupedOfficers.ALFA.map((officer) => (
-                <SelectItem
-                  key={officer}
-                  value={officer}
-                  disabled={disabledOfficers.includes(officer)}
-                >
-                  {officer}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          )}
-          
-          {/* Grupo BRAVO */}
-          {groupedOfficers.BRAVO.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="font-bold text-green-600">BRAVO</SelectLabel>
-              {groupedOfficers.BRAVO.map((officer) => (
-                <SelectItem
-                  key={officer}
-                  value={officer}
-                  disabled={disabledOfficers.includes(officer)}
-                >
-                  {officer}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          )}
-          
-          {/* Grupo CHARLIE */}
-          {groupedOfficers.CHARLIE.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="font-bold text-cyan-600">CHARLIE</SelectLabel>
-              {groupedOfficers.CHARLIE.map((officer) => (
-                <SelectItem
-                  key={officer}
-                  value={officer}
-                  disabled={disabledOfficers.includes(officer)}
-                >
-                  {officer}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          )}
-          
-          {/* Outros militares que não se encaixam em nenhum grupo */}
-          {groupedOfficers.OUTROS.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="font-bold text-gray-600">OUTROS</SelectLabel>
-              {groupedOfficers.OUTROS.map((officer) => (
-                <SelectItem
-                  key={officer}
-                  value={officer}
-                  disabled={disabledOfficers.includes(officer)}
-                >
-                  {officer}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          )}
-        </SelectContent>
-      </Select>
+      
+      {/* Solução customizada para exibição do nome completo */}
+      {selectedOfficer ? (
+        <div className="border border-gray-300 rounded-md shadow-sm p-2 bg-white text-sm">
+          {selectedOfficer}
+        </div>
+      ) : (
+        <Select
+          value={selectedOfficer || PLACEHOLDER_VALUE}
+          onValueChange={handleChange}
+        >
+          <SelectTrigger className="w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-200 text-sm min-h-[40px]">
+            <SelectValue placeholder="-- Selecione um policial --" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px] overflow-y-auto w-[300px]">
+            <SelectItem value={PLACEHOLDER_VALUE}>-- Selecione um policial --</SelectItem>
+            
+            {/* Grupo EXPEDIENTE */}
+            {groupedOfficers.EXPEDIENTE.length > 0 && (
+              <SelectGroup>
+                <SelectLabel className="font-bold text-blue-600">EXPEDIENTE</SelectLabel>
+                {groupedOfficers.EXPEDIENTE.map((officer) => (
+                  <SelectItem
+                    key={officer}
+                    value={officer}
+                    disabled={disabledOfficers.includes(officer)}
+                  >
+                    {officer}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            
+            {/* Grupo ALFA */}
+            {groupedOfficers.ALFA.length > 0 && (
+              <SelectGroup>
+                <SelectLabel className="font-bold text-yellow-600">ALFA</SelectLabel>
+                {groupedOfficers.ALFA.map((officer) => (
+                  <SelectItem
+                    key={officer}
+                    value={officer}
+                    disabled={disabledOfficers.includes(officer)}
+                  >
+                    {officer}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            
+            {/* Grupo BRAVO */}
+            {groupedOfficers.BRAVO.length > 0 && (
+              <SelectGroup>
+                <SelectLabel className="font-bold text-green-600">BRAVO</SelectLabel>
+                {groupedOfficers.BRAVO.map((officer) => (
+                  <SelectItem
+                    key={officer}
+                    value={officer}
+                    disabled={disabledOfficers.includes(officer)}
+                  >
+                    {officer}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            
+            {/* Grupo CHARLIE */}
+            {groupedOfficers.CHARLIE.length > 0 && (
+              <SelectGroup>
+                <SelectLabel className="font-bold text-cyan-600">CHARLIE</SelectLabel>
+                {groupedOfficers.CHARLIE.map((officer) => (
+                  <SelectItem
+                    key={officer}
+                    value={officer}
+                    disabled={disabledOfficers.includes(officer)}
+                  >
+                    {officer}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+            
+            {/* Outros militares que não se encaixam em nenhum grupo */}
+            {groupedOfficers.OUTROS.length > 0 && (
+              <SelectGroup>
+                <SelectLabel className="font-bold text-gray-600">OUTROS</SelectLabel>
+                {groupedOfficers.OUTROS.map((officer) => (
+                  <SelectItem
+                    key={officer}
+                    value={officer}
+                    disabled={disabledOfficers.includes(officer)}
+                  >
+                    {officer}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            )}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 }
