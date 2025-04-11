@@ -476,7 +476,7 @@ export default function VerificadorInconsistencias() {
                 } else if (inconsistencia.tipoOperacao === 'escolaSegura') {
                   problema = '<span class="warning-badge">Escalado no serviço ordinário e Escola Segura</span>';
                 } else {
-                  problema = '<span class="error-badge">Escalado em PMF e Escola Segura simultaneamente</span>';
+                  problema = '<span class="error-badge">Escalado em Polícia Mais Forte e Escola Segura simultaneamente</span>';
                 }
                 
                 return `
@@ -677,7 +677,7 @@ export default function VerificadorInconsistencias() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-red-900 flex items-center">
                       <AlertTriangle className="h-5 w-5 mr-2 text-red-600" />
-                      Inconsistências Dupla Escala
+                      Inconsistências Dupla Operação
                     </CardTitle>
                     <CardDescription className="text-red-700">
                       Militar escalado nas duas operações
@@ -695,7 +695,7 @@ export default function VerificadorInconsistencias() {
                       className="w-full bg-red-600 hover:bg-red-700 text-white"
                     >
                       <Printer className="h-4 w-4 mr-2" />
-                      Imprimir Relatório Dupla Escala
+                      Imprimir Relatório Dupla Operação
                     </Button>
                   </CardFooter>
                 </Card>
