@@ -797,6 +797,7 @@
     }
 
     function renderizarPMF(pmfData) {
+      console.log("Dados PMF recebidos:", pmfData);
       const container = document.getElementById('pmfContainer');
       container.innerHTML = '';
       
@@ -811,7 +812,21 @@
         const diaSemana = diasSemana[dataDia.getDay()].toLowerCase();
         const nomeDiaSemana = diasSemana[dataDia.getDay()];
         
-        const policiais = pmfData[ano]?.[mes]?.[dia] || [null, null, null];
+        // Log para debug
+        console.log(`Dia ${dia} - Dados: `, 
+          pmfData["2025"]?.[4]?.[dia] || 
+          pmfData[2025]?.[4]?.[dia] || 
+          pmfData?.[dia] || 
+          "Não encontrado"
+        );
+        
+        // Tenta encontrar os dados em todos os formatos possíveis
+        const policiais = 
+          pmfData["2025"]?.[4]?.[dia] || 
+          pmfData[2025]?.[4]?.[dia] || 
+          pmfData?.[dia] || 
+          [null, null, null];
+        
         const totalPoliciais = policiais.filter(Boolean).length;
         
         let statusBadge = '';
@@ -869,6 +884,7 @@
     }
 
     function renderizarES(esData) {
+      console.log("Dados ES recebidos:", esData);
       const container = document.getElementById('esContainer');
       container.innerHTML = '';
       
@@ -883,7 +899,20 @@
         const diaSemana = diasSemana[dataDia.getDay()].toLowerCase();
         const nomeDiaSemana = diasSemana[dataDia.getDay()];
         
-        const policiais = esData[ano]?.[mes]?.[dia] || [null, null];
+        // Log para debug
+        console.log(`ES Dia ${dia} - Dados: `, 
+          esData["2025"]?.[4]?.[dia] || 
+          esData[2025]?.[4]?.[dia] || 
+          esData?.[dia] || 
+          "Não encontrado"
+        );
+        
+        // Tenta encontrar os dados em todos os formatos possíveis
+        const policiais = 
+          esData["2025"]?.[4]?.[dia] || 
+          esData[2025]?.[4]?.[dia] || 
+          esData?.[dia] || 
+          [null, null];
         const totalPoliciais = policiais.filter(Boolean).length;
         
         let statusBadge = '';
@@ -941,11 +970,13 @@
     }
 
     function renderizarResumo(schedules) {
+      console.log("Dados para resumo:", schedules);
       const container = document.getElementById('resumoContainer');
       container.innerHTML = '';
       
-      const pmfData = schedules.pmf[ano]?.[mes] || {};
-      const esData = schedules.escolaSegura[ano]?.[mes] || {};
+      // Extrair dados nos possíveis formatos
+      const pmfData = schedules.pmf["2025"]?.[4] || schedules.pmf[2025]?.[4] || schedules.pmf[ano]?.[mes] || {};
+      const esData = schedules.escolaSegura["2025"]?.[4] || schedules.escolaSegura[2025]?.[4] || schedules.escolaSegura[ano]?.[mes] || {};
       
       // Coletar todos os policiais únicos
       const todosOsPoliciais = new Set();
