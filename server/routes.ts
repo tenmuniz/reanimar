@@ -26,11 +26,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Operation, year, month, and data are required" });
       }
       
+      // Formatação para garantir que o formato é consistente
+      // Construir no formato que esperamos para o armazenamento
+      const yearNum = parseInt(year as string);
+      const monthNum = parseInt(month as string);
+      
+      // Se os dados já estiverem no formato esperado, usamos assim mesmo
+      // Senão, formatamos para o padrão {ano: {mês: {dia: [dados]}}}
+      let formattedData;
+      
+      if (data && typeof data === 'object') {
+        if (data[yearNum] && data[yearNum][monthNum]) {
+          // Já está no formato correto
+          formattedData = data;
+        } else if (Object.keys(data).some(key => !isNaN(Number(key)))) {
+          // Formato simples com dias como chaves, vamos formatar
+          formattedData = {
+            [yearNum]: {
+              [monthNum]: data
+            }
+          };
+        } else {
+          // Formato desconhecido, usar como está
+          formattedData = data;
+        }
+      } else {
+        formattedData = data;
+      }
+      
       await storage.saveSchedule(
         operation,
-        parseInt(year as string), 
-        parseInt(month as string),
-        data
+        yearNum, 
+        monthNum,
+        formattedData
       );
       
       res.json({ message: "Schedule saved successfully" });
