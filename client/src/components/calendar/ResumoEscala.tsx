@@ -296,8 +296,8 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
     // do limite total de 12 por militar
     const combSchedules = combinedSchedules?.pmf?.[currentMonthKey] || {};
     
-    // Objeto para armazenar todas as escalas por militar
-    const militaresDias: Record<string, { 
+    // Objeto para armazenar todas as escalas por militar - declarado como let para poder reinicializar
+    let militaresDias: Record<string, { 
       dias: number[], 
       total: number,
       excedeuLimite: boolean,
@@ -307,73 +307,95 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
       }
     }> = {};
     
-    // Função para processar um schedule e popular militaresDias
-    // COMPLETAMENTE REVISTA para garantir cálculo correto do limite
+    // SOLUÇÃO DEFINITIVA: Função totalmente reescrita para contar corretamente
     const processSchedule = (scheduleData: any, operacao: 'pmf') => {
       if (!scheduleData) return;
       
-      // Contador preciso de escalas
-      const contadorTotal: Record<string, number> = {};
+      // Limpamos o objeto sem reassignar
+      Object.keys(militaresDias).forEach(key => {
+        delete militaresDias[key];
+      });
       
+      // Fazer contagem direta e definitiva
+      const contadorDireto: Record<string, { dias: number[], total: number }> = {};
+      
+      // Para cada dia na escala
       Object.entries(scheduleData).forEach(([day, officers]) => {
-        // Processar cada militar escalado no dia
-        (officers as (string | null)[]).forEach((officer: string | null) => {
-          if (officer) {
-            // Inicializar contador para este militar, se necessário
-            if (!contadorTotal[officer]) {
-              contadorTotal[officer] = 0;
-            }
-            
-            // Incrementar contador total para este militar
-            contadorTotal[officer] += 1;
-            
-            // Inicializar dados do militar, se necessário
-            if (!militaresDias[officer]) {
-              militaresDias[officer] = { 
-                dias: [], 
-                total: 0,
-                excedeuLimite: false,
-                posto: getPosto(officer),
-                operacoes: {
-                  pmf: 0
-                } as { pmf: number }
+        const dayNum = parseInt(day, 10);
+        
+        // Processar cada militar no dia
+        (officers as (string | null)[]).forEach((militar: string | null) => {
+          if (militar) {
+            // Inicializar entrada para o militar se necessário
+            if (!contadorDireto[militar]) {
+              contadorDireto[militar] = { 
+                dias: [],
+                total: 0
               };
             }
             
-            const dayNum = parseInt(day, 10);
-            
-            // Adicionar o dia apenas se não estiver já computado
-            if (!militaresDias[officer].dias.includes(dayNum)) {
-              militaresDias[officer].dias.push(dayNum);
-              militaresDias[officer].total += 1;
-              militaresDias[officer].operacoes[operacao] += 1;
+            // Adicionar este dia se ainda não foi contado
+            if (!contadorDireto[militar].dias.includes(dayNum)) {
+              contadorDireto[militar].dias.push(dayNum);
+              contadorDireto[militar].total++;
             }
           }
         });
       });
       
-      // VERIFICAÇÃO RIGOROSA DO LIMITE
-      // Após processar todos os dias, verificar quais militares
-      // excederam o limite de 12 dias no total
-      Object.entries(contadorTotal).forEach(([militar, total]) => {
-        if (militaresDias[militar]) {
-          // Atualizar total do militar (para ter certeza)
-          militaresDias[militar].total = total;
-          
-          // Verificar se excedeu limite de 12 escalas
-          if (total > 12) {
-            console.error(`⚠️ LIMITE EXCEDIDO: ${militar} tem ${total} escalas no mês (máximo 12)!`);
-            militaresDias[militar].excedeuLimite = true;
-          } else if (total === 12) {
-            console.warn(`⚠️ LIMITE ATINGIDO: ${militar} tem ${total} escalas no mês.`);
-            militaresDias[militar].excedeuLimite = true;
+      // Converter contagem para o formato militaresDias
+      Object.entries(contadorDireto).forEach(([militar, dados]) => {
+        militaresDias[militar] = {
+          dias: dados.dias,
+          total: dados.total,
+          excedeuLimite: dados.total >= 12, // Regra de negócio: 12 é o limite máximo
+          posto: getPosto(militar),
+          operacoes: {
+            pmf: dados.total
           }
+        };
+        
+        // Alertas importantes para o console
+        if (dados.total > 12) {
+          console.error(`🚨 ERRO CRÍTICO - LIMITE EXCEDIDO: ${militar} tem ${dados.total} escalas (máximo 12)!`);
+        } else if (dados.total === 12) {
+          console.warn(`⚠️ LIMITE MÁXIMO ATINGIDO: ${militar} tem ${dados.total} escalas no mês.`);
         }
       });
     };
     
-    // Processa usando os schedules combinados para garantir cálculo preciso
-    processSchedule(combSchedules || monthSchedule, 'pmf');
+    // CORREÇÃO CRUCIAL: Usar os dados corretos da API para processamento
+    // Vamos usar os dados combinados se disponíveis, caso contrário os dados normais
+    const scheduleToProcess = combinedSchedules?.pmf?.[currentMonthKey] || monthSchedule;
+    
+    // VERIFICAÇÃO DE SEGURANÇA: Mostrar quantos serviços existem para cada militar
+    console.log("VERIFICANDO ESCALA DE SERVIÇO COMPLETA:");
+    
+    // Processar a escala completa para ter certeza da contagem correta
+    let contadorTotal: Record<string, number> = {};
+    
+    // Fazer contagem direta dos dados da API
+    if (scheduleToProcess) {
+      Object.values(scheduleToProcess).forEach((daySchedule: any) => {
+        if (Array.isArray(daySchedule)) {
+          daySchedule.forEach((military) => {
+            if (military) {
+              contadorTotal[military] = (contadorTotal[military] || 0) + 1;
+            }
+          });
+        }
+      });
+    }
+    
+    // Mostrar contagem para debug
+    console.log("CONTAGEM DIRETA DA API:", 
+      Object.entries(contadorTotal)
+        .sort((a, b) => b[1] - a[1])
+        .map(([militar, total]) => `${militar}: ${total} escalas`)
+    );
+    
+    // Processa usando os dados diretos do servidor
+    processSchedule(scheduleToProcess, 'pmf');
     
     // Ordenar por antiguidade (posto/graduação) e depois por total de dias
     const ordenado = Object.fromEntries(

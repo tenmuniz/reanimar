@@ -200,14 +200,28 @@ export default function CalendarCard({
     const currentDayKey = `${day}`;
     const cardActual = selections.filter(m => m === officer).length;
     
-    // Se o militar já está no limite estrito de 12 escalas, NUNCA permitir adicionar mais
-    if (totalEscalasMilitar >= 12) {
+    // REGRA DE NEGÓCIO RIGOROSA: BLOQUEIO ABSOLUTO ao 13º serviço ou mais
+    // Para garantir que o militar NUNCA ultrapasse 12 serviços,
+    // fazemos uma contagem completa de todos os seus serviços
+    
+    // Verifica se ainda tem margem para mais um serviço
+    let servicosRestantes = 12 - totalEscalasMilitar;
+    
+    if (servicosRestantes <= 0) {
+      // BLOQUEIO TOTAL - Mensagem clara para o usuário
       toast({
-        title: "LIMITE MÁXIMO DE 12 ATINGIDO",
-        description: `${officer} já está com ${totalEscalasMilitar} escalas no mês. Impossível adicionar mais serviços.`,
+        title: "⛔ LIMITE MÁXIMO DE 12 ATINGIDO",
+        description: `${officer} já está com ${totalEscalasMilitar} escalas no mês. 
+                      IMPOSSÍVEL adicionar mais serviços. 
+                      Esta é uma regra de negócio rigorosa do sistema.`,
         variant: "destructive",
       });
-      console.error(`🚫 BLOQUEADO: ${officer} tem ${totalEscalasMilitar} escalas e atingiu o limite!`);
+      
+      // Log de erro detalhado
+      console.error(`🚫 BLOQUEADO: ${officer} tem ${totalEscalasMilitar} escalas e atingiu o limite estrito!`);
+      console.error(`🚫 REGRA DE NEGÓCIO VIOLADA: Tentativa de adicionar um ${totalEscalasMilitar + 1}º serviço`);
+      
+      // Retorna imediatamente sem processar
       return;
     }
     

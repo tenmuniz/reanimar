@@ -52,8 +52,23 @@ export default function OfficerSelect({
   limitReachedOfficers = [],
   onChange,
 }: OfficerSelectProps) {
+  // VERIFICAÇÃO ADICIONAL DE SEGURANÇA: Garantir que nunca podemos selecionar alguém com limite atingido
   const handleChange = (value: string) => {
-    onChange(value === PLACEHOLDER_VALUE ? null : value);
+    // Se for o placeholder, só remove a seleção
+    if (value === PLACEHOLDER_VALUE) {
+      onChange(null);
+      return;
+    }
+    
+    // VERIFICAÇÃO CRUCIAL: Nunca permitir selecionar alguém com limite atingido
+    if (limitReachedOfficers.includes(value)) {
+      console.error(`🚫 TENTATIVA BLOQUEADA: Seleção de ${value} que já atingiu o limite de 12 serviços`);
+      // Não realizar nenhuma ação - bloqueio total
+      return;
+    }
+    
+    // Tudo ok, pode prosseguir com a seleção
+    onChange(value);
   };
 
   // Agrupando oficiais por categoria
