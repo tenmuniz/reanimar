@@ -270,15 +270,6 @@ export default function Home() {
       <main className="container mx-auto px-4 py-6">
         {/* Calendar controls */}
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <div className="mb-4 sm:mb-0">
-            <h2 className="text-lg font-medium text-gray-800">
-              Escala mensal de serviço - PMF
-            </h2>
-            <p className="text-sm text-gray-600">
-              Selecione até 3 policiais por dia
-            </p>
-          </div>
-          
           <div className="flex space-x-2">
             <Button
               onClick={saveSchedule}
