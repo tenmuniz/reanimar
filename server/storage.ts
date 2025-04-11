@@ -32,56 +32,57 @@ export class MemStorage implements IStorage {
     
     // Inicializa com os oficiais reais da PMF
     const realOfficers = [
-      // Oficiais
-      { id: 1, name: "MAJ PM GOMES", rank: "OFICIAIS" },
-      { id: 2, name: "CAP PM RAQUEL", rank: "OFICIAIS" },
-      { id: 3, name: "1º TEN PM DIAS", rank: "OFICIAIS" },
-      { id: 4, name: "2º TEN PM MARCELO", rank: "OFICIAIS" },
-      { id: 5, name: "ASP OF PM JUNIOR", rank: "OFICIAIS" },
-      
-      // Seção
-      { id: 6, name: "SUB TEN PM CARDOSO", rank: "SEÇÃO" },
-      { id: 7, name: "1º SGT PM SANTOS", rank: "SEÇÃO" },
-      { id: 8, name: "2º SGT PM FERREIRA", rank: "SEÇÃO" },
-      { id: 9, name: "3º SGT PM COSTA", rank: "SEÇÃO" },
-      { id: 10, name: "CB PM OLIVEIRA", rank: "SEÇÃO" },
-      { id: 11, name: "SD PM ARAUJO", rank: "SEÇÃO" },
+      // Oficiais - EXPEDIENTE
+      { id: 1, name: "CAP QOPM MUNIZ", rank: "EXPEDIENTE" },
+      { id: 2, name: "1º TEN QOPM MONTEIRO", rank: "EXPEDIENTE" },
+      { id: 3, name: "TEN VANILSON", rank: "EXPEDIENTE" },
+      { id: 4, name: "SUB TEN ANDRÉ", rank: "EXPEDIENTE" },
+      { id: 5, name: "3º SGT PM CUNHA", rank: "EXPEDIENTE" },
+      { id: 6, name: "3º SGT PM CARAVELAS", rank: "EXPEDIENTE" },
+      { id: 7, name: "CB PM TONI", rank: "EXPEDIENTE" },
+      { id: 8, name: "SD PM S. CORREA", rank: "EXPEDIENTE" },
+      { id: 9, name: "SD PM RODRIGUES", rank: "EXPEDIENTE" },
+      { id: 10, name: "2º SGT PM A. TAVARES", rank: "EXPEDIENTE" },
       
       // Grupo ALFA
-      { id: 12, name: "2º SGT PM PEIXOTO", rank: "ALFA" },
-      { id: 13, name: "3º SGT PM RODRIGO", rank: "ALFA" },
-      { id: 14, name: "3º SGT PM LEDO", rank: "ALFA" },
-      { id: 15, name: "3º SGT PM NUNES", rank: "ALFA" },
-      { id: 16, name: "3º SGT PM AMARAL", rank: "ALFA" },
-      { id: 17, name: "CB PM CARLA", rank: "ALFA" },
-      { id: 18, name: "CB PM FELIPE", rank: "ALFA" },
-      { id: 19, name: "CB PM BARROS", rank: "ALFA" },
-      { id: 20, name: "CB PM A. SILVA", rank: "ALFA" },
-      { id: 21, name: "SD PM LUAN", rank: "ALFA" },
-      { id: 22, name: "SD PM NAVARRO", rank: "ALFA" },
+      { id: 11, name: "2º SGT PM PEIXOTO", rank: "ALFA" },
+      { id: 12, name: "3º SGT PM RODRIGO", rank: "ALFA" },
+      { id: 13, name: "3º SGT PM LEDO", rank: "ALFA" },
+      { id: 14, name: "3º SGT PM NUNES", rank: "ALFA" },
+      { id: 15, name: "3º SGT AMARAL", rank: "ALFA" },
+      { id: 16, name: "CB CARLA", rank: "ALFA" },
+      { id: 17, name: "CB PM FELIPE", rank: "ALFA" },
+      { id: 18, name: "CB PM BARROS", rank: "ALFA" },
+      { id: 19, name: "CB PM A. SILVA", rank: "ALFA" },
+      { id: 20, name: "SD PM LUAN", rank: "ALFA" },
+      { id: 21, name: "SD PM NAVARRO", rank: "ALFA" },
       
       // Grupo BRAVO
-      { id: 23, name: "1º SGT PM OLIMAR", rank: "BRAVO" },
-      { id: 24, name: "2º SGT PM FÁBIO", rank: "BRAVO" },
-      { id: 25, name: "3º SGT PM ANA CLEIDE", rank: "BRAVO" },
-      { id: 26, name: "3º SGT PM GLEIDSON", rank: "BRAVO" },
-      { id: 27, name: "3º SGT PM CARLOS EDUARDO", rank: "BRAVO" },
-      { id: 28, name: "3º SGT PM NEGRÃO", rank: "BRAVO" },
-      { id: 29, name: "CB PM BRASIL", rank: "BRAVO" },
-      { id: 30, name: "SD PM MARVÃO", rank: "BRAVO" },
-      { id: 31, name: "SD PM IDELVAN", rank: "BRAVO" },
+      { id: 22, name: "1º SGT PM OLIMAR", rank: "BRAVO" },
+      { id: 23, name: "2º SGT PM FÁBIO", rank: "BRAVO" },
+      { id: 24, name: "3º SGT PM ANA CLEIDE", rank: "BRAVO" },
+      { id: 25, name: "3º SGT PM GLEIDSON", rank: "BRAVO" },
+      { id: 26, name: "3º SGT PM CARLOS EDUARDO", rank: "BRAVO" },
+      { id: 27, name: "3º SGT PM NEGRÃO", rank: "BRAVO" },
+      { id: 28, name: "CB PM BRASIL", rank: "BRAVO" },
+      { id: 29, name: "SD PM MARVÃO", rank: "BRAVO" },
+      { id: 30, name: "SD PM IDELVAN", rank: "BRAVO" },
       
       // Grupo CHARLIE
-      { id: 32, name: "2º SGT PM PINHEIRO", rank: "CHARLIE" },
-      { id: 33, name: "3º SGT PM RAFAEL", rank: "CHARLIE" },
-      { id: 34, name: "CB PM MIQUEIAS", rank: "CHARLIE" },
-      { id: 35, name: "CB PM M. PAIXÃO", rank: "CHARLIE" },
-      { id: 36, name: "SD PM CHAGAS", rank: "CHARLIE" },
-      { id: 37, name: "SD PM CARVALHO", rank: "CHARLIE" },
-      { id: 38, name: "SD PM GOVEIA", rank: "CHARLIE" },
-      { id: 39, name: "SD PM ALMEIDA", rank: "CHARLIE" },
-      { id: 40, name: "SD PM PATRIK", rank: "CHARLIE" },
-      { id: 41, name: "SD PM GUIMARÃES", rank: "CHARLIE" }
+      { id: 31, name: "2º SGT PM PINHEIRO", rank: "CHARLIE" },
+      { id: 32, name: "3º SGT PM RAFAEL", rank: "CHARLIE" },
+      { id: 33, name: "CB PM MIQUEIAS", rank: "CHARLIE" },
+      { id: 34, name: "CB PM M. PAIXÃO", rank: "CHARLIE" },
+      { id: 35, name: "SD PM CHAGAS", rank: "CHARLIE" },
+      { id: 36, name: "SD PM CARVALHO", rank: "CHARLIE" },
+      { id: 37, name: "SD PM GOVEIA", rank: "CHARLIE" },
+      { id: 38, name: "SD PM ALMEIDA", rank: "CHARLIE" },
+      { id: 39, name: "SD PM PATRIK", rank: "CHARLIE" },
+      { id: 40, name: "SD PM GUIMARÃES", rank: "CHARLIE" }
+      
+      // Militares de férias em Abril (não incluídos na lista):
+      // CB PM ALAX (BRAVO)
+      // CB PM VELOSO (BRAVO)
     ];
     
     realOfficers.forEach(officer => {

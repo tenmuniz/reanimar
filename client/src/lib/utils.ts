@@ -41,11 +41,11 @@ export function getWeekdayClass(weekday: string): string {
   return "bg-gray-200 text-gray-800";
 }
 
-export function getLocalStorageSchedule(key: string): Record<string, (string | null)[]> {
+export function getLocalStorageSchedule(key: string): Record<string, Record<string, (string | null)[]>> {
   const stored = localStorage.getItem(key);
   return stored ? JSON.parse(stored) : {};
 }
 
-export function saveLocalStorageSchedule(key: string, data: Record<string, (string | null)[]>): void {
+export function saveLocalStorageSchedule(key: string, data: Record<string, Record<string, (string | null)[]>>): void {
   localStorage.setItem(key, JSON.stringify(data));
 }
