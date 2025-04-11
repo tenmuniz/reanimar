@@ -238,7 +238,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
         <div class="resumo">
           <div class="resumo-item">
             <div class="resumo-valor">${totalEscalas}</div>
-            <div class="resumo-label">Total de GCJOs</div>
+            <div class="resumo-label">Quantidade de GCJO</div>
           </div>
           <div class="resumo-item">
             <div class="resumo-valor">${totalMilitares}</div>
