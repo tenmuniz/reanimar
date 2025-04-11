@@ -1,0 +1,123 @@
+Entendi perfeitamente. O que você está descrevendo é basicamente um *MVP* (Produto Mínimo Viável) de um sistema de escala de serviço — e sim, podemos chamar de MVP nesse caso.
+
+Aqui vai um esboço do que você precisa, com base no Replit e focando em HTML, JavaScript e um pequeno banco de dados simulado com JSON ou localStorage (ideal para começar sem backend). Posteriormente você pode evoluir para usar Firebase ou outro banco real.
+
+---
+
+### **Funcionalidades do MVP**
+1. Exibir todos os dias do mês atual.
+2. Cada dia permite escalar até 3 policiais para a operação PMF.
+3. Lista de policiais armazenada em banco (pode começar com um array).
+4. Ao selecionar um policial em uma vaga, ele deve ser removido das opções do mesmo dia.
+
+---
+
+### **Estrutura Base (HTML + JS + CSS)**
+
+#### **1. Estrutura HTML (index.html)**
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Escala PMF</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Escala PMF - Mês Atual</h1>
+  <div id="diasContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+```
+
+---
+
+#### **2. Estilo Básico (style.css)**
+```css
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f2f2f2;
+}
+
+.dia {
+  background: white;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.select-container {
+  display: flex;
+  gap: 10px;
+}
+```
+
+---
+
+#### **3. Lógica (script.js)**
+```javascript
+const policiais = ["Sd Silva", "Cb Almeida", "Sd Costa", "Sgt Souza", "Sd Lima"];
+const diasContainer = document.getElementById("diasContainer");
+
+const mesAtual = new Date().getMonth();
+const anoAtual = new Date().getFullYear();
+const diasNoMes = new Date(anoAtual, mesAtual + 1, 0).getDate();
+
+function criarSelect(indexDia) {
+  const select = document.createElement("select");
+  select.innerHTML = `<option value="">-- Escolha --</option>`;
+  policiais.forEach(policial => {
+    select.innerHTML += `<option value="${policial}">${policial}</option>`;
+  });
+
+  select.addEventListener("change", () => {
+    atualizarSelecoes(indexDia);
+  });
+
+  return select;
+}
+
+function atualizarSelecoes(indexDia) {
+  const selects = document.querySelectorAll(`#dia-${indexDia} select`);
+  const selecionados = Array.from(selects).map(s => s.value).filter(v => v);
+
+  selects.forEach(select => {
+    Array.from(select.options).forEach(option => {
+      option.disabled = selecionados.includes(option.value) && option.value !== select.value;
+    });
+  });
+}
+
+for (let dia = 1; dia <= diasNoMes; dia++) {
+  const divDia = document.createElement("div");
+  divDia.className = "dia";
+  divDia.id = `dia-${dia}`;
+  divDia.innerHTML = `<h3>Dia ${dia}</h3>`;
+
+  const container = document.createElement("div");
+  container.className = "select-container";
+
+  for (let i = 0; i < 3; i++) {
+    container.appendChild(criarSelect(dia));
+  }
+
+  divDia.appendChild(container);
+  diasContainer.appendChild(divDia);
+}
+```
+
+---
+
+### **Próximos Passos (Futuramente)**
+- Salvar os dados no `localStorage` ou Firebase.
+- Criar um login para administradores.
+- Permitir exportar a escala em PDF.
+- Permitir visualização por nome de policial.
+
+---
+
+Quer que eu suba esse modelo num repositório no Replit ou te ajudo a fazer passo a passo por lá?
