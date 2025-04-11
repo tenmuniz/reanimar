@@ -290,7 +290,7 @@ export default function Home() {
               {/* Título principal com efeito de brilho e sombra */}
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-yellow-300 to-white">
-                  POLÍCIA MAIS FORTE
+                  20ª CIPM
                 </span>
               </h1>
               

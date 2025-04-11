@@ -477,13 +477,21 @@ export default function ResumoGuarnicao({
 
   return (
     <>
-      <Button
+      <button
         onClick={() => setOpen(true)}
-        className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-4 py-2 rounded flex items-center shadow-md transition"
+        className="relative group overflow-hidden bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 
+          text-white font-bold px-5 py-3 rounded-lg flex items-center transform transition-all duration-200 
+          border border-cyan-400 shadow-[0_8px_0_rgb(8,145,178),0_15px_20px_rgba(0,0,0,0.3)]
+          hover:shadow-[0_4px_0_rgb(8,145,178),0_8px_15px_rgba(0,0,0,0.3)]
+          active:translate-y-4 active:shadow-[0_0px_0_rgb(8,145,178),0_0px_10px_rgba(0,0,0,0.2)]"
       >
-        <BarChart2 className="h-5 w-5 mr-1" />
-        Guarnição
-      </Button>
+        {/* Efeito de brilho no hover */}
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/30 to-white/0 
+          transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+        
+        <BarChart2 className="h-5 w-5 mr-2 drop-shadow-lg" />
+        <span>Guarnição</span>
+      </button>
       
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-indigo-900 to-purple-900 text-white border-0 shadow-2xl">
