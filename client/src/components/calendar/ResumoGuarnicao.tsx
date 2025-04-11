@@ -25,7 +25,7 @@ export default function ResumoGuarnicao({
 }: ResumoGuarnicaoProps) {
   const [open, setOpen] = useState(false);
   const [resumoData, setResumoData] = useState<Record<string, { total: number; militares: string[] }>>({});
-  const [searchTerm, setSearchTerm] = useState("");
+  const [activeGuarnicao, setActiveGuarnicao] = useState<string | null>(null);
 
   // Função para identificar o grupo de um militar (mesma do ResumoEscala)
   const getGrupoMilitar = (nome: string): string => {
@@ -123,15 +123,42 @@ export default function ResumoGuarnicao({
   // Calcular o total geral de GCJO
   const totalGCJO = Object.values(resumoData).reduce((sum, guarnicao) => sum + guarnicao.total, 0);
   
-  // Filtrar guarnições com base no termo de busca
+  // Filtrar guarnições com base na seleção ativa
   const filteredGuarnicoes = () => {
-    if (!searchTerm.trim()) return Object.entries(resumoData);
+    if (!activeGuarnicao) return Object.entries(resumoData).filter(([nome, _]) => nome !== "OUTROS");
     
     return Object.entries(resumoData).filter(([nome, _]) => 
-      nome.toLowerCase().includes(searchTerm.toLowerCase())
+      nome === activeGuarnicao
     );
   };
 
+  // Função para ordenar por hierarquia (mais antigo para mais moderno)
+  const ordernarPorHierarquia = (militares: string[]): string[] => {
+    const hierarquiaPrefixos = [
+      "CAP QOPM", "1º TEN QOPM", "TEN", "SUB TEN", "1º SGT PM", 
+      "2º SGT PM", "3º SGT PM", "CB PM", "SD PM"
+    ];
+    
+    return [...militares].sort((a, b) => {
+      // Obter o prefixo da patente para cada militar
+      const prefixoA = hierarquiaPrefixos.find(prefixo => a.startsWith(prefixo)) || "";
+      const prefixoB = hierarquiaPrefixos.find(prefixo => b.startsWith(prefixo)) || "";
+      
+      // Calcular o índice de cada prefixo na lista de hierarquia
+      const rankA = hierarquiaPrefixos.indexOf(prefixoA);
+      const rankB = hierarquiaPrefixos.indexOf(prefixoB);
+      
+      // Ordenar primeiro por patente (do maior ao menor rank)
+      if (rankA !== rankB) {
+        // Quanto menor o índice, maior a hierarquia
+        return rankA - rankB;
+      }
+      
+      // Se mesma patente, ordenar alfabeticamente pelo nome
+      return a.localeCompare(b);
+    });
+  };
+  
   // Função para gerar uma cor de destaque para cada guarnição
   const getGuarnicaoColor = (guarnicao: string): string => {
     switch (guarnicao) {
@@ -303,7 +330,7 @@ export default function ResumoGuarnicao({
                     <td>${dados.militares.length}</td>
                     <td>-</td>
                   </tr>
-                  ${dados.militares.map(militar => {
+                  ${ordernarPorHierarquia(dados.militares).map(militar => {
                     // Encontrar no contador quantos serviços este militar tem
                     const militarContador = Object.entries(schedule[`${currentDate.getFullYear()}-${currentDate.getMonth()}`] || {})
                       .flatMap(([_, oficiais]) => oficiais)
@@ -378,17 +405,52 @@ export default function ResumoGuarnicao({
             </Button>
           </div>
           
-          {/* Campo de busca de guarnição */}
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-indigo-300" />
-              <Input
-                placeholder="Buscar guarnição..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 bg-indigo-700/30 border-indigo-600 text-white placeholder:text-indigo-300"
-              />
-            </div>
+          {/* Botões de filtro por guarnição */}
+          <div className="mb-4 grid grid-cols-4 gap-2">
+            <Button 
+              onClick={() => setActiveGuarnicao(activeGuarnicao === "EXPEDIENTE" ? null : "EXPEDIENTE")}
+              className={`flex items-center justify-center ${
+                activeGuarnicao === "EXPEDIENTE" 
+                  ? "bg-gradient-to-r from-orange-500 to-amber-600" 
+                  : "bg-gradient-to-r from-orange-400/80 to-amber-500/80 hover:from-orange-500 hover:to-amber-600"
+              }`}
+            >
+              <Shield className="h-4 w-4 mr-1.5" />
+              EXPEDIENTE
+            </Button>
+            <Button 
+              onClick={() => setActiveGuarnicao(activeGuarnicao === "ALFA" ? null : "ALFA")}
+              className={`flex items-center justify-center ${
+                activeGuarnicao === "ALFA" 
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-700" 
+                  : "bg-gradient-to-r from-blue-500/80 to-indigo-600/80 hover:from-blue-600 hover:to-indigo-700"
+              }`}
+            >
+              <MapPin className="h-4 w-4 mr-1.5" />
+              ALFA
+            </Button>
+            <Button 
+              onClick={() => setActiveGuarnicao(activeGuarnicao === "BRAVO" ? null : "BRAVO")}
+              className={`flex items-center justify-center ${
+                activeGuarnicao === "BRAVO" 
+                  ? "bg-gradient-to-r from-green-600 to-emerald-700" 
+                  : "bg-gradient-to-r from-green-500/80 to-emerald-600/80 hover:from-green-600 hover:to-emerald-700"
+              }`}
+            >
+              <Users className="h-4 w-4 mr-1.5" />
+              BRAVO
+            </Button>
+            <Button 
+              onClick={() => setActiveGuarnicao(activeGuarnicao === "CHARLIE" ? null : "CHARLIE")}
+              className={`flex items-center justify-center ${
+                activeGuarnicao === "CHARLIE" 
+                  ? "bg-gradient-to-r from-purple-600 to-fuchsia-700" 
+                  : "bg-gradient-to-r from-purple-500/80 to-fuchsia-600/80 hover:from-purple-600 hover:to-fuchsia-700"
+              }`}
+            >
+              <Calendar className="h-4 w-4 mr-1.5" />
+              CHARLIE
+            </Button>
           </div>
           
           {/* Estatísticas Gerais */}
@@ -415,7 +477,7 @@ export default function ResumoGuarnicao({
               </div>
             ) : filteredGuarnicoes().length === 0 ? (
               <div className="p-4 text-center text-indigo-200">
-                Nenhuma guarnição encontrada com o termo &quot;{searchTerm}&quot;
+                Nenhuma guarnição com dados para este filtro
               </div>
             ) : (
               filteredGuarnicoes()
@@ -461,7 +523,7 @@ export default function ResumoGuarnicao({
                       
                       {/* Lista de militares expandida */}
                       <div className="mt-3 space-y-1 pl-2 border-l-2 border-indigo-500/30">
-                        {dados.militares.map(militar => {
+                        {ordernarPorHierarquia(dados.militares).map(militar => {
                           // Encontrar no contador quantos serviços este militar tem
                           const militarContador = Object.entries(schedule[`${currentDate.getFullYear()}-${currentDate.getMonth()}`] || {})
                             .flatMap(([_, oficiais]) => oficiais)
