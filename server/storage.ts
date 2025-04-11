@@ -315,17 +315,46 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getSchedule(operation: string, year: number, month: number): Promise<any> {
-    const [schedule] = await db.select()
-      .from(schedules)
-      .where(
-        and(
-          eq(schedules.operation, operation),
-          eq(schedules.year, year),
-          eq(schedules.month, month)
-        )
-      );
-    
-    return schedule ? JSON.parse(schedule.data) : {};
+    try {
+      const [schedule] = await db.select()
+        .from(schedules)
+        .where(
+          and(
+            eq(schedules.operation, operation),
+            eq(schedules.year, year),
+            eq(schedules.month, month)
+          )
+        );
+      
+      if (!schedule) return {};
+      
+      // Tratar dados possivelmente mal formatados
+      let scheduleData = {};
+      
+      if (schedule.data) {
+        try {
+          // Verificar se o dado já é um objeto
+          if (typeof schedule.data === 'object') {
+            scheduleData = schedule.data;
+          } else {
+            // Tentar fazer o parse
+            scheduleData = JSON.parse(schedule.data);
+            
+            // Se ainda for string, tentar fazer outro parse (dupla serialização)
+            if (typeof scheduleData === 'string') {
+              scheduleData = JSON.parse(scheduleData);
+            }
+          }
+        } catch (err) {
+          console.error(`Erro ao processar dados da operação ${operation}:`, err);
+        }
+      }
+      
+      return scheduleData;
+    } catch (error) {
+      console.error(`Erro ao buscar escala da operação ${operation}:`, error);
+      return {};
+    }
   }
   
   async getCombinedSchedules(year: number, month: number): Promise<any> {
@@ -356,10 +385,52 @@ export class DatabaseStorage implements IStorage {
       const pmfSchedule = pmfSchedules.length > 0 ? pmfSchedules[0] : null;
       const escolaSeguraSchedule = escolaSeguraSchedules.length > 0 ? escolaSeguraSchedules[0] : null;
       
-      // Retornar as escalas combinadas com tratamento de erro ao fazer parse do JSON
+      // Tratar dados possivelmente mal formatados
+      let pmfData = {};
+      let escolaSeguraData = {};
+      
+      if (pmfSchedule && pmfSchedule.data) {
+        try {
+          // Verificar se o dado já é um objeto
+          if (typeof pmfSchedule.data === 'object') {
+            pmfData = pmfSchedule.data;
+          } else {
+            // Tentar fazer o parse
+            pmfData = JSON.parse(pmfSchedule.data);
+            
+            // Se ainda for string, tentar fazer outro parse (dupla serialização)
+            if (typeof pmfData === 'string') {
+              pmfData = JSON.parse(pmfData);
+            }
+          }
+        } catch (err) {
+          console.error("Erro ao processar dados PMF:", err);
+        }
+      }
+      
+      if (escolaSeguraSchedule && escolaSeguraSchedule.data) {
+        try {
+          // Verificar se o dado já é um objeto
+          if (typeof escolaSeguraSchedule.data === 'object') {
+            escolaSeguraData = escolaSeguraSchedule.data;
+          } else {
+            // Tentar fazer o parse
+            escolaSeguraData = JSON.parse(escolaSeguraSchedule.data);
+            
+            // Se ainda for string, tentar fazer outro parse (dupla serialização)
+            if (typeof escolaSeguraData === 'string') {
+              escolaSeguraData = JSON.parse(escolaSeguraData);
+            }
+          }
+        } catch (err) {
+          console.error("Erro ao processar dados Escola Segura:", err);
+        }
+      }
+      
+      // Retornar as escalas combinadas
       return {
-        pmf: pmfSchedule && pmfSchedule.data ? JSON.parse(pmfSchedule.data) : {},
-        escolaSegura: escolaSeguraSchedule && escolaSeguraSchedule.data ? JSON.parse(escolaSeguraSchedule.data) : {}
+        pmf: pmfData,
+        escolaSegura: escolaSeguraData
       };
     } catch (error) {
       console.error("Erro ao buscar ou processar escalas combinadas:", error);
