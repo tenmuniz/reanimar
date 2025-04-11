@@ -3,7 +3,7 @@ import { toast } from "@/hooks/use-toast";
 import { getMonthData, getWeekdayName, getLocalStorageSchedule, saveLocalStorageSchedule } from "@/lib/utils";
 import { MonthSchedule, OfficersResponse, CombinedSchedules } from "@/lib/types";
 import { Save, BookOpen } from "lucide-react";
-import CalendarCard from "@/components/calendar/CalendarCard";
+import CalendarCardEscolaSegura from "@/components/calendar/CalendarCardEscolaSegura";
 import MonthSelector from "@/components/calendar/MonthSelector";
 import ResumoEscala from "@/components/calendar/ResumoEscala";
 import ResumoGuarnicao from "@/components/calendar/ResumoGuarnicao";
@@ -385,7 +385,7 @@ export default function EscolaSegura() {
               const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null]; // Apenas 2 posições para Escola Segura
               
               return (
-                <CalendarCard
+                <CalendarCardEscolaSegura
                   key={`day-${day}`}
                   day={day}
                   month={currentDate.getMonth()}

@@ -1,13 +1,9 @@
-import { useState, useEffect } from "react";
-import { AlertCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState } from "react";
+import { Trash2 } from "lucide-react";
+import { cn, getWeekdayClass } from "@/lib/utils";
 import OfficerSelect from "./OfficerSelect";
-import { getWeekdayClass } from "@/lib/utils";
-import { CombinedSchedules } from "@/lib/types";
+import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 
-// Interface para as props do componente
 interface CalendarCardEscolaSeguraProps {
   day: number;
   month: number;
@@ -16,7 +12,8 @@ interface CalendarCardEscolaSeguraProps {
   officers: string[];
   savedSelections: (string | null)[];
   onOfficerChange: (day: number, position: number, officer: string | null) => void;
-  combinedSchedules?: CombinedSchedules; // Schedule de PMF + Escola Segura para verificar limite total
+  schedule?: MonthSchedule; // Agenda da Escola Segura atual
+  combinedSchedules?: CombinedSchedules; // Combinação de PMF + Escola Segura para verificar limite total
 }
 
 export default function CalendarCardEscolaSegura({
@@ -27,146 +24,160 @@ export default function CalendarCardEscolaSegura({
   officers,
   savedSelections,
   onOfficerChange,
-  combinedSchedules
+  schedule,
+  combinedSchedules,
 }: CalendarCardEscolaSeguraProps) {
-  const [showLimitWarning, setShowLimitWarning] = useState(false);
-  const [disabledOfficers, setDisabledOfficers] = useState<string[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
   
-  // Classes para diferentes dias da semana
+  // Classe CSS com base no dia da semana
   const weekdayClass = getWeekdayClass(weekday);
   
-  // Verificar limites de serviço e atualizar oficiais desabilitados
-  useEffect(() => {
-    if (!combinedSchedules || !officers.length) return;
+  // Verificar oficiais que já atingiram o limite de 12 escalas no mês
+  // Estes oficiais devem ser desabilitados para novas escalas
+  const limitReachedOfficers: string[] = [];
+  
+  // Contar total de escalas para cada oficial no mês inteiro (PMF + Escola Segura)
+  if (combinedSchedules) {
+    const monthKey = `${year}-${month}`;
+    const pmfSchedule = combinedSchedules.pmf[monthKey] || {};
+    const escolaSeguraSchedule = combinedSchedules.escolaSegura[monthKey] || {};
     
-    const monthKeyPMF = `${year}-${month}`;
-    const monthKeyEscolaSegura = `${year}-${month}`;
+    // Contagem de escalas por oficial
+    const officerCounts: Record<string, number> = {};
     
-    // Lista para acumular oficiais desabilitados
-    let disabledOfficersList: string[] = [];
-    
-    // 1. Contar dias de serviço para cada oficial em ambas operações (limite de 12)
-    const officerDaysCount: Record<string, number> = {};
-    
-    // Inicializar contador para todos os oficiais
-    officers.forEach(officer => {
-      officerDaysCount[officer] = 0;
+    // Contar em PMF
+    Object.values(pmfSchedule).forEach((dayOfficers: any) => {
+      if (Array.isArray(dayOfficers)) {
+        dayOfficers.forEach(officer => {
+          if (officer) {
+            officerCounts[officer] = (officerCounts[officer] || 0) + 1;
+          }
+        });
+      }
     });
     
-    // Contar dias em PMF
-    if (combinedSchedules.pmf[monthKeyPMF]) {
-      Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(daySchedule => {
-        daySchedule.forEach(officer => {
+    // Contar em Escola Segura
+    Object.values(escolaSeguraSchedule).forEach((dayOfficers: any) => {
+      if (Array.isArray(dayOfficers)) {
+        dayOfficers.forEach(officer => {
           if (officer) {
-            officerDaysCount[officer] = (officerDaysCount[officer] || 0) + 1;
+            officerCounts[officer] = (officerCounts[officer] || 0) + 1;
           }
         });
-      });
-    }
+      }
+    });
     
-    // Contar dias em Escola Segura
-    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura]) {
-      Object.values(combinedSchedules.escolaSegura[monthKeyEscolaSegura]).forEach(daySchedule => {
-        daySchedule.forEach(officer => {
-          if (officer) {
-            officerDaysCount[officer] = (officerDaysCount[officer] || 0) + 1;
-          }
-        });
-      });
-    }
-    
-    // Encontrar oficiais que já atingiram o limite de 12 dias no mês
-    const limitReachedOfficers = officers.filter(
-      officer => officerDaysCount[officer] >= 12
-    );
-    
-    // Adicionar à lista de desabilitados
-    disabledOfficersList = [...disabledOfficersList, ...limitReachedOfficers];
-    
-    // 2. Verificar se o oficial já está escalado no mesmo dia (evitar duplicação)
-    const currentDayKey = `${day}`;
-    
-    // Verificar PMF para o mesmo dia
-    if (combinedSchedules.pmf[monthKeyPMF] && combinedSchedules.pmf[monthKeyPMF][currentDayKey]) {
-      const officersInPMF = combinedSchedules.pmf[monthKeyPMF][currentDayKey].filter(o => o !== null) as string[];
-      disabledOfficersList = [...disabledOfficersList, ...officersInPMF];
-    }
-    
-    // Verificar Escola Segura para o mesmo dia (exceto os já selecionados neste card)
-    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura] && 
-        combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey]) {
-      const officersInEscolaSegura = combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey].filter(o => o !== null) as string[];
-      disabledOfficersList = [...disabledOfficersList, ...officersInEscolaSegura];
-    }
-    
-    // Remover duplicações
-    disabledOfficersList = Array.from(new Set(disabledOfficersList));
-    
-    // Remover do limite os oficiais já escalados para este dia neste card específico
-    // para que possam ser desescalados mesmo se já atingiram limite
-    const disabledForNewSelections = disabledOfficersList.filter(
-      officer => !savedSelections.includes(officer)
-    );
-    
-    setDisabledOfficers(disabledForNewSelections);
-  }, [combinedSchedules, officers, savedSelections, year, month, day]);
-  
-  // Handler para mostrar alerta de limite quando um oficial é selecionado
-  const handleOfficerChange = (position: number, officer: string | null) => {
-    // Se o oficial a ser selecionado está na lista de desabilitados, mostrar alerta
-    if (officer && disabledOfficers.includes(officer)) {
-      setShowLimitWarning(true);
-      return;
-    }
-    
-    // Caso contrário, proceder com a seleção normalmente
-    onOfficerChange(day, position, officer);
-  };
-  
-  // Verificar se é final de semana
-  const isWeekend = weekday === 'Dom' || weekday === 'Sáb';
-  
-  // Não renderizar os dias de final de semana
-  if (isWeekend) {
-    return null; // Retorna null para não renderizar os finais de semana
+    // Verificar se algum oficial já atingiu o limite (12 escalas)
+    Object.entries(officerCounts).forEach(([officer, count]) => {
+      if (count >= 12) {
+        limitReachedOfficers.push(officer);
+      }
+    });
   }
-
+  
+  // Determinar quais oficiais já estão escalados neste dia (para desabilitar na seleção)
+  const disabledOfficers = savedSelections.filter(Boolean) as string[];
+  
+  // Contar quantos oficiais já estão escalados neste dia
+  const selectedCount = savedSelections.filter(Boolean).length;
+  
   return (
-    <Card className={`relative border-l-4 border-l-green-500 bg-green-50 transition-all duration-200 hover:shadow-md`}>
-      <CardHeader className="pb-2 pt-4">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-xl font-bold">{day}</CardTitle>
-          <Badge variant="secondary" className="uppercase">
-            {weekday}
-          </Badge>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        {/* Seleção de oficiais - limite de 2 para Escola Segura */}
-        <div className="space-y-3">
-          {Array.from({ length: 2 }).map((_, position) => (
-            <OfficerSelect
-              key={`select-${position}`}
-              position={position}
-              officers={officers}
-              selectedOfficer={savedSelections[position]}
-              disabledOfficers={disabledOfficers}
-              onChange={(value) => handleOfficerChange(position, value)}
-            />
-          ))}
+    <div className="relative">
+      {/* Card principal com sombra aumentada para efeito 3D */}
+      <div
+        className={cn(
+          "bg-gradient-to-br from-white to-gray-50 rounded-lg border border-gray-200 overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)]",
+          "transition-all duration-300 hover:shadow-[0_15px_35px_rgba(0,0,0,0.15)]",
+          weekdayClass
+        )}
+      >
+        {/* Header do card */}
+        <div
+          className={cn(
+            "px-4 py-2 flex justify-between items-center border-b border-gray-200",
+            weekday === "Domingo" && "bg-red-50 border-red-200",
+            weekday === "Sábado" && "bg-orange-50 border-orange-200",
+            weekday !== "Domingo" && weekday !== "Sábado" && "bg-green-50 border-green-200",
+          )}
+        >
+          <div className="flex flex-col">
+            <span 
+              className={cn(
+                "text-xl font-bold",
+                weekday === "Domingo" && "text-red-700",
+                weekday === "Sábado" && "text-orange-700",
+                weekday !== "Domingo" && weekday !== "Sábado" && "text-green-700",
+              )}
+            >
+              {day}
+            </span>
+            <span 
+              className={cn(
+                "text-xs uppercase font-medium",
+                weekday === "Domingo" && "text-red-600",
+                weekday === "Sábado" && "text-orange-600",
+                weekday !== "Domingo" && weekday !== "Sábado" && "text-green-600",
+              )}
+            >
+              {weekday}
+            </span>
+          </div>
+          
+          {/* Contador de oficiais */}
+          <div 
+            className={cn(
+              "py-1 px-2 rounded-full text-xs font-medium shadow-md border", 
+              selectedCount === 0 && "bg-gray-100 text-gray-700 border-gray-300",
+              selectedCount === 1 && "bg-yellow-100 text-yellow-800 border-yellow-300",
+              selectedCount === 2 && "bg-green-100 text-green-800 border-green-300"
+            )}
+          >
+            {selectedCount}/2 policiais escalados
+          </div>
         </div>
         
-        {/* Alerta de limite atingido */}
-        {showLimitWarning && (
-          <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-xs">
-              Este oficial já atingiu o limite de 12 escalas extras no mês.
-            </AlertDescription>
-          </Alert>
-        )}
-      </CardContent>
-    </Card>
+        {/* Corpo do card */}
+        <div className="p-3 space-y-2">
+          {/* Oficiais selecionados */}
+          {Array.from({ length: 2 }).map((_, index) => {
+            const selectedOfficer = savedSelections[index];
+            
+            return (
+              <div 
+                key={`officer-${index}`} 
+                className="flex items-center space-x-2 p-2 border border-gray-100 rounded-md bg-white shadow-sm relative"
+              >
+                <div className="font-medium text-xs text-gray-500 absolute -top-2 left-2 bg-white px-1">
+                  Posição {index + 1}
+                </div>
+                
+                {selectedOfficer ? (
+                  <>
+                    <div className="flex-1 text-gray-800 font-medium ml-1 mr-2">
+                      {selectedOfficer}
+                    </div>
+                    <button
+                      onClick={() => onOfficerChange(day, index, null)}
+                      className="text-rose-500 hover:text-rose-700 transition-colors p-1 rounded-full hover:bg-rose-50"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <OfficerSelect
+                    position={index}
+                    officers={officers}
+                    selectedOfficer={null}
+                    disabledOfficers={disabledOfficers}
+                    limitReachedOfficers={limitReachedOfficers}
+                    onChange={(value) => onOfficerChange(day, index, value)}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }
