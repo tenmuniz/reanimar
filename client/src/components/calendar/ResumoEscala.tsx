@@ -11,6 +11,7 @@ interface ResumoEscalaProps {
   schedule: MonthSchedule;
   currentDate: Date;
   combinedSchedules?: CombinedSchedules; // Agendas combinadas para cálculo do limite 12
+  operationType?: 'pmf' | 'escolaSegura'; // Tipo de operação: PMF (padrão) ou Escola Segura
 }
 
 interface MilitarEscalaData {
@@ -20,7 +21,7 @@ interface MilitarEscalaData {
   posto: number;
 }
 
-export default function ResumoEscala({ schedule, currentDate, combinedSchedules }: ResumoEscalaProps) {
+export default function ResumoEscala({ schedule, currentDate, combinedSchedules, operationType = 'pmf' }: ResumoEscalaProps) {
   const [open, setOpen] = useState(false);
   const [resumoData, setResumoData] = useState<Record<string, MilitarEscalaData>>({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -232,7 +233,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
         </style>
       </head>
       <body>
-        <h1>POLÍCIA MAIS FORTE</h1>
+        <h1>${operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'POLÍCIA MAIS FORTE'}</h1>
         <h2>RELATÓRIO DE ESCALA - ${mesAno.toUpperCase()}</h2>
         
         <div class="resumo">
@@ -279,7 +280,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
         </table>
         
         <div class="footer">
-          <p>Sistema de Escalas PMF | Limite máximo: 12 extras por policial</p>
+          <p>Sistema de Escalas ${operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'PMF'} | Limite máximo: 12 extras por policial</p>
           <p>Relatório gerado em: ${new Date().toLocaleString()}</p>
         </div>
         

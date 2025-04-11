@@ -327,6 +327,7 @@ export default function EscolaSegura() {
                   schedule={schedule}
                   currentDate={currentDate}
                   combinedSchedules={combinedSchedules}
+                  operationType="escolaSegura"
                 />
               </div>
               
