@@ -691,11 +691,11 @@ export default function VerificadorInconsistencias() {
                   </CardContent>
                   <CardFooter>
                     <Button 
-                      onClick={() => handlePrint('completo')} 
+                      onClick={() => handlePrint('ambas')} 
                       className="w-full bg-red-600 hover:bg-red-700 text-white"
                     >
                       <Printer className="h-4 w-4 mr-2" />
-                      Imprimir Relatório Completo
+                      Imprimir Relatório Dupla Escala
                     </Button>
                   </CardFooter>
                 </Card>
@@ -704,13 +704,25 @@ export default function VerificadorInconsistencias() {
               {/* Resumo de todas as inconsistências */}
               <Card className="border-amber-300 shadow-md">
                 <CardHeader className="bg-gradient-to-r from-amber-700 to-amber-800 text-white">
-                  <CardTitle className="text-lg flex items-center">
-                    <Search className="h-5 w-5 mr-2" />
-                    Todas as Inconsistências Encontradas
-                  </CardTitle>
-                  <CardDescription className="text-amber-100">
-                    {formatMonthYear(currentDate)}
-                  </CardDescription>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-lg flex items-center">
+                        <Search className="h-5 w-5 mr-2" />
+                        Todas as Inconsistências Encontradas
+                      </CardTitle>
+                      <CardDescription className="text-amber-100">
+                        {formatMonthYear(currentDate)}
+                      </CardDescription>
+                    </div>
+                    <Button 
+                      onClick={() => handlePrint('completo')} 
+                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                      size="sm"
+                    >
+                      <Printer className="h-4 w-4 mr-2" />
+                      Imprimir Relatório Completo
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   {(inconsistenciasPMF.length + inconsistenciasEscolaSegura.length + inconsistenciasAmbas.length) > 0 ? (
