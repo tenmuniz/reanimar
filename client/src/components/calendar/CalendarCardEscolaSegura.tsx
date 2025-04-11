@@ -98,44 +98,57 @@ export default function CalendarCardEscolaSegura({
     onOfficerChange(day, position, officer);
   };
   
+  // Verificar se é final de semana
+  const isWeekend = weekday === 'Dom' || weekday === 'Sáb';
+
   return (
     <Card className={`relative border-l-4 ${
-      weekday === 'Dom' || weekday === 'Sáb' 
-        ? 'border-l-amber-500 bg-amber-50' 
+      isWeekend
+        ? 'border-l-gray-300 bg-gray-100' 
         : 'border-l-green-500 bg-green-50'
     } transition-all duration-200 hover:shadow-md`}>
       <CardHeader className="pb-2 pt-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold">{day}</CardTitle>
-          <Badge variant={weekday === 'Dom' || weekday === 'Sáb' ? "outline" : "secondary"} className="uppercase">
+          <Badge variant={isWeekend ? "outline" : "secondary"} className="uppercase">
             {weekday}
           </Badge>
         </div>
       </CardHeader>
       
       <CardContent>
-        {/* Seleção de oficiais - limite de 2 para Escola Segura */}
-        <div className="space-y-3">
-          {Array.from({ length: 2 }).map((_, position) => (
-            <OfficerSelect
-              key={`select-${position}`}
-              position={position}
-              officers={officers}
-              selectedOfficer={savedSelections[position]}
-              disabledOfficers={disabledOfficers}
-              onChange={(value) => handleOfficerChange(position, value)}
-            />
-          ))}
-        </div>
-        
-        {/* Alerta de limite atingido */}
-        {showLimitWarning && (
-          <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-xs">
-              Este oficial já atingiu o limite de 12 escalas extras no mês.
-            </AlertDescription>
-          </Alert>
+        {isWeekend ? (
+          // Sem operação nos finais de semana
+          <div className="py-4 text-center text-gray-500 text-sm italic">
+            Não há operação Escola Segura nos finais de semana.
+          </div>
+        ) : (
+          // Dias úteis - permitir seleção
+          <>
+            {/* Seleção de oficiais - limite de 2 para Escola Segura */}
+            <div className="space-y-3">
+              {Array.from({ length: 2 }).map((_, position) => (
+                <OfficerSelect
+                  key={`select-${position}`}
+                  position={position}
+                  officers={officers}
+                  selectedOfficer={savedSelections[position]}
+                  disabledOfficers={disabledOfficers}
+                  onChange={(value) => handleOfficerChange(position, value)}
+                />
+              ))}
+            </div>
+            
+            {/* Alerta de limite atingido */}
+            {showLimitWarning && (
+              <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-xs">
+                  Este oficial já atingiu o limite de 12 escalas extras no mês.
+                </AlertDescription>
+              </Alert>
+            )}
+          </>
         )}
       </CardContent>
     </Card>

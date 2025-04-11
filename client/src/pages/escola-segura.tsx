@@ -211,67 +211,85 @@ export default function EscolaSegura() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center">
-            <BookOpen className="mr-2 h-8 w-8 text-green-500" />
-            <span className="bg-gradient-to-r from-green-500 to-emerald-700 bg-clip-text text-transparent">
-              Escola Segura
-            </span>
-          </h1>
-          <p className="text-gray-500 mt-1">Gerenciar escalas da operação Escola Segura</p>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            onClick={saveSchedule}
-            disabled={isSaving}
-            className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100"
-          >
-            <CalendarPlus className="mr-2 h-4 w-4" />
-            {isSaving ? 'Salvando...' : 'Salvar Escala'}
-          </Button>
+    <div className="min-h-screen bg-gray-100 font-sans">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-green-800 to-green-600 text-white shadow-lg">
+        <div className="container mx-auto px-4 py-6 flex flex-col items-center">
+          <div className="flex items-center mb-4 justify-center">
+            <BookOpen className="h-12 w-12 mr-3" />
+            <div className="text-center">
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-1">
+                ESCOLA SEGURA
+              </h1>
+              <div className="text-xl sm:text-2xl font-bold">
+                SISTEMA DE ESCALA PMF
+              </div>
+            </div>
+          </div>
           
-          <ResumoEscala 
-            schedule={schedule} 
-            currentDate={currentDate} 
-          />
+          <div className="bg-green-900 px-6 py-3 rounded-lg shadow-inner w-full max-w-md mx-auto mt-2">
+            <MonthSelector
+              currentDate={currentDate}
+              onPreviousMonth={handlePreviousMonth}
+              onNextMonth={handleNextMonth}
+            />
+          </div>
         </div>
-      </div>
+      </header>
       
-      <Alert className="mb-6 bg-green-50 border-green-200">
-        <AlertCircle className="h-4 w-4 text-green-600" />
-        <AlertTitle className="text-green-800">Operação Escola Segura</AlertTitle>
-        <AlertDescription className="text-green-700">
-          Esta operação permite escalar até <strong>2 policiais por dia</strong>. Lembre-se que o mesmo policial não pode ultrapassar <strong>12 escalas extras no total</strong> somando PMF e Escola Segura.
-        </AlertDescription>
-      </Alert>
-      
-      <div className="mb-6">
-        <MonthSelector
-          currentDate={currentDate}
-          onPreviousMonth={handlePreviousMonth}
-          onNextMonth={handleNextMonth}
-        />
-      </div>
-      
-      <div className="grid grid-cols-7 gap-4">
-        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
-          <div key={day} className="text-center font-medium text-sm text-gray-500">
-            {day}
+      {/* Main content */}
+      <main className="container mx-auto px-4 py-6">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="mb-4 sm:mb-0">
+            <h2 className="text-lg font-medium text-gray-800">
+              Escala mensal de serviço - Escola Segura
+            </h2>
+            <p className="text-sm text-gray-600">
+              Selecione até 2 policiais por dia (dias úteis apenas)
+            </p>
           </div>
-        ))}
-        
-        {loading ? (
-          <div className="col-span-7 py-12 text-center text-gray-500">
-            Carregando calendário...
+          
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={saveSchedule}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center shadow-sm transition"
+              disabled={isSaving}
+            >
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              {isSaving ? 'Salvando...' : 'Salvar Escala'}
+            </Button>
+            
+            <ResumoEscala 
+              schedule={schedule} 
+              currentDate={currentDate} 
+            />
           </div>
-        ) : (
-          generateCalendarCards()
-        )}
-      </div>
+        </div>
+      
+        <Alert className="mb-6 bg-green-50 border-green-200">
+          <AlertCircle className="h-4 w-4 text-green-600" />
+          <AlertTitle className="text-green-800">Operação Escola Segura</AlertTitle>
+          <AlertDescription className="text-green-700">
+            Esta operação permite escalar até <strong>2 policiais por dia</strong>. Lembre-se que o mesmo policial não pode ultrapassar <strong>12 escalas extras no total</strong> somando PMF e Escola Segura.
+          </AlertDescription>
+        </Alert>
+      
+        <div className="grid grid-cols-7 gap-4">
+          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
+            <div key={day} className="text-center font-medium text-sm text-gray-500">
+              {day}
+            </div>
+          ))}
+          
+          {loading ? (
+            <div className="col-span-7 py-12 text-center text-gray-500">
+              Carregando calendário...
+            </div>
+          ) : (
+            generateCalendarCards()
+          )}
+        </div>
+      </main>
     </div>
   );
 }

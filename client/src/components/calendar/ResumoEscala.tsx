@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BarChart3, Calendar, FileText, Printer, Award, Users } from "lucide-react";
-import { MonthSchedule } from "@/lib/types";
+import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 interface ResumoEscalaProps {
   schedule: MonthSchedule;
   currentDate: Date;
+  combinedSchedules?: CombinedSchedules; // Agendas combinadas para cálculo do limite 12
 }
 
 interface MilitarEscalaData {
@@ -18,7 +19,7 @@ interface MilitarEscalaData {
   posto: number;
 }
 
-export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProps) {
+export default function ResumoEscala({ schedule, currentDate, combinedSchedules }: ResumoEscalaProps) {
   const [open, setOpen] = useState(false);
   const [resumoData, setResumoData] = useState<Record<string, MilitarEscalaData>>({});
   const { toast } = useToast();
@@ -287,42 +288,78 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
   // Generate summary data from the schedule
   const generateResumo = () => {
     const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+    
+    // Schedules para a operação atual
     const monthSchedule = schedule[currentMonthKey] || {};
     
+    // Objeto para armazenar todas as escalas por militar
     const militaresDias: Record<string, { 
       dias: number[], 
       total: number,
       excedeuLimite: boolean,
-      posto: number
+      posto: number,
+      operacoes: {
+        pmf: number,
+        escolaSegura: number
+      }
     }> = {};
     
-    // Percorrer cada dia do mês
-    Object.entries(monthSchedule).forEach(([day, officers]) => {
-      // Processar cada militar escalado no dia
-      officers.forEach(officer => {
-        if (officer) {
-          if (!militaresDias[officer]) {
-            militaresDias[officer] = { 
-              dias: [], 
-              total: 0,
-              excedeuLimite: false,
-              posto: getPosto(officer)
-            };
-          }
-          
-          const dayNum = parseInt(day, 10);
-          if (!militaresDias[officer].dias.includes(dayNum)) {
-            militaresDias[officer].dias.push(dayNum);
-            militaresDias[officer].total += 1;
+    // Função para processar um schedule e popular militaresDias
+    const processSchedule = (scheduleData: any, operacao: 'pmf' | 'escolaSegura') => {
+      if (!scheduleData) return;
+      
+      Object.entries(scheduleData).forEach(([day, officers]) => {
+        // Processar cada militar escalado no dia
+        officers.forEach((officer: string | null) => {
+          if (officer) {
+            if (!militaresDias[officer]) {
+              militaresDias[officer] = { 
+                dias: [], 
+                total: 0,
+                excedeuLimite: false,
+                posto: getPosto(officer),
+                operacoes: {
+                  pmf: 0,
+                  escolaSegura: 0
+                }
+              };
+            }
             
-            // O limite é exatamente 12 dias, já que o requisito diz para não permitir mais que isso
-            if (militaresDias[officer].total > 12) {
-              militaresDias[officer].excedeuLimite = false; // Nunca deve acontecer, mas mantemos por segurança
+            const dayNum = parseInt(day, 10);
+            
+            // Adicionar o dia apenas se não estiver já computado para esta operação
+            const dayKey = `${operacao}-${dayNum}`;
+            if (!militaresDias[officer].dias.includes(dayNum)) {
+              militaresDias[officer].dias.push(dayNum);
+              militaresDias[officer].total += 1;
+              militaresDias[officer].operacoes[operacao] += 1;
             }
           }
-        }
+        });
       });
-    });
+    };
+    
+    // Primeiro, processa o schedule da operação atual
+    processSchedule(monthSchedule, schedule === combinedSchedules?.pmf ? 'pmf' : 'escolaSegura');
+    
+    // Se temos dados combinados, processamos também a outra operação
+    if (combinedSchedules) {
+      // Determinar se estamos na página PMF ou Escola Segura
+      const isCurrentPMF = schedule === combinedSchedules.pmf;
+      
+      // Processar a outra operação
+      if (isCurrentPMF) {
+        // Estamos em PMF, então processamos também Escola Segura
+        if (combinedSchedules.escolaSegura && combinedSchedules.escolaSegura[currentMonthKey]) {
+          processSchedule(combinedSchedules.escolaSegura[currentMonthKey], 'escolaSegura');
+        }
+      } else {
+        // Estamos em Escola Segura, então processamos também PMF
+        if (combinedSchedules.pmf && combinedSchedules.pmf[currentMonthKey]) {
+          processSchedule(combinedSchedules.pmf[currentMonthKey], 'pmf');
+        }
+      }
+    }
     
     // Ordenar por antiguidade (posto/graduação) e depois por total de dias
     const ordenado = Object.fromEntries(
