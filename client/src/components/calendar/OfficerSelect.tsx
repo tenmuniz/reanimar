@@ -6,6 +6,7 @@ interface OfficerSelectProps {
   officers: string[];
   selectedOfficer: string | null;
   disabledOfficers: string[];
+  limitReachedOfficers?: string[]; // Oficiais que atingiram o limite de 12 escalas
   onChange: (value: string | null) => void;
 }
 
@@ -48,6 +49,7 @@ export default function OfficerSelect({
   officers,
   selectedOfficer,
   disabledOfficers,
+  limitReachedOfficers = [],
   onChange,
 }: OfficerSelectProps) {
   const handleChange = (value: string) => {
@@ -128,15 +130,24 @@ export default function OfficerSelect({
             {groupedOfficers.EXPEDIENTE.length > 0 && (
               <SelectGroup>
                 <SelectLabel className="font-bold text-blue-600">EXPEDIENTE</SelectLabel>
-                {groupedOfficers.EXPEDIENTE.map((officer) => (
-                  <SelectItem
-                    key={officer}
-                    value={officer}
-                    disabled={disabledOfficers.includes(officer)}
-                  >
-                    {officer}
-                  </SelectItem>
-                ))}
+                {groupedOfficers.EXPEDIENTE.map((officer) => {
+                  const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  return (
+                    <SelectItem
+                      key={officer}
+                      value={officer}
+                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
+                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                    >
+                      {officer}
+                      {hasReachedLimit && (
+                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
+                          [LIMITE 12]
+                        </span>
+                      )}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             )}
             
@@ -144,15 +155,24 @@ export default function OfficerSelect({
             {groupedOfficers.ALFA.length > 0 && (
               <SelectGroup>
                 <SelectLabel className="font-bold text-yellow-600">ALFA</SelectLabel>
-                {groupedOfficers.ALFA.map((officer) => (
-                  <SelectItem
-                    key={officer}
-                    value={officer}
-                    disabled={disabledOfficers.includes(officer)}
-                  >
-                    {officer}
-                  </SelectItem>
-                ))}
+                {groupedOfficers.ALFA.map((officer) => {
+                  const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  return (
+                    <SelectItem
+                      key={officer}
+                      value={officer}
+                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
+                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                    >
+                      {officer}
+                      {hasReachedLimit && (
+                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
+                          [LIMITE 12]
+                        </span>
+                      )}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             )}
             
@@ -160,15 +180,24 @@ export default function OfficerSelect({
             {groupedOfficers.BRAVO.length > 0 && (
               <SelectGroup>
                 <SelectLabel className="font-bold text-green-600">BRAVO</SelectLabel>
-                {groupedOfficers.BRAVO.map((officer) => (
-                  <SelectItem
-                    key={officer}
-                    value={officer}
-                    disabled={disabledOfficers.includes(officer)}
-                  >
-                    {officer}
-                  </SelectItem>
-                ))}
+                {groupedOfficers.BRAVO.map((officer) => {
+                  const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  return (
+                    <SelectItem
+                      key={officer}
+                      value={officer}
+                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
+                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                    >
+                      {officer}
+                      {hasReachedLimit && (
+                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
+                          [LIMITE 12]
+                        </span>
+                      )}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             )}
             
@@ -176,15 +205,24 @@ export default function OfficerSelect({
             {groupedOfficers.CHARLIE.length > 0 && (
               <SelectGroup>
                 <SelectLabel className="font-bold text-cyan-600">CHARLIE</SelectLabel>
-                {groupedOfficers.CHARLIE.map((officer) => (
-                  <SelectItem
-                    key={officer}
-                    value={officer}
-                    disabled={disabledOfficers.includes(officer)}
-                  >
-                    {officer}
-                  </SelectItem>
-                ))}
+                {groupedOfficers.CHARLIE.map((officer) => {
+                  const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  return (
+                    <SelectItem
+                      key={officer}
+                      value={officer}
+                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
+                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                    >
+                      {officer}
+                      {hasReachedLimit && (
+                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
+                          [LIMITE 12]
+                        </span>
+                      )}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             )}
             
@@ -192,15 +230,24 @@ export default function OfficerSelect({
             {groupedOfficers.OUTROS.length > 0 && (
               <SelectGroup>
                 <SelectLabel className="font-bold text-gray-600">OUTROS</SelectLabel>
-                {groupedOfficers.OUTROS.map((officer) => (
-                  <SelectItem
-                    key={officer}
-                    value={officer}
-                    disabled={disabledOfficers.includes(officer)}
-                  >
-                    {officer}
-                  </SelectItem>
-                ))}
+                {groupedOfficers.OUTROS.map((officer) => {
+                  const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  return (
+                    <SelectItem
+                      key={officer}
+                      value={officer}
+                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
+                      className={hasReachedLimit ? "bg-red-50 text-red-800 line-through" : ""}
+                    >
+                      {officer}
+                      {hasReachedLimit && (
+                        <span className="ml-1 text-red-600 text-xs font-bold inline-block">
+                          [LIMITE 12]
+                        </span>
+                      )}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             )}
           </SelectContent>
