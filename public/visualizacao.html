@@ -719,8 +719,8 @@
       const loadingSpinner = document.getElementById('loadingSpinner');
       const escalaContainer = document.querySelector('.escala-container');
       
-      // Sempre forçar atualização quando o botão é clicado
-      if (forcarAtualizacao) {
+      // Sempre forçar atualização quando o botão é clicado ou quando a página carrega inicialmente
+      if (forcarAtualizacao || !dadosCache) {
         dadosCache = null; // Limpar o cache
       }
       
@@ -728,18 +728,21 @@
       escalaContainer.classList.remove('show');
       
       try {
-        // Adicionar timestamp para evitar cache do navegador
+        // Sempre adicionar timestamp único para evitar cache do navegador
         const cacheBuster = new Date().getTime(); 
-        const url = `/api/combined-schedules?year=${ano}&month=${mes}&_${cacheBuster}`;
+        const url = `/api/combined-schedules?year=${ano}&month=${mes}&t=${cacheBuster}`;
         
-        console.log(`Buscando dados de: ${url}`);
+        console.log(`Buscando escalas atualizadas: ${url}`);
+        
         const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0'
-          }
+          },
+          // Desabilitar cache completamente
+          cache: 'no-store'
         });
         
         if (!response.ok) {
@@ -747,7 +750,7 @@
         }
         
         const data = await response.json();
-        console.log('Dados recebidos:', data);
+        console.log('Dados atualizados recebidos com sucesso');
         
         // Salvar no cache
         dadosCache = data;
