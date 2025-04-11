@@ -225,12 +225,20 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
         
         <div class="resumo">
           <div class="resumo-item">
-            <div class="resumo-valor">${militarMaisEscalado.nome !== "Nenhum" ? militarMaisEscalado.nome.split(' ').slice(-1)[0] : "Nenhum"}</div>
-            <div class="resumo-label">Militar Mais Escalado (${militarMaisEscalado.total} dias)</div>
+            <div class="resumo-valor" style="font-size: ${militaresMaisEscalados.length > 2 ? '18px' : '24px'}">
+              ${militaresMaisEscalados.length > 0 
+                ? militaresMaisEscalados.map(m => m.nome).join('<br />') 
+                : "Nenhum"
+              }
+            </div>
+            <div class="resumo-label">
+              ${militaresMaisEscalados.length === 1 ? "Militar Mais Escalado" : "Militares Mais Escalados"}
+              ${militaresMaisEscalados.length > 0 ? `(${militaresMaisEscalados[0].total} dias)` : ""}
+            </div>
           </div>
           <div class="resumo-item">
-            <div class="resumo-valor">${grupoMaisEscalado.nome}</div>
-            <div class="resumo-label">Guarnição Mais Escalada (${grupoMaisEscalado.total} escalas)</div>
+            <div class="resumo-valor">${totalMilitares}</div>
+            <div class="resumo-label">Militares Escalados</div>
           </div>
           <div class="resumo-item">
             <div class="resumo-valor">${totalEscalas}</div>
@@ -416,8 +424,9 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
   const totalEscalas = Object.values(resumoData).reduce((sum, militar) => sum + militar.total, 0);
   const totalMilitares = Object.keys(resumoData).length;
   
-  // Encontrar o militar mais escalado
-  let militarMaisEscalado = { nome: "Nenhum", total: 0 };
+  // Encontrar TODOS os militares mais escalados (podem existir vários com o mesmo número máximo)
+  const militaresMaisEscalados: { nome: string, total: number }[] = [];
+  let maxEscalas = 0;
   
   // Calcular estatísticas por guarnição/grupo
   const estatisticasPorGrupo: Record<string, { total: number, militares: number }> = {
@@ -460,9 +469,15 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
   
   // Processar estatísticas
   Object.entries(resumoData).forEach(([nome, dados]) => {
-    // Verificar se é o militar mais escalado
-    if (dados.total > militarMaisEscalado.total) {
-      militarMaisEscalado = { nome, total: dados.total };
+    // Verificar se é um dos militares mais escalados
+    if (dados.total > maxEscalas) {
+      // Novo máximo encontrado, limpar a lista anterior e adicionar este militar
+      militaresMaisEscalados.length = 0;
+      militaresMaisEscalados.push({ nome, total: dados.total });
+      maxEscalas = dados.total;
+    } else if (dados.total === maxEscalas && maxEscalas > 0) {
+      // Outro militar com o mesmo número máximo de escalas
+      militaresMaisEscalados.push({ nome, total: dados.total });
     }
     
     // Acumular estatísticas por grupo
@@ -473,13 +488,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
     }
   });
   
-  // Encontrar o grupo mais escalado
-  let grupoMaisEscalado = { nome: "Nenhum", total: 0 };
-  Object.entries(estatisticasPorGrupo).forEach(([grupo, dados]) => {
-    if (dados.total > grupoMaisEscalado.total) {
-      grupoMaisEscalado = { nome: grupo, total: dados.total };
-    }
-  });
+  // Não precisamos mais calcular o grupo mais escalado, pois removemos essa exibição
   
   return (
     <>
@@ -502,15 +511,34 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
             </DialogTitle>
           </DialogHeader>
           
-          {/* Estatística centralizada apenas do Militar Mais Escalado */}
+          {/* Estatísticas dos Militares Mais Escalados */}
           <div className="flex justify-center mb-6">
             <div className="bg-blue-700 p-4 rounded-lg shadow-inner flex flex-col items-center w-2/3">
               <span className="text-blue-200 font-medium flex items-center">
                 <Award className="h-4 w-4 mr-1" />
-                Militar Mais Escalado
+                {militaresMaisEscalados.length === 1 ? "Militar Mais Escalado" : "Militares Mais Escalados"}
               </span>
-              <span className="text-2xl font-bold text-white my-1">{militarMaisEscalado.nome !== "Nenhum" ? militarMaisEscalado.nome : "Nenhum"}</span>
-              <span className="text-yellow-300 text-sm font-medium">{militarMaisEscalado.total} dias</span>
+              
+              {militaresMaisEscalados.length === 0 ? (
+                <span className="text-xl font-bold text-white my-1">Nenhum</span>
+              ) : (
+                <>
+                  <div className="flex flex-col items-center mt-2 w-full">
+                    {militaresMaisEscalados.map((militar, index) => (
+                      <div 
+                        key={index} 
+                        className="text-center bg-blue-800/50 rounded-md py-1 px-3 mb-1 w-full"
+                      >
+                        <span className="text-lg font-bold text-white">{militar.nome}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-yellow-300 text-sm font-medium mt-2">
+                    {militaresMaisEscalados[0].total} dias
+                    {militaresMaisEscalados[0].total === 12 && " (Limite máximo)"}
+                  </span>
+                </>
+              )}
             </div>
           </div>
           
