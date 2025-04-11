@@ -241,60 +241,29 @@ export default function Home() {
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-white to-blue-400 opacity-50"></div>
         
         <div className="container mx-auto px-4 py-6 flex flex-row items-center justify-between relative z-10">
-          <div className="flex items-center">
-            {/* Emblema policial estilizado */}
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-900 rounded-full p-3 mr-5 shadow-lg border-2 border-blue-400 flex-shrink-0">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-full w-full drop-shadow-lg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4Z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 8L9.5 6L12 4L14.5 6L12 8Z"
-                  fill="currentColor"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 12V21M6 19L12 21L18 19"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 6L2 8L5 10"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 6L22 8L19 10"
-                />
-              </svg>
-            </div>
-            
-            <div>
+          <div className="mr-4">
+            {/* Título e subtítulo */}
+            <div className="mb-1">
               {/* Título principal com efeito de brilho e sombra */}
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-yellow-300 to-white">
-                  20ª CIPM
+                  POLÍCIA MAIS FORTE
                 </span>
               </h1>
-              
-              {/* Subtítulo com efeito de profundidade */}
-              <div className="relative mt-1 overflow-hidden">
-                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg">
-                  SISTEMA DE ESCALA PMF
-                </h2>
-              </div>
+            </div>
+            
+            {/* Subtítulo com efeito de profundidade */}
+            <div className="bg-blue-800/50 px-4 py-1 rounded-lg shadow-inner transform skew-x-2">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg">
+                SISTEMA DE ESCALA <span className="text-yellow-300">PMF</span>
+              </h2>
+            </div>
+            
+            {/* Badge 20ª CIPM */}
+            <div className="mt-2">
+              <span className="bg-yellow-500 text-blue-900 font-bold px-4 py-1 rounded-full shadow-md border border-yellow-400">
+                20ª CIPM
+              </span>
             </div>
           </div>
           
