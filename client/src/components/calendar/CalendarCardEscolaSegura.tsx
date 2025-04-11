@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { DaySchedule, MonthSchedule, CombinedSchedules } from "@/lib/types";
-import { getWeekdayClass } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import OfficerSelect from "./OfficerSelect";
-import { toast } from "@/hooks/use-toast";
-import { BookOpen, AlertTriangle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getWeekdayClass } from "@/lib/utils";
+import { CombinedSchedules } from "@/lib/types";
 
+// Interface para as props do componente
 interface CalendarCardEscolaSeguraProps {
   day: number;
   month: number;
@@ -27,138 +29,115 @@ export default function CalendarCardEscolaSegura({
   onOfficerChange,
   combinedSchedules
 }: CalendarCardEscolaSeguraProps) {
-  const positions = 2; // Para Escola Segura, só temos 2 posições
-  const [currentSelections, setCurrentSelections] = useState<(string | null)[]>(
-    savedSelections.length === positions 
-      ? savedSelections 
-      : Array(positions).fill(null)
-  );
-  const [isLimitWarningOpen, setIsLimitWarningOpen] = useState(false);
-  const [limitWarningMessage, setLimitWarningMessage] = useState("");
+  const [showLimitWarning, setShowLimitWarning] = useState(false);
+  const [disabledOfficers, setDisabledOfficers] = useState<string[]>([]);
   
+  // Classes para diferentes dias da semana
+  const weekdayClass = getWeekdayClass(weekday);
+  
+  // Verificar limites de serviço e atualizar oficiais desabilitados
   useEffect(() => {
-    // Atualiza quando as seleções salvas mudarem
-    setCurrentSelections(
-      savedSelections.length === positions 
-        ? savedSelections 
-        : Array(positions).fill(null)
+    if (!combinedSchedules || !officers.length) return;
+    
+    const monthKeyPMF = `${year}-${month}`;
+    const monthKeyEscolaSegura = `${year}-${month}`;
+    
+    // Contar dias de serviço para cada oficial em ambas operações
+    const officerDaysCount: Record<string, number> = {};
+    
+    // Inicializar contador para todos os oficiais
+    officers.forEach(officer => {
+      officerDaysCount[officer] = 0;
+    });
+    
+    // Contar dias em PMF
+    if (combinedSchedules.pmf[monthKeyPMF]) {
+      Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(daySchedule => {
+        daySchedule.forEach(officer => {
+          if (officer) {
+            officerDaysCount[officer] = (officerDaysCount[officer] || 0) + 1;
+          }
+        });
+      });
+    }
+    
+    // Contar dias em Escola Segura
+    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura]) {
+      Object.values(combinedSchedules.escolaSegura[monthKeyEscolaSegura]).forEach(daySchedule => {
+        daySchedule.forEach(officer => {
+          if (officer) {
+            officerDaysCount[officer] = (officerDaysCount[officer] || 0) + 1;
+          }
+        });
+      });
+    }
+    
+    // Encontrar oficiais que já atingiram o limite de 12 dias no mês
+    const limitReachedOfficers = officers.filter(
+      officer => officerDaysCount[officer] >= 12
     );
-  }, [savedSelections, positions]);
+    
+    // Remover do limite os oficiais já escalados para este dia
+    // para que possam ser desescalados mesmo se já atingiram limite
+    const disabledForNewSelections = limitReachedOfficers.filter(
+      officer => !savedSelections.includes(officer)
+    );
+    
+    setDisabledOfficers(disabledForNewSelections);
+  }, [combinedSchedules, officers, savedSelections, year, month, day]);
   
-  // Verify if an officer is already at the limit of 12 days across both operations
-  const isOfficerAtLimit = (officer: string): boolean => {
-    if (!combinedSchedules) return false;
-    
-    // Checa as escalas da PMF
-    const pmfSchedule = combinedSchedules.pmf;
-    const pmfMonthKey = `${year}-${month}`;
-    const pmfMonthData = pmfSchedule[pmfMonthKey] || {};
-    
-    // Checa as escalas da Escola Segura
-    const escolaSchedule = combinedSchedules.escolaSegura;
-    const escolaMonthKey = `${year}-${month}`;
-    const escolaMonthData = escolaSchedule[escolaMonthKey] || {};
-    
-    // Conta dias na PMF
-    let totalDays = 0;
-    Object.entries(pmfMonthData).forEach(([_, officers]) => {
-      if (officers.includes(officer)) {
-        totalDays++;
-      }
-    });
-    
-    // Conta dias na Escola Segura (excluindo o dia atual para permitir alterações)
-    Object.entries(escolaMonthData).forEach(([dayStr, officers]) => {
-      const currentDay = parseInt(dayStr);
-      if (currentDay !== day && officers.includes(officer)) {
-        totalDays++;
-      }
-    });
-    
-    // Verifica se já atingiu o limite de 12 dias
-    return totalDays >= 12;
-  };
-  
-  const handleOfficerChange = (position: number, selectedOfficer: string | null) => {
-    // Verifica se o oficial selecionado já atingiu o limite
-    if (selectedOfficer && isOfficerAtLimit(selectedOfficer)) {
-      setLimitWarningMessage(
-        `${selectedOfficer} já atingiu o limite de 12 escalas no mês, considerando PMF e Escola Segura. Não é possível escalar este policial novamente.`
-      );
-      setIsLimitWarningOpen(true);
+  // Handler para mostrar alerta de limite quando um oficial é selecionado
+  const handleOfficerChange = (position: number, officer: string | null) => {
+    // Se o oficial a ser selecionado está na lista de desabilitados, mostrar alerta
+    if (officer && disabledOfficers.includes(officer)) {
+      setShowLimitWarning(true);
       return;
     }
     
-    // Atualiza seleções locais
-    const newSelections = [...currentSelections];
-    newSelections[position] = selectedOfficer;
-    setCurrentSelections(newSelections);
-    
-    // Propaga alteração para o componente pai
-    onOfficerChange(day, position, selectedOfficer);
+    // Caso contrário, proceder com a seleção normalmente
+    onOfficerChange(day, position, officer);
   };
-  
-  // Lista de oficiais já selecionados para este dia (para desabilitar)
-  const getDisabledOfficers = (position: number): string[] => {
-    return currentSelections
-      .filter((officer, idx) => idx !== position && officer !== null) as string[];
-  };
-  
-  // Define a cor de fundo baseada no dia da semana
-  const bgColorClass = getWeekdayClass(weekday);
-  
-  // Conta quantos policiais estão escalados
-  const scheduledCount = currentSelections.filter(officer => officer !== null).length;
   
   return (
-    <div className={`p-3 rounded-lg border border-green-700/30 ${bgColorClass} shadow-md h-full flex flex-col`}>
-      {/* Cabeçalho do cartão */}
-      <div className="flex justify-between items-center mb-3 font-medium text-white border-b border-green-700/40 pb-2">
-        <div className="flex items-center">
-          <BookOpen className="h-4 w-4 mr-1 text-green-300" />
-          <span className="text-lg">{day}</span>
-          <span className="text-xs ml-1.5 text-green-200">{weekday}</span>
+    <Card className={`relative border-l-4 ${
+      weekday === 'Dom' || weekday === 'Sáb' 
+        ? 'border-l-amber-500 bg-amber-50' 
+        : 'border-l-green-500 bg-green-50'
+    } transition-all duration-200 hover:shadow-md`}>
+      <CardHeader className="pb-2 pt-4">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-xl font-bold">{day}</CardTitle>
+          <Badge variant={weekday === 'Dom' || weekday === 'Sáb' ? "outline" : "secondary"} className="uppercase">
+            {weekday}
+          </Badge>
         </div>
-        <div className={`text-xs px-2 py-0.5 rounded-full ${scheduledCount === 0 ? 'bg-red-600/40 text-red-100' : 'bg-green-600/50 text-green-50'}`}>
-          {scheduledCount}/{positions}
+      </CardHeader>
+      
+      <CardContent>
+        {/* Seleção de oficiais - limite de 2 para Escola Segura */}
+        <div className="space-y-3">
+          {Array.from({ length: 2 }).map((_, position) => (
+            <OfficerSelect
+              key={`select-${position}`}
+              position={position}
+              officers={officers}
+              selectedOfficer={savedSelections[position]}
+              disabledOfficers={disabledOfficers}
+              onChange={(value) => handleOfficerChange(position, value)}
+            />
+          ))}
         </div>
-      </div>
-      
-      {/* Lista de seleção de policiais */}
-      <div className="flex-1 flex flex-col gap-2">
-        {Array.from({ length: positions }).map((_, position) => (
-          <OfficerSelect
-            key={`officer-select-${day}-${position}`}
-            position={position}
-            officers={officers}
-            selectedOfficer={currentSelections[position]}
-            disabledOfficers={getDisabledOfficers(position)}
-            onChange={(officer) => handleOfficerChange(position, officer)}
-          />
-        ))}
-      </div>
-      
-      {/* Diálogo de aviso de limite */}
-      <Dialog open={isLimitWarningOpen} onOpenChange={setIsLimitWarningOpen}>
-        <DialogContent className="bg-red-900 border-red-600 text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <AlertTriangle className="mr-2 h-5 w-5 text-yellow-300" />
-              <span className="text-xl">Limite de Escalas Atingido</span>
-            </DialogTitle>
-          </DialogHeader>
-          <div className="pt-2 pb-1 text-red-100">
-            {limitWarningMessage}
-          </div>
-          <div className="bg-red-800/50 p-3 mt-4 rounded-md text-amber-100 text-sm flex items-start">
-            <AlertTriangle className="mr-2 h-4 w-4 text-amber-300 mt-0.5 flex-shrink-0" />
-            <div>
-              Os policiais não podem exceder o limite de 12 escalas extras por mês, 
-              somando todas as operações (PMF e Escola Segura).
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+        
+        {/* Alerta de limite atingido */}
+        {showLimitWarning && (
+          <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-xs">
+              Este oficial já atingiu o limite de 12 escalas extras no mês.
+            </AlertDescription>
+          </Alert>
+        )}
+      </CardContent>
+    </Card>
   );
 }

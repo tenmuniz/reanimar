@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { getMonthData, getWeekdayName, getLocalStorageSchedule, saveLocalStorageSchedule } from "@/lib/utils";
-import { MonthSchedule, OfficersResponse } from "@/lib/types";
+import { MonthSchedule, OfficersResponse, CombinedSchedules } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Save, Printer } from "lucide-react";
 import CalendarCard from "@/components/calendar/CalendarCard";
@@ -17,6 +17,11 @@ const STORAGE_KEY = "pmfSchedule";
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [schedule, setSchedule] = useState<MonthSchedule>({});
+  const [combinedSchedules, setCombinedSchedules] = useState<CombinedSchedules>({
+    pmf: {},
+    escolaSegura: {}
+  });
+  const [isLoadingSchedules, setIsLoadingSchedules] = useState(true);
   
   // Buscar oficiais da API
   const { data: officersData, isLoading } = useQuery<OfficersResponse>({
@@ -29,16 +34,57 @@ export default function Home() {
   // Get current month data
   const monthData = getMonthData(currentDate.getFullYear(), currentDate.getMonth());
   
+  // Buscar agenda combinada do servidor
   useEffect(() => {
-    // Load saved schedule from localStorage
-    const savedSchedule = getLocalStorageSchedule(STORAGE_KEY);
-    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+    const fetchCombinedSchedules = async () => {
+      try {
+        setIsLoadingSchedules(true);
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        // Buscar agenda específica da PMF
+        const pmfResponse = await fetch(`/api/schedule?operation=pmf&year=${year}&month=${month}`);
+        if (!pmfResponse.ok) throw new Error("Erro ao buscar agenda da PMF");
+        
+        const pmfData = await pmfResponse.json();
+        if (Object.keys(pmfData.schedule).length > 0) {
+          setSchedule({ [`${year}-${month}`]: pmfData.schedule });
+        } else {
+          // Se não há dados no servidor, usar dados locais
+          const savedSchedule = getLocalStorageSchedule(STORAGE_KEY);
+          const currentMonthKey = `${year}-${month}`;
+          
+          if (savedSchedule[currentMonthKey]) {
+            setSchedule(savedSchedule);
+          } else {
+            setSchedule({});
+          }
+        }
+        
+        // Buscar agenda combinada (PMF + Escola Segura)
+        const combinedResponse = await fetch(`/api/combined-schedules?year=${year}&month=${month}`);
+        if (!combinedResponse.ok) throw new Error("Erro ao buscar agendas combinadas");
+        
+        const combinedData = await combinedResponse.json();
+        setCombinedSchedules(combinedData.schedules);
+        
+        setIsLoadingSchedules(false);
+      } catch (error) {
+        console.error("Erro ao carregar agendas:", error);
+        setIsLoadingSchedules(false);
+        // Em caso de erro, tentar usar dados locais
+        const savedSchedule = getLocalStorageSchedule(STORAGE_KEY);
+        const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+        
+        if (savedSchedule[currentMonthKey]) {
+          setSchedule(savedSchedule);
+        } else {
+          setSchedule({});
+        }
+      }
+    };
     
-    if (savedSchedule[currentMonthKey]) {
-      setSchedule(savedSchedule);
-    } else {
-      setSchedule({});
-    }
+    fetchCombinedSchedules();
   }, [currentDate]);
   
   const handlePreviousMonth = () => {
