@@ -1,25 +1,41 @@
-import { Switch, Route, Link } from "wouter";
+import { Switch, Route, Link, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield } from "lucide-react";
+import { Shield, BookOpen } from "lucide-react";
 import Home from "@/pages/home";
+import EscolaSegura from "@/pages/escola-segura";
 import NotFound from "@/pages/not-found";
 
 // Componente de navegação
 function NavBar() {
-  // Não precisamos mais verificar a localização já que temos apenas uma rota
+  const [location] = useLocation();
   
   return (
     <nav className="bg-gradient-to-r from-blue-900 to-blue-800 p-4 shadow-md">
       <div className="container mx-auto flex flex-wrap items-center justify-between">
-        <div className="text-white font-bold text-xl">Escala PMF</div>
+        <div className="text-white font-bold text-xl">20ª CIPM - Sistema de Escalas</div>
         
-        <div className="flex space-x-1">
+        <div className="flex space-x-3">
           <Link href="/">
-            <a className="px-4 py-2 rounded-lg flex items-center text-sm bg-blue-700 text-white">
+            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+              location === "/" 
+                ? "bg-blue-600 text-white shadow-lg border border-blue-500" 
+                : "bg-blue-700/80 text-white/90 hover:bg-blue-700 hover:text-white transition-colors"
+            }`}>
               <Shield className="mr-1 h-4 w-4" />
               <span>Polícia Mais Forte</span>
+            </a>
+          </Link>
+          
+          <Link href="/escola-segura">
+            <a className={`px-4 py-2 rounded-lg flex items-center text-sm ${
+              location === "/escola-segura" 
+                ? "bg-green-600 text-white shadow-lg border border-green-500" 
+                : "bg-green-700/80 text-white/90 hover:bg-green-700 hover:text-white transition-colors"
+            }`}>
+              <BookOpen className="mr-1 h-4 w-4" />
+              <span>Escola Segura</span>
             </a>
           </Link>
         </div>
@@ -35,6 +51,7 @@ function Router() {
       <main className="flex-grow">
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/escola-segura" component={EscolaSegura} />
           <Route component={NotFound} />
         </Switch>
       </main>
