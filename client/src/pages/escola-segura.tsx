@@ -102,6 +102,17 @@ export default function EscolaSegura() {
   
   // BLOQUEIO TOTAL: esta função é o último ponto de controle antes de adicionar um militar à escala
   const handleOfficerChange = (day: number, position: number, officer: string | null) => {
+    // Verificar se a posição está dentro do limite (apenas 2 posições para Escola Segura)
+    if (position >= 2) {
+      console.error(`Posição ${position} não permitida. Operação Escola Segura permite apenas 2 policiais por dia.`);
+      toast({
+        variant: "destructive",
+        title: "Limite de policiais",
+        description: "Operação Escola Segura permite apenas 2 policiais por dia."
+      });
+      return;
+    }
+    
     const dayKey = `${day}`;
     const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
     
@@ -115,7 +126,7 @@ export default function EscolaSegura() {
         }
         
         if (!newSchedule[currentMonthKey][dayKey]) {
-          newSchedule[currentMonthKey][dayKey] = [null, null, null];
+          newSchedule[currentMonthKey][dayKey] = [null, null]; // Apenas 2 posições para Escola Segura
         }
         
         newSchedule[currentMonthKey][dayKey][position] = null;
@@ -190,7 +201,7 @@ export default function EscolaSegura() {
       }
       
       if (!newSchedule[currentMonthKey][dayKey]) {
-        newSchedule[currentMonthKey][dayKey] = [null, null, null];
+        newSchedule[currentMonthKey][dayKey] = [null, null]; // Apenas 2 posições para Escola Segura
       }
       
       newSchedule[currentMonthKey][dayKey][position] = officer;
@@ -343,7 +354,7 @@ export default function EscolaSegura() {
               <div>
                 <h3 className="text-lg font-bold text-green-900 mb-1">Operação Escola Segura</h3>
                 <p className="text-green-800">
-                  Esta operação permite escalar até <strong>3 policiais por dia</strong>, como na operação PMF regular.
+                  Esta operação permite escalar até <strong>2 policiais por dia</strong>, diferente da operação PMF regular.
                 </p>
                 <div className="mt-2 p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded-r-md">
                   <p className="text-yellow-800 font-medium text-sm">
@@ -371,7 +382,7 @@ export default function EscolaSegura() {
               
               // Get saved selections for this day
               const dayKey = `${day}`;
-              const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null, null];
+              const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null]; // Apenas 2 posições para Escola Segura
               
               return (
                 <CalendarCard
