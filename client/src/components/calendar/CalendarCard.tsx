@@ -48,7 +48,10 @@ export default function CalendarCard({
     const monthKeyPMF = `${year}-${month}`;
     const monthKeyEscolaSegura = `${year}-${month}`;
     
-    // Contar dias de serviço para cada oficial em ambas operações
+    // Lista para acumular oficiais desabilitados
+    let disabledOfficersList: string[] = [];
+    
+    // 1. Contar dias de serviço para cada oficial em ambas operações (limite de 12)
     const officerDaysCount: Record<string, number> = {};
     
     // Inicializar contador para todos os oficiais
@@ -83,9 +86,43 @@ export default function CalendarCard({
       officer => officerDaysCount[officer] >= 12
     );
     
-    // Remover do limite os oficiais já escalados para este dia
+    // Adicionar à lista de desabilitados
+    disabledOfficersList = [...disabledOfficersList, ...limitReachedOfficers];
+    
+    // 2. Verificar se o oficial já está escalado no mesmo dia em outra operação
+    const currentDayKey = `${day}`;
+    
+    // Verificar PMF para o mesmo dia (outros cards do mesmo dia)
+    if (combinedSchedules.pmf[monthKeyPMF] && combinedSchedules.pmf[monthKeyPMF][currentDayKey]) {
+      // Pegar oficiais já selecionados neste dia, EXCETO os selecionados neste card
+      const thisOfficers = new Set(savedSelections.filter(o => o !== null));
+      const officersInPMF = combinedSchedules.pmf[monthKeyPMF][currentDayKey]
+        .filter(o => o !== null && !thisOfficers.has(o)) as string[];
+      
+      // Para evitar duplicação na mesma operação, desabilite oficiais já escalados no mesmo dia
+      const alreadySelectedInThisDay = combinedSchedules.pmf[monthKeyPMF][currentDayKey]
+        .filter(o => o !== null) as string[];
+      
+      // Para o mesmo dia na operação PMF, desabilitar oficiais já selecionados
+      // para evitar duplicatas no mesmo dia
+      disabledOfficersList = [...disabledOfficersList, ...alreadySelectedInThisDay];
+    }
+    
+    // Verificar Escola Segura para o mesmo dia
+    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura] && 
+        combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey]) {
+      const officersInEscolaSegura = combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey]
+        .filter(o => o !== null) as string[];
+      
+      disabledOfficersList = [...disabledOfficersList, ...officersInEscolaSegura];
+    }
+    
+    // Remover duplicações
+    disabledOfficersList = Array.from(new Set(disabledOfficersList));
+    
+    // Remover do limite os oficiais já escalados para este dia neste card específico
     // para que possam ser desescalados mesmo se já atingiram limite
-    const disabledForNewSelections = limitReachedOfficers.filter(
+    const disabledForNewSelections = disabledOfficersList.filter(
       officer => !savedSelections.includes(officer)
     );
     

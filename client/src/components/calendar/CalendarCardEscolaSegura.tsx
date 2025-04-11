@@ -42,7 +42,10 @@ export default function CalendarCardEscolaSegura({
     const monthKeyPMF = `${year}-${month}`;
     const monthKeyEscolaSegura = `${year}-${month}`;
     
-    // Contar dias de serviço para cada oficial em ambas operações
+    // Lista para acumular oficiais desabilitados
+    let disabledOfficersList: string[] = [];
+    
+    // 1. Contar dias de serviço para cada oficial em ambas operações (limite de 12)
     const officerDaysCount: Record<string, number> = {};
     
     // Inicializar contador para todos os oficiais
@@ -77,9 +80,31 @@ export default function CalendarCardEscolaSegura({
       officer => officerDaysCount[officer] >= 12
     );
     
-    // Remover do limite os oficiais já escalados para este dia
+    // Adicionar à lista de desabilitados
+    disabledOfficersList = [...disabledOfficersList, ...limitReachedOfficers];
+    
+    // 2. Verificar se o oficial já está escalado no mesmo dia (evitar duplicação)
+    const currentDayKey = `${day}`;
+    
+    // Verificar PMF para o mesmo dia
+    if (combinedSchedules.pmf[monthKeyPMF] && combinedSchedules.pmf[monthKeyPMF][currentDayKey]) {
+      const officersInPMF = combinedSchedules.pmf[monthKeyPMF][currentDayKey].filter(o => o !== null) as string[];
+      disabledOfficersList = [...disabledOfficersList, ...officersInPMF];
+    }
+    
+    // Verificar Escola Segura para o mesmo dia (exceto os já selecionados neste card)
+    if (combinedSchedules.escolaSegura[monthKeyEscolaSegura] && 
+        combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey]) {
+      const officersInEscolaSegura = combinedSchedules.escolaSegura[monthKeyEscolaSegura][currentDayKey].filter(o => o !== null) as string[];
+      disabledOfficersList = [...disabledOfficersList, ...officersInEscolaSegura];
+    }
+    
+    // Remover duplicações
+    disabledOfficersList = Array.from(new Set(disabledOfficersList));
+    
+    // Remover do limite os oficiais já escalados para este dia neste card específico
     // para que possam ser desescalados mesmo se já atingiram limite
-    const disabledForNewSelections = limitReachedOfficers.filter(
+    const disabledForNewSelections = disabledOfficersList.filter(
       officer => !savedSelections.includes(officer)
     );
     
@@ -100,55 +125,46 @@ export default function CalendarCardEscolaSegura({
   
   // Verificar se é final de semana
   const isWeekend = weekday === 'Dom' || weekday === 'Sáb';
+  
+  // Não renderizar os dias de final de semana
+  if (isWeekend) {
+    return null; // Retorna null para não renderizar os finais de semana
+  }
 
   return (
-    <Card className={`relative border-l-4 ${
-      isWeekend
-        ? 'border-l-gray-300 bg-gray-100' 
-        : 'border-l-green-500 bg-green-50'
-    } transition-all duration-200 hover:shadow-md`}>
+    <Card className={`relative border-l-4 border-l-green-500 bg-green-50 transition-all duration-200 hover:shadow-md`}>
       <CardHeader className="pb-2 pt-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold">{day}</CardTitle>
-          <Badge variant={isWeekend ? "outline" : "secondary"} className="uppercase">
+          <Badge variant="secondary" className="uppercase">
             {weekday}
           </Badge>
         </div>
       </CardHeader>
       
       <CardContent>
-        {isWeekend ? (
-          // Sem operação nos finais de semana
-          <div className="py-4 text-center text-gray-500 text-sm italic">
-            Não há operação Escola Segura nos finais de semana.
-          </div>
-        ) : (
-          // Dias úteis - permitir seleção
-          <>
-            {/* Seleção de oficiais - limite de 2 para Escola Segura */}
-            <div className="space-y-3">
-              {Array.from({ length: 2 }).map((_, position) => (
-                <OfficerSelect
-                  key={`select-${position}`}
-                  position={position}
-                  officers={officers}
-                  selectedOfficer={savedSelections[position]}
-                  disabledOfficers={disabledOfficers}
-                  onChange={(value) => handleOfficerChange(position, value)}
-                />
-              ))}
-            </div>
-            
-            {/* Alerta de limite atingido */}
-            {showLimitWarning && (
-              <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-xs">
-                  Este oficial já atingiu o limite de 12 escalas extras no mês.
-                </AlertDescription>
-              </Alert>
-            )}
-          </>
+        {/* Seleção de oficiais - limite de 2 para Escola Segura */}
+        <div className="space-y-3">
+          {Array.from({ length: 2 }).map((_, position) => (
+            <OfficerSelect
+              key={`select-${position}`}
+              position={position}
+              officers={officers}
+              selectedOfficer={savedSelections[position]}
+              disabledOfficers={disabledOfficers}
+              onChange={(value) => handleOfficerChange(position, value)}
+            />
+          ))}
+        </div>
+        
+        {/* Alerta de limite atingido */}
+        {showLimitWarning && (
+          <Alert className="mt-3 bg-red-50 border-red-200 text-red-800">
+            <AlertCircle className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-xs">
+              Este oficial já atingiu o limite de 12 escalas extras no mês.
+            </AlertDescription>
+          </Alert>
         )}
       </CardContent>
     </Card>
