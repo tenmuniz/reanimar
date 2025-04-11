@@ -333,6 +333,11 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
               militaresDias[officer].dias.push(dayNum);
               militaresDias[officer].total += 1;
               militaresDias[officer].operacoes[operacao] += 1;
+              
+              // Verificar se atingiu o limite de 12 dias
+              if (militaresDias[officer].total >= 12) {
+                militaresDias[officer].excedeuLimite = true;
+              }
             }
           }
         });

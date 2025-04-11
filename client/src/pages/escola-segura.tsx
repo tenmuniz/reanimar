@@ -281,15 +281,16 @@ export default function EscolaSegura() {
           </AlertDescription>
         </Alert>
       
-        <div className="grid grid-cols-7 gap-4">
-          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((day) => (
+        <div className="grid grid-cols-5 gap-4">
+          {/* Apenas dias úteis: Segunda a Sexta */}
+          {["Seg", "Ter", "Qua", "Qui", "Sex"].map((day) => (
             <div key={day} className="text-center font-medium text-sm text-gray-500">
               {day}
             </div>
           ))}
           
           {loading ? (
-            <div className="col-span-7 py-12 text-center text-gray-500">
+            <div className="col-span-5 py-12 text-center text-gray-500">
               Carregando calendário...
             </div>
           ) : (

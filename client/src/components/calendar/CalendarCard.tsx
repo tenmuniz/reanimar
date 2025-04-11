@@ -81,7 +81,7 @@ export default function CalendarCard({
       });
     }
     
-    // Encontrar oficiais que já atingiram o limite de 12 dias no mês
+    // Encontrar oficiais que já atingiram o limite de 12 dias no mês (estritamente 12, não maior)
     const limitReachedOfficers = officers.filter(
       officer => officerDaysCount[officer] >= 12
     );
