@@ -5,26 +5,19 @@ import * as schema from "@shared/schema";
 
 neonConfig.webSocketConstructor = ws;
 
-// Criar pool e cliente drizzle apenas se DATABASE_URL estiver definido
+// Configuração de conexão personalizada (usar a mesma conexão no deploy)
+const DATABASE_URL = process.env.DATABASE_URL || 
+  'postgresql://neondb_owner:npg_TP1lKjG6pxqc@ep-bold-queen-a63l3hze.us-west-2.aws.neon.tech/neondb?sslmode=require';
+
+// Criar pool e cliente drizzle
 let pool;
 let db;
 
 try {
-  // Verificar se DATABASE_URL existe
-  if (process.env.DATABASE_URL) {
-    pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    db = drizzle(pool, { schema });
-    console.log('Banco de dados PostgreSQL conectado com sucesso.');
-  } else {
-    console.log('DATABASE_URL não definido. Banco de dados não será usado.');
-    // Criar um objeto db que não faz nada para evitar erros
-    db = new Proxy({}, {
-      get: () => () => {
-        console.log('Tentativa de usar banco de dados, mas DATABASE_URL não está definido.');
-        return Promise.resolve([]);
-      }
-    });
-  }
+  // Tentar conectar com a URL definida acima
+  pool = new Pool({ connectionString: DATABASE_URL });
+  db = drizzle(pool, { schema });
+  console.log('Banco de dados PostgreSQL conectado com sucesso.');
 } catch (error) {
   console.error('Erro ao conectar ao banco de dados:', error);
   // Criar um objeto db que não faz nada para evitar erros
