@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { getMonthData, getWeekdayName, getLocalStorageSchedule, saveLocalStorageSchedule } from "@/lib/utils";
 import { MonthSchedule, OfficersResponse, CombinedSchedules } from "@/lib/types";
@@ -348,46 +348,78 @@ export default function EscolaSegura() {
           </h2>
         </div>
         
-        {/* Calendar grid - Layout melhorado para dias úteis */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {isLoadingSchedules || isLoading ? (
-            <div className="col-span-full py-20 text-center text-gray-500">
-              Carregando calendário...
-            </div>
-          ) : (
-            // Filtrar apenas os dias úteis (excluir sábados e domingos)
-            Array.from({ length: monthData.days }, (_, i) => i + 1)
-              .map((day) => {
-                const weekday = getWeekdayName(
-                  day,
-                  currentDate.getMonth(),
-                  currentDate.getFullYear()
-                );
-                return { day, weekday };
-              })
-              .filter(({ weekday }) => weekday !== "Sábado" && weekday !== "Domingo")
-              .map(({ day, weekday }) => {
-                // Get saved selections for this day
-                const dayKey = `${day}`;
-                const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null]; // Apenas 2 posições para Escola Segura
-                
-                return (
-                  <CalendarCardEscolaSegura
-                    key={`day-${day}`}
-                    day={day}
-                    month={currentDate.getMonth()}
-                    year={currentDate.getFullYear()}
-                    weekday={weekday}
-                    officers={officers}
-                    savedSelections={savedSelections}
-                    onOfficerChange={handleOfficerChange}
-                    schedule={schedule}
-                    combinedSchedules={combinedSchedules}
-                  />
-                );
-              })
-          )}
-        </div>
+        {/* Cards organizados por semana */}
+        {isLoadingSchedules || isLoading ? (
+          <div className="py-20 text-center text-gray-500">
+            Carregando calendário...
+          </div>
+        ) : (
+          <div>
+            {/* Processo para organizar os dias em semanas (segunda a sexta) */}
+            {(() => {
+              // Obter dias úteis do mês (segunda a sexta)
+              const diasUteis = Array.from({ length: monthData.days }, (_, i) => i + 1)
+                .map(day => {
+                  const weekday = getWeekdayName(day, currentDate.getMonth(), currentDate.getFullYear());
+                  return { day, weekday };
+                })
+                .filter(({ weekday }) => weekday !== "Sábado" && weekday !== "Domingo");
+              
+              // Agrupar os dias por semana
+              const semanas = [];
+              let semanaAtual = [];
+              
+              diasUteis.forEach(dia => {
+                if (dia.weekday === "Segunda-feira" && semanaAtual.length > 0) {
+                  semanas.push([...semanaAtual]);
+                  semanaAtual = [];
+                }
+                semanaAtual.push(dia);
+              });
+              
+              // Adicionar a última semana
+              if (semanaAtual.length > 0) {
+                semanas.push(semanaAtual);
+              }
+              
+              // Renderizar as semanas
+              return semanas.map((semana, semanaIndex) => (
+                <div key={`semana-${semanaIndex}`} className="mb-10">
+                  {/* Cabeçalho da semana */}
+                  <div className="mb-4 border-b border-green-300 pb-2">
+                    <h3 className="text-lg font-semibold text-green-800 px-2 inline-block">
+                      Semana {semanaIndex + 1}
+                    </h3>
+                  </div>
+                  
+                  {/* Grid de dias da semana (flexbox para melhor alinhamento) */}
+                  <div className="flex flex-wrap gap-4">
+                    {semana.map(({ day, weekday }) => {
+                      const dayKey = `${day}`;
+                      const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null];
+                      
+                      return (
+                        <div key={`day-${day}`} className="flex-1 min-w-[250px]">
+                          <CalendarCardEscolaSegura
+                            day={day}
+                            month={currentDate.getMonth()}
+                            year={currentDate.getFullYear()}
+                            weekday={weekday}
+                            officers={officers}
+                            savedSelections={savedSelections}
+                            onOfficerChange={handleOfficerChange}
+                            schedule={schedule}
+                            combinedSchedules={combinedSchedules}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        )}
       </main>
     </div>
   );
