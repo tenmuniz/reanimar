@@ -46,10 +46,8 @@ export default function CalendarCard({
 
   // Verificar se todas as 3 posições estão preenchidas
   const allPositionsFilled = selections.every(officer => officer !== null);
-  // Verificar se pelo menos um oficial está escalado
+  // Verificar se pelo menos um oficial está escalado (mas não todos)
   const hasAnyOfficer = selectedOfficers.length > 0;
-  // Verificar se há vagas não preenchidas (pelo menos um policial, mas não todos)
-  const hasMissingOfficers = hasAnyOfficer && !allPositionsFilled;
   
   // Definir as classes do cabeçalho com base no estado de preenchimento
   let headerClasses = "px-4 py-2 border-b flex justify-between items-center";
@@ -59,8 +57,8 @@ export default function CalendarCard({
     // Todos os 3 policiais estão escalados - verde vivo
     headerClasses += " bg-green-500";
     dayTextClass += " text-white";
-  } else if (hasMissingOfficers) {
-    // Faltando pelo menos 1 militar - vermelho
+  } else if (hasAnyOfficer) {
+    // Há pelo menos 1 policial, mas faltam outros - vermelho
     headerClasses += " bg-red-500";
     dayTextClass += " text-white";
   } else {
@@ -74,7 +72,7 @@ export default function CalendarCard({
   
   if (allPositionsFilled) {
     weekdayBgClass = "bg-green-700 text-white";
-  } else if (hasMissingOfficers) {
+  } else if (hasAnyOfficer) {
     weekdayBgClass = "bg-red-700 text-white";
   } else {
     weekdayBgClass = weekdayClass; // Usa a cor padrão baseada no dia da semana
