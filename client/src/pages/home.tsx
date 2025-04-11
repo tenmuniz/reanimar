@@ -79,14 +79,27 @@ export default function Home() {
       // Save to localStorage
       saveLocalStorageSchedule(STORAGE_KEY, schedule);
       
-      // In a real app, save to backend too
-      // await apiRequest("POST", "/api/schedule", schedule);
+      // Salvar no servidor
+      const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+      const monthSchedule = schedule[monthKey] || {};
+      
+      await apiRequest(
+        'POST',
+        '/api/schedule',
+        {
+          operation: 'pmf', // Operação PMF
+          year: currentDate.getFullYear(),
+          month: currentDate.getMonth(),
+          data: monthSchedule
+        }
+      );
       
       toast({
         title: "Escala salva com sucesso!",
         description: "Suas alterações foram salvas",
       });
     } catch (error) {
+      console.error("Erro ao salvar escala:", error);
       toast({
         title: "Erro ao salvar a escala",
         description: "Tente novamente mais tarde",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CalendarLeft, CalendarPlus, BookOpen, AlertCircle } from "lucide-react";
+import { Calendar, CalendarPlus, BookOpen, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
@@ -120,7 +120,7 @@ export default function EscolaSegura() {
   // Atualizar escala quando um oficial é selecionado
   const handleOfficerChange = (day: number, position: number, officer: string | null) => {
     const monthKey = `${monthData.year}-${monthData.month}`;
-    const currentMonthSchedule = { ...schedule[monthKey] } || {};
+    const currentMonthSchedule = { ...(schedule[monthKey] || {}) };
     
     // Inicializa o dia se necessário
     if (!currentMonthSchedule[day]) {
@@ -145,18 +145,16 @@ export default function EscolaSegura() {
       const monthSchedule = schedule[monthKey] || {};
       
       // Envia para o servidor
-      await apiRequest('/api/schedule', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+      await apiRequest(
+        'POST',
+        '/api/schedule',
+        {
           operation: 'escolaSegura',
           year: monthData.year,
           month: monthData.month,
           data: monthSchedule
-        })
-      });
+        }
+      );
       
       toast({
         title: "Salvo com sucesso",
@@ -218,7 +216,7 @@ export default function EscolaSegura() {
         <div>
           <h1 className="text-3xl font-bold flex items-center">
             <BookOpen className="mr-2 h-8 w-8 text-green-500" />
-            <span className="bg-gradient-to-r from-green-500 to-emerald-700 bg.clip-text text-transparent">
+            <span className="bg-gradient-to-r from-green-500 to-emerald-700 bg-clip-text text-transparent">
               Escola Segura
             </span>
           </h1>
