@@ -623,7 +623,7 @@ export default function VerificadorInconsistencias() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-amber-900 flex items-center">
                       <Shield className="h-5 w-5 mr-2 text-amber-600" />
-                      Inconsistências PMF
+                      Inconsistências Polícia Mais Forte
                     </CardTitle>
                     <CardDescription className="text-amber-700">
                       Conflitos com serviço ordinário
@@ -650,7 +650,7 @@ export default function VerificadorInconsistencias() {
                   <CardHeader className="pb-2">
                     <CardTitle className="text-green-900 flex items-center">
                       <School className="h-5 w-5 mr-2 text-green-600" />
-                      Inconsistências E.S.
+                      Inconsistências Escola Segura
                     </CardTitle>
                     <CardDescription className="text-green-700">
                       Conflitos com serviço ordinário
@@ -802,7 +802,7 @@ export default function VerificadorInconsistencias() {
                 <CardHeader className="bg-gradient-to-r from-blue-700 to-blue-800 text-white">
                   <CardTitle className="text-lg flex items-center">
                     <Shield className="h-5 w-5 mr-2" />
-                    Inconsistências PMF x Serviço Ordinário
+                    Inconsistências Polícia Mais Forte x Serviço Ordinário
                   </CardTitle>
                   <CardDescription className="text-blue-100">
                     {formatMonthYear(currentDate)}
@@ -930,7 +930,7 @@ export default function VerificadorInconsistencias() {
                 <CardHeader className="bg-gradient-to-r from-red-700 to-red-800 text-white">
                   <CardTitle className="text-lg flex items-center">
                     <AlertTriangle className="h-5 w-5 mr-2" />
-                    Inconsistências dupla escala (PMF + Escola Segura)
+                    Inconsistências Dupla Operação (PMF + Escola Segura)
                   </CardTitle>
                   <CardDescription className="text-red-100">
                     {formatMonthYear(currentDate)}
