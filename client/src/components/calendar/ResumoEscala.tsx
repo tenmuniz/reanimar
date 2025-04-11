@@ -68,9 +68,214 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
     return 99; // Caso não encontre nenhum posto conhecido
   };
 
-  // Function to handle printing
+  // Function to handle printing - cria uma versão para impressão em uma nova janela
   const handlePrint = () => {
-    window.print();
+    // Cria uma nova janela para impressão
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast({
+        title: "Erro ao abrir janela de impressão",
+        description: "Verifique se o navegador permite abrir pop-ups",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Obtém dados dos militares
+    const militaresLista = Object.entries(resumoData).map(([nome, dados]) => {
+      return {
+        nome,
+        dias: dados.dias.sort((a, b) => a - b),
+        total: dados.total,
+        posto: dados.posto
+      };
+    });
+    
+    // Conteúdo HTML da página de impressão
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Relatório de Escala - PMF - ${mesAno}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+          }
+          h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #03396c;
+          }
+          h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #005b96;
+          }
+          .resumo {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+          }
+          .resumo-item {
+            text-align: center;
+            flex: 1;
+          }
+          .resumo-valor {
+            font-size: 24px;
+            font-weight: bold;
+            color: #03396c;
+          }
+          .resumo-label {
+            font-size: 14px;
+            color: #666;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+          }
+          th {
+            background-color: #03396c;
+            color: white;
+            padding: 10px;
+            text-align: left;
+          }
+          td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+          }
+          tr:nth-child(even) {
+            background-color: #f2f7ff;
+          }
+          .dias-container {
+            display: flex;
+            flex-wrap: wrap;
+          }
+          .dia {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #0074d9;
+            color: white;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            font-size: 12px;
+          }
+          .ultimo-dia {
+            background-color: #ff851b;
+            border: 1px solid #ff5e1b;
+            font-weight: bold;
+          }
+          .total {
+            font-weight: bold;
+            text-align: center;
+          }
+          .total-value {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+          }
+          .total-max {
+            background-color: #ff851b;
+          }
+          .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+          }
+          @media print {
+            @page {
+              size: portrait;
+              margin: 1cm;
+            }
+            body {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>POLÍCIA MAIS FORTE</h1>
+        <h2>RELATÓRIO DE ESCALA - ${mesAno.toUpperCase()}</h2>
+        
+        <div class="resumo">
+          <div class="resumo-item">
+            <div class="resumo-valor">${totalEscalas}</div>
+            <div class="resumo-label">Escalas no mês</div>
+          </div>
+          <div class="resumo-item">
+            <div class="resumo-valor">${totalMilitares}</div>
+            <div class="resumo-label">Policiais escalados</div>
+          </div>
+        </div>
+        
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40%">Policial</th>
+              <th style="width: 45%">Dias Escalados</th>
+              <th style="width: 15%">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${militaresLista.map(militar => `
+              <tr>
+                <td>${militar.nome}</td>
+                <td>
+                  <div class="dias-container">
+                    ${militar.dias.map((dia, idx) => `
+                      <div class="dia ${idx === 11 ? 'ultimo-dia' : ''}" 
+                           title="${idx === 11 ? 'Último dia permitido (12º dia)' : 'Dia escalado'}">
+                        ${dia}
+                      </div>
+                    `).join('')}
+                  </div>
+                </td>
+                <td class="total">
+                  <span class="total-value ${militar.total === 12 ? 'total-max' : ''}">
+                    ${militar.total}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <div class="footer">
+          <p>Sistema de Escalas PMF | Limite máximo: 12 extras por policial</p>
+          <p>Relatório gerado em: ${new Date().toLocaleString()}</p>
+        </div>
+        
+        <script>
+          // Abre a janela de impressão automaticamente
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+    
+    // Escreve o conteúdo na nova janela
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
   };
   
   // Generate summary data from the schedule
