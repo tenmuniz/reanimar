@@ -16,12 +16,14 @@ interface ResumoGuarnicaoProps {
   schedule: MonthSchedule;
   currentDate: Date;
   combinedSchedules?: CombinedSchedules;
+  operationType?: 'pmf' | 'escolaSegura'; // Tipo de operação: PMF (padrão) ou Escola Segura
 }
 
 export default function ResumoGuarnicao({
   schedule,
   currentDate,
   combinedSchedules,
+  operationType = 'pmf',
 }: ResumoGuarnicaoProps) {
   const [open, setOpen] = useState(false);
   const [resumoData, setResumoData] = useState<Record<string, { total: number; militares: string[] }>>({});
@@ -258,7 +260,7 @@ export default function ResumoGuarnicao({
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Relatório de ${titleGuarnicao} - PMF - ${mesAno}</title>
+        <title>Relatório de ${titleGuarnicao} - ${operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'PMF'} - ${mesAno}</title>
         <style>
           body {
             font-family: Arial, sans-serif;
@@ -385,7 +387,7 @@ export default function ResumoGuarnicao({
         </style>
       </head>
       <body>
-        <h1>POLÍCIA MAIS FORTE</h1>
+        <h1>${operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'POLÍCIA MAIS FORTE'}</h1>
         <h2>RELATÓRIO DE ${titleGuarnicao} - ${mesAno.toUpperCase()}</h2>
         
         <div class="resumo">
@@ -453,7 +455,7 @@ export default function ResumoGuarnicao({
         }).join('')}
         
         <div class="footer">
-          <p>Sistema de Escalas PMF | Estatísticas por Guarnição</p>
+          <p>Sistema de Escalas ${operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'PMF'} | Estatísticas por Guarnição</p>
           <p>Relatório gerado em: ${new Date().toLocaleString()}</p>
         </div>
         
