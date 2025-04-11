@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BarChart3, Calendar, FileText, Printer } from "lucide-react";
+import { BarChart3, Calendar, FileText, Printer, Award, Users } from "lucide-react";
 import { MonthSchedule } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface ResumoEscalaProps {
   schedule: MonthSchedule;
@@ -20,6 +21,7 @@ interface MilitarEscalaData {
 export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProps) {
   const [open, setOpen] = useState(false);
   const [resumoData, setResumoData] = useState<Record<string, MilitarEscalaData>>({});
+  const { toast } = useToast();
   
   // Compute summary whenever the schedule changes or the modal is opened
   useEffect(() => {
@@ -214,12 +216,16 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
         
         <div class="resumo">
           <div class="resumo-item">
-            <div class="resumo-valor">${totalEscalas}</div>
-            <div class="resumo-label">Escalas no mês</div>
+            <div class="resumo-valor">${militarMaisEscalado.nome !== "Nenhum" ? militarMaisEscalado.nome.split(' ').slice(-1)[0] : "Nenhum"}</div>
+            <div class="resumo-label">Militar Mais Escalado (${militarMaisEscalado.total} dias)</div>
           </div>
           <div class="resumo-item">
-            <div class="resumo-valor">${totalMilitares}</div>
-            <div class="resumo-label">Policiais escalados</div>
+            <div class="resumo-valor">${grupoMaisEscalado.nome}</div>
+            <div class="resumo-label">Guarnição Mais Escalada (${grupoMaisEscalado.total} escalas)</div>
+          </div>
+          <div class="resumo-item">
+            <div class="resumo-valor">${totalEscalas}</div>
+            <div class="resumo-label">Total de Escalas</div>
           </div>
         </div>
         
@@ -337,9 +343,74 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
   // Get the month name for display
   const mesAno = formatMonthYear(currentDate);
   
-  // Calculate totals
+  // Calculate totals and find most scheduled officer and group
   const totalEscalas = Object.values(resumoData).reduce((sum, militar) => sum + militar.total, 0);
   const totalMilitares = Object.keys(resumoData).length;
+  
+  // Encontrar o militar mais escalado
+  let militarMaisEscalado = { nome: "Nenhum", total: 0 };
+  
+  // Calcular estatísticas por guarnição/grupo
+  const estatisticasPorGrupo: Record<string, { total: number, militares: number }> = {
+    "EXPEDIENTE": { total: 0, militares: 0 },
+    "ALFA": { total: 0, militares: 0 },
+    "BRAVO": { total: 0, militares: 0 },
+    "CHARLIE": { total: 0, militares: 0 }
+  };
+  
+  // Função para identificar o grupo de um militar
+  const getGrupoMilitar = (nome: string): string => {
+    if (nome.includes("QOPM") || nome.includes("MONTEIRO") || 
+        nome.includes("VANILSON") || nome.includes("ANDRÉ") || 
+        nome.includes("CUNHA") || nome.includes("CARAVELAS") || 
+        nome.includes("TONI") || nome.includes("CORREA") || 
+        nome.includes("RODRIGUES") || nome.includes("TAVARES")) {
+      return "EXPEDIENTE";
+    } else if (nome.includes("PEIXOTO") || nome.includes("RODRIGO") || 
+               nome.includes("LEDO") || nome.includes("NUNES") || 
+               nome.includes("AMARAL") || nome.includes("CARLA") || 
+               nome.includes("FELIPE") || nome.includes("BARROS") || 
+               nome.includes("A. SILVA") || nome.includes("LUAN") || 
+               nome.includes("NAVARRO")) {
+      return "ALFA";
+    } else if (nome.includes("OLIMAR") || nome.includes("FÁBIO") || 
+               nome.includes("ANA CLEIDE") || nome.includes("GLEIDSON") || 
+               nome.includes("CARLOS EDUARDO") || nome.includes("NEGRÃO") || 
+               nome.includes("BRASIL") || nome.includes("MARVÃO") || 
+               nome.includes("IDELVAN")) {
+      return "BRAVO";
+    } else if (nome.includes("PINHEIRO") || nome.includes("RAFAEL") || 
+               nome.includes("MIQUEIAS") || nome.includes("M. PAIXÃO") || 
+               nome.includes("CHAGAS") || nome.includes("CARVALHO") || 
+               nome.includes("GOVEIA") || nome.includes("ALMEIDA") || 
+               nome.includes("PATRIK") || nome.includes("GUIMARÃES")) {
+      return "CHARLIE";
+    }
+    return "OUTROS";
+  };
+  
+  // Processar estatísticas
+  Object.entries(resumoData).forEach(([nome, dados]) => {
+    // Verificar se é o militar mais escalado
+    if (dados.total > militarMaisEscalado.total) {
+      militarMaisEscalado = { nome, total: dados.total };
+    }
+    
+    // Acumular estatísticas por grupo
+    const grupo = getGrupoMilitar(nome);
+    if (grupo !== "OUTROS" && estatisticasPorGrupo[grupo]) {
+      estatisticasPorGrupo[grupo].total += dados.total;
+      estatisticasPorGrupo[grupo].militares += 1;
+    }
+  });
+  
+  // Encontrar o grupo mais escalado
+  let grupoMaisEscalado = { nome: "Nenhum", total: 0 };
+  Object.entries(estatisticasPorGrupo).forEach(([grupo, dados]) => {
+    if (dados.total > grupoMaisEscalado.total) {
+      grupoMaisEscalado = { nome: grupo, total: dados.total };
+    }
+  });
   
   return (
     <>
@@ -365,12 +436,20 @@ export default function ResumoEscala({ schedule, currentDate }: ResumoEscalaProp
           {/* Estatísticas gerais */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="bg-blue-700 p-4 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-blue-200 font-medium">Total de Escalas</span>
-              <span className="text-3xl font-bold text-white">{totalEscalas}</span>
+              <span className="text-blue-200 font-medium flex items-center">
+                <Award className="h-4 w-4 mr-1" />
+                Militar Mais Escalado
+              </span>
+              <span className="text-2xl font-bold text-white my-1">{militarMaisEscalado.nome !== "Nenhum" ? militarMaisEscalado.nome.split(' ').slice(-1)[0] : "Nenhum"}</span>
+              <span className="text-yellow-300 text-sm font-medium">{militarMaisEscalado.total} dias</span>
             </div>
             <div className="bg-blue-700 p-4 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-blue-200 font-medium">Militares Escalados</span>
-              <span className="text-3xl font-bold text-white">{totalMilitares}</span>
+              <span className="text-blue-200 font-medium flex items-center">
+                <Users className="h-4 w-4 mr-1" />
+                Guarnição Mais Escalada
+              </span>
+              <span className="text-2xl font-bold text-white my-1">{grupoMaisEscalado.nome}</span>
+              <span className="text-yellow-300 text-sm font-medium">{grupoMaisEscalado.total} escalas</span>
             </div>
           </div>
           
