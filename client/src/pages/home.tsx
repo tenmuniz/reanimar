@@ -3,7 +3,7 @@ import { toast } from "@/hooks/use-toast";
 import { getMonthData, getWeekdayName, getLocalStorageSchedule, saveLocalStorageSchedule } from "@/lib/utils";
 import { MonthSchedule, OfficersResponse, CombinedSchedules } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { Save, Printer } from "lucide-react";
+import { Save } from "lucide-react";
 import CalendarCard from "@/components/calendar/CalendarCard";
 import MonthSelector from "@/components/calendar/MonthSelector";
 import ResumoEscala from "@/components/calendar/ResumoEscala";
@@ -222,9 +222,7 @@ export default function Home() {
     }
   };
   
-  const handlePrint = () => {
-    window.print();
-  };
+
   
   const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
 
@@ -295,15 +293,6 @@ export default function Home() {
               currentDate={currentDate}
               combinedSchedules={combinedSchedules}
             />
-            
-            <Button
-              variant="outline"
-              onClick={handlePrint}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded flex items-center shadow-sm transition"
-            >
-              <Printer className="h-5 w-5 mr-1" />
-              Imprimir
-            </Button>
           </div>
         </div>
         
