@@ -310,7 +310,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
       
       Object.entries(scheduleData).forEach(([day, officers]) => {
         // Processar cada militar escalado no dia
-        officers.forEach((officer: string | null) => {
+        (officers as (string | null)[]).forEach((officer: string | null) => {
           if (officer) {
             if (!militaresDias[officer]) {
               militaresDias[officer] = { 

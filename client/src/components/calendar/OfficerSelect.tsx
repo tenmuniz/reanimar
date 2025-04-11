@@ -103,9 +103,9 @@ export default function OfficerSelect({
         onValueChange={handleChange}
       >
         <SelectTrigger className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 focus:ring-opacity-50 text-sm">
-          <SelectValue placeholder="-- Selecione um policial --" />
+          <SelectValue className="text-ellipsis whitespace-nowrap overflow-hidden" placeholder="-- Selecione um policial --" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[300px] overflow-y-auto">
           <SelectItem value={PLACEHOLDER_VALUE}>-- Selecione um policial --</SelectItem>
           
           {/* Grupo EXPEDIENTE */}

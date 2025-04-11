@@ -225,6 +225,7 @@ export default function Home() {
             <ResumoEscala
               schedule={schedule}
               currentDate={currentDate}
+              combinedSchedules={combinedSchedules}
             />
             
             <Button
