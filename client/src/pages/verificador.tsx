@@ -472,7 +472,7 @@ export default function VerificadorInconsistencias() {
               ${inconsistenciasParaImprimir.map(inconsistencia => {
                 let problema = '';
                 if (inconsistencia.tipoOperacao === 'pmf') {
-                  problema = '<span class="warning-badge">Escalado no serviço ordinário e PMF</span>';
+                  problema = '<span class="warning-badge">Escalado no serviço ordinário e Polícia Mais Forte</span>';
                 } else if (inconsistencia.tipoOperacao === 'escolaSegura') {
                   problema = '<span class="warning-badge">Escalado no serviço ordinário e Escola Segura</span>';
                 } else {
@@ -745,7 +745,7 @@ export default function VerificadorInconsistencias() {
                               <td className="py-2 px-4">{item.guarnicaoOrdinaria}</td>
                               <td className="py-2 px-4">
                                 <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
-                                  Escalado no serviço ordinário e PMF
+                                  Escalado no serviço ordinário e Polícia Mais Forte
                                 </Badge>
                               </td>
                             </tr>
@@ -773,7 +773,7 @@ export default function VerificadorInconsistencias() {
                               <td className="py-2 px-4">{item.guarnicaoOrdinaria}</td>
                               <td className="py-2 px-4">
                                 <Badge variant="destructive" className="bg-red-600">
-                                  Escalado em PMF e Escola Segura no mesmo dia
+                                  Escalado em Polícia Mais Forte e Escola Segura no mesmo dia
                                 </Badge>
                               </td>
                             </tr>
@@ -956,7 +956,7 @@ export default function VerificadorInconsistencias() {
                               <td className="py-2 px-4">{item.guarnicaoOrdinaria}</td>
                               <td className="py-2 px-4">
                                 <Badge variant="destructive" className="bg-red-600">
-                                  Escalado em PMF e Escola Segura no mesmo dia
+                                  Escalado em Polícia Mais Forte e Escola Segura no mesmo dia
                                 </Badge>
                               </td>
                             </tr>
