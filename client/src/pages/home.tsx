@@ -316,6 +316,7 @@ export default function Home() {
                   schedule={schedule}
                   currentDate={currentDate}
                   combinedSchedules={combinedSchedules}
+                  operationType="pmf"
                 />
               </div>
             </div>
