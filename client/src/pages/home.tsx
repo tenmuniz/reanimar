@@ -229,7 +229,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Header - Versão melhorada com mais impacto visual */}
+      {/* Header - Versão redesenhada com layout mais limpo */}
       <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white border-b-4 border-yellow-500 shadow-2xl relative overflow-hidden">
         {/* Padrões de fundo para dar sensação de profundidade */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R3JpZDwvdGl0bGU+PHBhdGggZD0iTTYwIDYwSDBWMGg2MHY2MHptLTI2LThIMjZ2LTRoOHY0em0tOC0yNGg4djRoLTh2LTR6bTI0IDE2aC00djhoLTh2NGg4djhoNHYtOGg4di00aC04di04em0wLTE2djRoLTR2LTRoNHptLTI0LThWNGg4djRoLThWOHptMjQtNGgtOHY4aDR2NGg0VjR6bS0yNCAyMGg4djRoLTh2LTR6bTAgMTZ2LTRoOHY0aC04eiIgZmlsbD0iIzIwMzQ3YiIgZmlsbC1vcGFjaXR5PSIwLjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg==')]"
@@ -240,15 +240,10 @@ export default function Home() {
         {/* Efeito de brilho no topo */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-white to-blue-400 opacity-50"></div>
         
-        <div className="container mx-auto px-4 py-8 flex flex-col items-center relative z-10">
-          <div className="flex flex-col items-center mb-6 justify-center relative">
-            {/* Badge com efeito 3D */}
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-500 text-blue-900 text-xs font-bold px-4 py-1 rounded-full shadow-lg border-2 border-yellow-400 rotate-2">
-              OFICIAL
-            </div>
-
+        <div className="container mx-auto px-4 py-6 flex flex-row items-center justify-between relative z-10">
+          <div className="flex items-center">
             {/* Emblema policial estilizado */}
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-900 rounded-full p-3 mb-4 shadow-lg border-2 border-blue-400">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-900 rounded-full p-3 mr-5 shadow-lg border-2 border-blue-400 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-full w-full drop-shadow-lg"
@@ -286,31 +281,25 @@ export default function Home() {
               </svg>
             </div>
             
-            <div className="text-center">
+            <div>
               {/* Título principal com efeito de brilho e sombra */}
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-yellow-300 to-white">
                   20ª CIPM
                 </span>
               </h1>
               
               {/* Subtítulo com efeito de profundidade */}
-              <div className="relative px-6 py-2 mb-2 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 opacity-50 rounded-lg shadow-inner transform skew-x-2"></div>
-                <h2 className="relative text-2xl sm:text-3xl font-bold tracking-wide text-shadow-lg">
+              <div className="relative mt-1 overflow-hidden">
+                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg">
                   SISTEMA DE ESCALA PMF
                 </h2>
               </div>
-              
-              {/* Frase motivacional */}
-              <p className="text-sm text-blue-200 italic mt-1 shadow-inner">
-                Ordem e Progresso nas Escalas Operacionais
-              </p>
             </div>
           </div>
           
           {/* Seletor de mês com efeito neomórfico */}
-          <div className="bg-gradient-to-b from-blue-800 to-blue-950 px-6 py-4 rounded-lg border border-blue-700 shadow-[inset_0_1px_4px_rgba(0,0,0,0.6),0_10px_20px_rgba(0,0,0,0.2)] w-full max-w-md mx-auto mt-2">
+          <div className="bg-gradient-to-b from-blue-800 to-blue-950 px-5 py-3 rounded-lg border border-blue-700 shadow-[inset_0_1px_4px_rgba(0,0,0,0.6),0_10px_20px_rgba(0,0,0,0.2)] w-64">
             <MonthSelector
               currentDate={currentDate}
               onPreviousMonth={handlePreviousMonth}
