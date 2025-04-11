@@ -210,7 +210,7 @@ export default function CalendarCard({
     if (servicosRestantes <= 0) {
       // BLOQUEIO TOTAL - Mensagem clara para o usuário
       toast({
-        title: "⛔ LIMITE MÁXIMO DE 12 ATINGIDO",
+        title: "⛔ LIMITE DE 12 SERVIÇOS ATINGIDO",
         description: `${officer} já está com ${totalEscalasMilitar} escalas no mês. 
                       IMPOSSÍVEL adicionar mais serviços. 
                       Esta é uma regra de negócio rigorosa do sistema.`,
@@ -228,7 +228,7 @@ export default function CalendarCard({
     // Caso 2: Verificação rigorosa de limite (bloquear militar com 12+ escalas)
     if (limitReachedOfficers.includes(officer)) {
       toast({
-        title: "LIMITE MÁXIMO ATINGIDO",
+        title: "LIMITE ATINGIDO",
         description: `${officer} já está escalado em 12 dias. Impossível adicionar mais escalas.`,
         variant: "destructive",
       });
@@ -320,7 +320,7 @@ export default function CalendarCard({
           <Alert className="mt-3 bg-red-200 border-red-400 text-red-900">
             <AlertCircle className="h-5 w-5 text-red-700" />
             <AlertDescription className="text-sm font-bold">
-              ⚠️ LIMITE MÁXIMO: Um ou mais militares neste dia já atingiram 12 escalas no mês.
+              ⚠️ LIMITE ATINGIDO: Um ou mais militares neste dia já atingiram 12 escalas no mês.
               <br/><span className="text-xs">REGRA DE NEGÓCIO: É PROIBIDO ESCALAR UM MILITAR MAIS DE 12 VEZES NO MÊS.</span>
             </AlertDescription>
           </Alert>

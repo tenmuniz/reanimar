@@ -395,7 +395,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules 
       
       // Alertas importantes quando o limite é atingido
       if (dados.total > 12) {
-        console.error(`🚨 LIMITE EXCEDIDO: ${militar} tem ${dados.total} serviços (máximo: 12)`);
+        console.error(`🚨 LIMITE ATINGIDO: ${militar} tem ${dados.total} serviços (máximo: 12)`);
       } else if (dados.total === 12) {
         console.warn(`⚠️ LIMITE MÁXIMO: ${militar} atingiu exatamente 12 serviços`);
       }

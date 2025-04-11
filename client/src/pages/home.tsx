@@ -165,7 +165,7 @@ export default function Home() {
       console.error(`🚫 BLOQUEIO TOTAL: ${officer} já atingiu o limite de 12 serviços (${totalEscalas} serviços)`);
       toast({
         variant: "destructive",
-        title: "⛔ LIMITE MÁXIMO DE 12 SERVIÇOS",
+        title: "⛔ LIMITE DE 12 SERVIÇOS ATINGIDO",
         description: `${officer} já possui ${totalEscalas} serviços no mês e está BLOQUEADO para novas escalas!`
       });
       return; // Interrompe aqui - não permite de forma alguma
