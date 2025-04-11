@@ -69,12 +69,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Year and month are required" });
       }
       
+      // Configurar cabeçalhos anti-cache
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      
       // Converter para números
       const yearNum = parseInt(year as string);
       const monthNum = parseInt(month as string);
       
-      // Buscar dados do banco
-      const schedules = await storage.getCombinedSchedules(yearNum, monthNum);
+      // Buscar dados diretamente para garantir que temos os dados corretos
+      const pmfSchedule = await storage.getSchedule('pmf', yearNum, monthNum);
+      const esSchedule = await storage.getSchedule('escolaSegura', yearNum, monthNum);
+      
+      // Extrai dados do formato correto
+      let pmfData = {};
+      if (pmfSchedule && pmfSchedule["2025"] && pmfSchedule["2025"]["4"]) {
+        pmfData = pmfSchedule["2025"]["4"];
+      }
+      
+      let esData = {};
+      if (esSchedule && esSchedule["2025"] && esSchedule["2025"]["4"]) {
+        esData = esSchedule["2025"]["4"];
+      }
+      
+      // Montar objeto de resposta com formato simples e direto
+      const schedules = {
+        pmf: pmfData,
+        escolaSegura: esData
+      };
       
       // Log para depuração
       console.log("Dados obtidos do banco:", JSON.stringify(schedules));

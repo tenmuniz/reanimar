@@ -474,25 +474,27 @@ export class DatabaseStorage implements IStorage {
       
       console.log("Dados obtidos do banco:", directPmfData);
       
-      // Verifica se o formato antigo está formatado corretamente para os dias 22 e 24
-      if (Object.keys(pmfData).length > 0) {
-        // Garante que estamos usando os dados do banco no formato correto
-        // Se temos dados diretos do banco, garantimos que os dias 22 e 24 estão presentes
-        if (directPmfData && Object.keys(directPmfData).length > 0) {
-          // Retorna em um formato que facilita o acesso para a visualização pública
-          return {
-            pmf: {
-              [year]: {
-                [month]: directPmfData
-              }
-            },
-            escolaSegura: {
-              [year]: {
-                [month]: directEsData || {}
-              }
-            }
-          };
+      // Mostra todos os dados para depuração
+      console.log('Dados PMF obtidos do banco:', JSON.stringify(directPmfData));
+      console.log('Dados ES obtidos do banco:', JSON.stringify(directEsData));
+      
+      // Se temos dados no formato direto do banco
+      if (directPmfData && Object.keys(directPmfData).length > 0) {
+        // Verifica se os dados do PMF contêm as informações do dia 22 e 24
+        const tempData = {};
+        
+        // Copia os dias 1 a 30 (ou quantos existirem)
+        for (let day = 1; day <= 31; day++) {
+          if (directPmfData[day]) {
+            tempData[day] = directPmfData[day];
+          }
         }
+        
+        // Retorna em um formato simplificado para evitar aninhamento excessivo
+        return {
+          pmf: tempData,
+          escolaSegura: directEsData || {}
+        };
       }
       
       // Retornar as escalas combinadas no formato antigo
