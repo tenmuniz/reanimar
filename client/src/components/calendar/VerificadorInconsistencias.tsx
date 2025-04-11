@@ -61,7 +61,8 @@ export default function VerificadorInconsistencias({
             nome.includes("MIQUEIAS") || nome.includes("M. PAIXÃO") || 
             nome.includes("CHAGAS") || nome.includes("CARVALHO") || 
             nome.includes("GOVEIA") || nome.includes("ALMEIDA") || 
-            nome.includes("PATRIK") || nome.includes("GUIMARÃES")) {
+            nome.includes("PATRIK") || nome.includes("GUIMARÃES") ||
+            nome.includes("MONTEIRO")) { // Adicionado MONTEIRO ao CHARLIE
       return "CHARLIE";
     }
     // EXPEDIENTE e outros
