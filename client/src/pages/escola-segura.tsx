@@ -341,39 +341,51 @@ export default function EscolaSegura() {
           </div>
         </div>
         
-        {/* Calendar grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* Título informativo sobre dias escolares */}
+        <div className="mb-6 text-center">
+          <h2 className="text-xl font-bold text-gray-800 border-b border-green-300 pb-2 inline-block px-4">
+            Escala Operacional <span className="text-green-700">Escola Segura</span> - Somente Dias Úteis
+          </h2>
+        </div>
+        
+        {/* Calendar grid - Layout melhorado para dias úteis */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {isLoadingSchedules || isLoading ? (
             <div className="col-span-full py-20 text-center text-gray-500">
               Carregando calendário...
             </div>
           ) : (
-            Array.from({ length: monthData.days }, (_, i) => i + 1).map((day) => {
-              const weekday = getWeekdayName(
-                day,
-                currentDate.getMonth(),
-                currentDate.getFullYear()
-              );
-              
-              // Get saved selections for this day
-              const dayKey = `${day}`;
-              const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null]; // Apenas 2 posições para Escola Segura
-              
-              return (
-                <CalendarCardEscolaSegura
-                  key={`day-${day}`}
-                  day={day}
-                  month={currentDate.getMonth()}
-                  year={currentDate.getFullYear()}
-                  weekday={weekday}
-                  officers={officers}
-                  savedSelections={savedSelections}
-                  onOfficerChange={handleOfficerChange}
-                  schedule={schedule}
-                  combinedSchedules={combinedSchedules}
-                />
-              );
-            })
+            // Filtrar apenas os dias úteis (excluir sábados e domingos)
+            Array.from({ length: monthData.days }, (_, i) => i + 1)
+              .map((day) => {
+                const weekday = getWeekdayName(
+                  day,
+                  currentDate.getMonth(),
+                  currentDate.getFullYear()
+                );
+                return { day, weekday };
+              })
+              .filter(({ weekday }) => weekday !== "Sábado" && weekday !== "Domingo")
+              .map(({ day, weekday }) => {
+                // Get saved selections for this day
+                const dayKey = `${day}`;
+                const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null]; // Apenas 2 posições para Escola Segura
+                
+                return (
+                  <CalendarCardEscolaSegura
+                    key={`day-${day}`}
+                    day={day}
+                    month={currentDate.getMonth()}
+                    year={currentDate.getFullYear()}
+                    weekday={weekday}
+                    officers={officers}
+                    savedSelections={savedSelections}
+                    onOfficerChange={handleOfficerChange}
+                    schedule={schedule}
+                    combinedSchedules={combinedSchedules}
+                  />
+                );
+              })
           )}
         </div>
       </main>

@@ -92,35 +92,10 @@ export default function CalendarCardEscolaSegura({
         )}
       >
         {/* Header do card */}
-        <div
-          className={cn(
-            "px-4 py-2 flex justify-between items-center border-b border-gray-200",
-            weekday === "Domingo" && "bg-red-50 border-red-200",
-            weekday === "Sábado" && "bg-orange-50 border-orange-200",
-            weekday !== "Domingo" && weekday !== "Sábado" && "bg-green-50 border-green-200",
-          )}
-        >
+        <div className="px-4 py-2 flex justify-between items-center border-b border-green-200 bg-green-50">
           <div className="flex flex-col">
-            <span 
-              className={cn(
-                "text-xl font-bold",
-                weekday === "Domingo" && "text-red-700",
-                weekday === "Sábado" && "text-orange-700",
-                weekday !== "Domingo" && weekday !== "Sábado" && "text-green-700",
-              )}
-            >
-              {day}
-            </span>
-            <span 
-              className={cn(
-                "text-xs uppercase font-medium",
-                weekday === "Domingo" && "text-red-600",
-                weekday === "Sábado" && "text-orange-600",
-                weekday !== "Domingo" && weekday !== "Sábado" && "text-green-600",
-              )}
-            >
-              {weekday}
-            </span>
+            <span className="text-xl font-bold text-green-700">{day}</span>
+            <span className="text-xs uppercase font-medium text-green-600">{weekday}</span>
           </div>
           
           {/* Contador de oficiais */}
