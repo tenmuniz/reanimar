@@ -44,10 +44,21 @@ export default function CalendarCard({
 
   const weekdayClass = getWeekdayClass(weekday);
 
+  // Verificar se há pelo menos um oficial escalado
+  const hasAssignedOfficer = selectedOfficers.length > 0;
+  
+  // Classes do cabeçalho - muda para verde quando há pelo menos um oficial escalado
+  const headerClasses = hasAssignedOfficer 
+    ? "bg-green-100 px-4 py-2 border-b flex justify-between items-center" 
+    : "bg-gray-50 px-4 py-2 border-b flex justify-between items-center";
+  
+  // Cor do texto para o dia
+  const dayTextClass = hasAssignedOfficer ? "font-medium text-green-800" : "font-medium text-gray-800";
+
   return (
     <div className="day-card bg-white rounded-lg shadow-sm overflow-hidden" id={`dia-${day}`}>
-      <div className="bg-gray-50 px-4 py-2 border-b flex justify-between items-center">
-        <h3 className="font-medium text-gray-800">Dia {day}</h3>
+      <div className={headerClasses}>
+        <h3 className={dayTextClass}>Dia {day}</h3>
         <span className={`text-xs font-medium ${weekdayClass} px-2 py-1 rounded`}>
           {weekday}
         </span>
