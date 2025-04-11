@@ -240,31 +240,38 @@ export default function Home() {
         
         {/* Calendar grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: monthData.days }, (_, i) => i + 1).map((day) => {
-            const weekday = getWeekdayName(
-              day,
-              currentDate.getMonth(),
-              currentDate.getFullYear()
-            );
-            
-            // Get saved selections for this day
-            const dayKey = `${day}`;
-            const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null, null];
-            
-            return (
-              <CalendarCard
-                key={`day-${day}`}
-                day={day}
-                month={currentDate.getMonth()}
-                year={currentDate.getFullYear()}
-                weekday={weekday}
-                officers={officers}
-                savedSelections={savedSelections}
-                onOfficerChange={handleOfficerChange}
-                schedule={schedule}
-              />
-            );
-          })}
+          {isLoadingSchedules || isLoading ? (
+            <div className="col-span-full py-20 text-center text-gray-500">
+              Carregando calendário...
+            </div>
+          ) : (
+            Array.from({ length: monthData.days }, (_, i) => i + 1).map((day) => {
+              const weekday = getWeekdayName(
+                day,
+                currentDate.getMonth(),
+                currentDate.getFullYear()
+              );
+              
+              // Get saved selections for this day
+              const dayKey = `${day}`;
+              const savedSelections = schedule[currentMonthKey]?.[dayKey] || [null, null, null];
+              
+              return (
+                <CalendarCard
+                  key={`day-${day}`}
+                  day={day}
+                  month={currentDate.getMonth()}
+                  year={currentDate.getFullYear()}
+                  weekday={weekday}
+                  officers={officers}
+                  savedSelections={savedSelections}
+                  onOfficerChange={handleOfficerChange}
+                  schedule={schedule}
+                  combinedSchedules={combinedSchedules}
+                />
+              );
+            })
+          )}
         </div>
       </main>
     </div>
