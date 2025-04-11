@@ -190,6 +190,12 @@ export default function EscolaSegura() {
     // Dias do mês
     for (let day = 1; day <= monthData.days; day++) {
       const weekday = getWeekdayName(day, monthData.month, monthData.year);
+      
+      // Verificar se é final de semana e pular se for
+      if (weekday === 'Dom' || weekday === 'Sáb') {
+        continue; // Pula a iteração para finais de semana
+      }
+      
       const savedSelections = currentMonthSchedule[day] || Array(2).fill(null);
       
       cards.push(
