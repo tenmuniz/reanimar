@@ -262,6 +262,7 @@ export default function EscolaSegura() {
             <ResumoEscala 
               schedule={schedule} 
               currentDate={currentDate} 
+              combinedSchedules={combinedSchedules}
             />
           </div>
         </div>
