@@ -655,6 +655,7 @@ export default function Relatorios() {
         
         {/* Conteúdo de Por Militar */}
         <TabsContent value="porMilitar" className="space-y-4">
+          {/* Cards na primeira linha */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
@@ -664,7 +665,7 @@ export default function Relatorios() {
               <CardContent className="h-[350px]">
                 <div className="h-full w-full flex flex-col p-4">
                   {/* Ranking customizado de militares */}
-                  <div className="space-y-3 flex-1">
+                  <div className="space-y-3 flex-1 overflow-y-auto">
                     {topMilitares.map((militar, i) => {
                       const percentWidth = (militar.value / topMilitares[0].value) * 100;
                       
@@ -760,65 +761,68 @@ export default function Relatorios() {
             </Card>
           </div>
           
-          <Card>
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-lg font-medium">Distribuição por Tipo de Operação</CardTitle>
-                <CardDescription>Comparativo entre as operações para cada militar</CardDescription>
-              </div>
-              <Select defaultValue="total">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Ordernar por" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="total">Total de Escalas</SelectItem>
-                  <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
-                  <SelectItem value="es">Escola Segura</SelectItem>
-                  <SelectItem value="alfa">Orderm Alfabética</SelectItem>
-                </SelectContent>
-              </Select>
-            </CardHeader>
-            <CardContent className="h-[350px] overflow-y-auto px-0">
-              <table className="w-full">
-                <thead className="sticky top-0 bg-white">
-                  <tr className="border-b">
-                    <th className="text-left p-3">Militar</th>
-                    <th className="text-center p-3">PMF</th>
-                    <th className="text-center p-3">Escola Segura</th>
-                    <th className="text-center p-3">Total</th>
-                    <th className="text-center p-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(dadosMilitares)
-                    .sort((a, b) => b[1].total - a[1].total)
-                    .map(([nome, dados], index) => (
-                      <tr key={nome} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
-                        <td className="p-3 font-medium">{nome}</td>
-                        <td className="p-3 text-center">{dados.pmf}</td>
-                        <td className="p-3 text-center">{dados.escolaSegura}</td>
-                        <td className="p-3 text-center font-semibold">{dados.total}</td>
-                        <td className="p-3 text-center">
-                          {dados.total >= 12 ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
-                              <Clock className="h-3 w-3 mr-1" /> Limite atingido
-                            </span>
-                          ) : dados.total >= 10 ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
-                              <AlertTriangle className="h-3 w-3 mr-1" /> Próximo ao limite
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                              <CheckCircle className="h-3 w-3 mr-1" /> Disponível
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
+          {/* Tabela separada na segunda linha */}
+          <div>
+            <Card>
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-medium">Distribuição por Tipo de Operação</CardTitle>
+                  <CardDescription>Comparativo entre as operações para cada militar</CardDescription>
+                </div>
+                <Select defaultValue="total">
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Ordernar por" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="total">Total de Escalas</SelectItem>
+                    <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
+                    <SelectItem value="es">Escola Segura</SelectItem>
+                    <SelectItem value="alfa">Orderm Alfabética</SelectItem>
+                  </SelectContent>
+                </Select>
+              </CardHeader>
+              <CardContent className="h-[350px] overflow-y-auto px-0">
+                <table className="w-full">
+                  <thead className="sticky top-0 bg-white">
+                    <tr className="border-b">
+                      <th className="text-left p-3">Militar</th>
+                      <th className="text-center p-3">PMF</th>
+                      <th className="text-center p-3">Escola Segura</th>
+                      <th className="text-center p-3">Total</th>
+                      <th className="text-center p-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(dadosMilitares)
+                      .sort((a, b) => b[1].total - a[1].total)
+                      .map(([nome, dados], index) => (
+                        <tr key={nome} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
+                          <td className="p-3 font-medium">{nome}</td>
+                          <td className="p-3 text-center">{dados.pmf}</td>
+                          <td className="p-3 text-center">{dados.escolaSegura}</td>
+                          <td className="p-3 text-center font-semibold">{dados.total}</td>
+                          <td className="p-3 text-center">
+                            {dados.total >= 12 ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                <Clock className="h-3 w-3 mr-1" /> Limite atingido
+                              </span>
+                            ) : dados.total >= 10 ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                                <AlertTriangle className="h-3 w-3 mr-1" /> Próximo ao limite
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                <CheckCircle className="h-3 w-3 mr-1" /> Disponível
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
         
         {/* Conteúdo de Por Data */}
