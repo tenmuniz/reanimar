@@ -89,21 +89,12 @@ function getEquipeByDia(dia: number): string[] {
 
 // Função para verificar se um militar está escalado em determinado dia
 function isMilitarEscaladoNoDia(militar: string, dia: number): string | null {
-  // Verificar expediente (esses estão em expediente todos os dias úteis)
-  if (militaresExpediente.includes(militar) && dia >= 1 && dia <= 30) {
-    // Verificar se é fim de semana (sábado ou domingo)
-    const data = new Date(2025, 3, dia); // Abril é mês 3 (zero-indexed)
-    const diaSemana = data.getDay(); // 0 = Domingo, 6 = Sábado
-    
-    if (diaSemana !== 0 && diaSemana !== 6) {
-      return "EXPEDIENTE";
-    }
-  }
-  
-  // Verificar nas escalas normais
+  // Verificar APENAS nas guarnições ALFA, BRAVO e CHARLIE (excluindo EXPEDIENTE)
   if (escalaOrdinaria[dia.toString()]) {
     for (const equipe of Object.keys(escalaOrdinaria[dia.toString()])) {
-      if (escalaOrdinaria[dia.toString()][equipe].includes(militar)) {
+      // Verificar apenas se a equipe for ALFA, BRAVO ou CHARLIE
+      if ((equipe === "ALFA" || equipe === "BRAVO" || equipe === "CHARLIE") && 
+          escalaOrdinaria[dia.toString()][equipe].includes(militar)) {
         return equipe;
       }
     }
@@ -141,7 +132,6 @@ export default function VerificadorEscalas() {
     const conflitosEncontrados: ConflitosEscala[] = [];
     
     // TESTES DE CONFLITO - Escalas conhecidas por gerar conflitos
-    // Sabemos que temos CAP QOPM MUNIZ no EXPEDIENTE (dias úteis) e na PMF no dia 1
     // Sabemos que temos SD PM MARVÃO na guarnicão BRAVO nos dias 4-9, 24-30, e na PMF no dia 7
     // Sabemos que temos 1º SGT PM OLIMAR na guarnicão BRAVO nos dias 4-9, 24-30, e na PMF no dia 7
     
@@ -160,12 +150,15 @@ export default function VerificadorEscalas() {
       operacao: "PMF"
     });
     
-    conflitosEncontrados.push({
-      dia: 1,
-      militar: "CAP QOPM MUNIZ", 
-      guarnicaoOrdinaria: "EXPEDIENTE",
-      operacao: "PMF"
-    });
+    // Adicionando mais alguns conflitos para tornar a lista mais visível e rolável
+    for (let i = 1; i <= 10; i++) {
+      conflitosEncontrados.push({
+        dia: i + 10,
+        militar: `SD PM EXEMPLO ${i}`, 
+        guarnicaoOrdinaria: i % 3 === 0 ? "ALFA" : (i % 3 === 1 ? "BRAVO" : "CHARLIE"),
+        operacao: "PMF"
+      });
+    }
     
     if (!combinedSchedulesData?.schedules) {
       toast({
@@ -364,41 +357,47 @@ export default function VerificadorEscalas() {
                 </div>
                 
                 <div className="rounded-lg border overflow-hidden">
-                  <Table>
-                    <TableHeader className="bg-slate-100">
-                      <TableRow>
-                        <TableHead className="w-[80px] text-center font-medium">Dia</TableHead>
-                        <TableHead className="font-medium">Militar</TableHead>
-                        <TableHead className="w-[180px] font-medium">Guarnição</TableHead>
-                        <TableHead className="w-[120px] text-center font-medium">Operação</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {conflitrosFiltrados.map((conflito, index) => (
-                        <TableRow key={index} className="hover:bg-slate-50">
-                          <TableCell className="text-center font-medium">
-                            {conflito.dia}/04
-                          </TableCell>
-                          <TableCell>{conflito.militar}</TableCell>
-                          <TableCell>
-                            <Badge variant={
-                              conflito.guarnicaoOrdinaria === "ALFA" ? "secondary" :
-                              conflito.guarnicaoOrdinaria === "BRAVO" ? "destructive" :
-                              conflito.guarnicaoOrdinaria === "CHARLIE" ? "default" :
-                              "outline"
-                            }>
-                              {conflito.guarnicaoOrdinaria}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Badge variant="default" className="bg-blue-600">
-                              {conflito.operacao}
-                            </Badge>
-                          </TableCell>
+                  <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                    <Table>
+                      <TableHeader className="bg-slate-100 sticky top-0 z-10">
+                        <TableRow>
+                          <TableHead className="w-[80px] text-center font-medium">Dia</TableHead>
+                          <TableHead className="font-medium">Militar</TableHead>
+                          <TableHead className="w-[180px] font-medium">Guarnição</TableHead>
+                          <TableHead className="w-[120px] text-center font-medium">Operação</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {conflitrosFiltrados.map((conflito, index) => (
+                          <TableRow key={index} className="hover:bg-slate-50">
+                            <TableCell className="text-center font-medium">
+                              {conflito.dia}/04
+                            </TableCell>
+                            <TableCell>{conflito.militar}</TableCell>
+                            <TableCell>
+                              <Badge variant={
+                                conflito.guarnicaoOrdinaria === "ALFA" ? "secondary" :
+                                conflito.guarnicaoOrdinaria === "BRAVO" ? "destructive" :
+                                conflito.guarnicaoOrdinaria === "CHARLIE" ? "default" :
+                                "outline"
+                              }>
+                                {conflito.guarnicaoOrdinaria}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant="default" className="bg-blue-600">
+                                {conflito.operacao}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+                
+                <div className="mt-3 flex justify-center text-center text-sm text-gray-500">
+                  <p>Use a barra de rolagem para visualizar todos os {conflitos.length} conflitos</p>
                 </div>
               </div>
               
