@@ -332,62 +332,83 @@ export default function Relatorios() {
         </div>
       </div>
       
-      {/* Cartão de GCJOs Utilizados: exatamente como na imagem de referência */}
-      <div className="mb-6">
-        <div className="bg-blue-50 rounded-xl border border-blue-100 p-4 relative overflow-hidden">
+      {/* Cards de métricas principais - os dois cartões solicitados */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Próximo ao Limite - exatamente como na imagem */}
+        <div className="bg-amber-50 rounded-lg border border-amber-100 p-5 relative overflow-hidden">
           <div className="absolute top-3 right-3">
-            <Activity className="h-5 w-5 text-blue-600" />
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
           </div>
-          <h3 className="text-lg font-semibold text-blue-800 mb-3">GCJOs Utilizados</h3>
+          <h3 className="text-base font-semibold text-amber-800 mb-2">Próximo ao Limite</h3>
           
-          <div className="grid grid-cols-2 gap-4 mb-3">
-            <div className="bg-blue-100/60 rounded-lg p-3">
-              <p className="text-sm font-medium text-blue-700 text-center mb-1">PMF</p>
-              <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-bold text-blue-800">{totalEscalasPMF}</span>
-                <span className="text-sm text-blue-600 ml-1">de {extrasDisponibilizadosPMF}</span>
-              </div>
-              <div className="mt-2 w-full bg-blue-200 rounded-full h-1.5">
-                <div 
-                  className="bg-blue-600 h-1.5 rounded-full" 
-                  style={{width: `${percentualUtilizacaoPMF}%`}}
-                />
-              </div>
-              <p className="text-xs text-blue-600 mt-1 text-center">{percentualUtilizacaoPMF}% utilizado</p>
+          <p className="text-4xl font-bold text-amber-800 mb-1">
+            {Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total < 12).length}
+          </p>
+          
+          <p className="text-sm text-amber-700 mb-4">
+            Militares com 10-11 escalas
+          </p>
+          
+          <div className="grid grid-cols-3 gap-1">
+            <div className="bg-amber-100/70 rounded p-2 text-center">
+              <p className="text-xs font-medium text-amber-800">Baixa</p>
+              <p className="text-xl font-bold text-amber-900">
+                {Object.values(dadosMilitares).filter(d => d.total < 5).length}
+              </p>
             </div>
-            
-            <div className="bg-purple-100/60 rounded-lg p-3">
-              <p className="text-sm font-medium text-purple-700 text-center mb-1">Escola Segura</p>
-              <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-bold text-purple-800">{totalEscolasSegura}</span>
-                <span className="text-sm text-purple-600 ml-1">de {extrasDisponibilizadosES}</span>
-              </div>
-              <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5">
-                <div 
-                  className="bg-purple-600 h-1.5 rounded-full" 
-                  style={{width: `${percentualUtilizacaoES}%`}}
-                />
-              </div>
-              <p className="text-xs text-purple-600 mt-1 text-center">{percentualUtilizacaoES}% utilizado</p>
+            <div className="bg-amber-100/70 rounded p-2 text-center">
+              <p className="text-xs font-medium text-amber-800">Média</p>
+              <p className="text-xl font-bold text-amber-900">
+                {Object.values(dadosMilitares).filter(d => d.total >= 5 && d.total < 10).length}
+              </p>
             </div>
+            <div className="bg-amber-100/70 rounded p-2 text-center">
+              <p className="text-xs font-medium text-amber-800">Alta</p>
+              <p className="text-xl font-bold text-amber-900">
+                {Object.values(dadosMilitares).filter(d => d.total >= 10).length}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* No Limite - exatamente como na imagem */}
+        <div className="bg-red-50 rounded-lg border border-red-100 p-5 relative overflow-hidden">
+          <div className="absolute top-3 right-3">
+            <Clock className="h-5 w-5 text-red-500" />
+          </div>
+          <h3 className="text-base font-semibold text-red-800 mb-2">No Limite</h3>
+          
+          <p className="text-4xl font-bold text-red-800 mb-1">
+            {militaresNoLimite}
+          </p>
+          
+          <p className="text-sm text-red-700 mb-3">
+            Militares com 12+ escalas
+          </p>
+          
+          <div className="mt-1 mb-3">
+            <div className="flex items-center">
+              <div className="w-full bg-red-100 rounded-full h-2 mr-1">
+                <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(militaresNoLimite / Object.keys(dadosMilitares).length) * 100}%` }}></div>
+              </div>
+              <span className="text-xs text-red-700">{((militaresNoLimite / Object.keys(dadosMilitares).length) * 100).toFixed(1)}%</span>
+            </div>
+            <p className="text-xs text-red-600 mt-1">
+              do efetivo
+            </p>
           </div>
           
-          <div className="border-t border-blue-100 pt-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-700">Total utilizado:</span>
-              <div className="flex items-baseline">
-                <span className="text-3xl font-bold text-blue-800">{totalEscalas}</span>
-                <span className="text-sm text-gray-500 ml-1">de {totalExtrasDisponibilizados}</span>
-              </div>
+          {militaresNoLimite > 0 && (
+            <div className="mt-2 bg-red-100 border border-red-200 rounded p-3">
+              <p className="text-xs text-red-800 flex items-center font-medium">
+                <AlertTriangle className="h-3.5 w-3.5 mr-1.5 text-red-600" />
+                <span>Ação Requerida</span>
+              </p>
+              <p className="text-xs text-red-700 mt-1">
+                Há {militaresNoLimite} militar(es) que atingiram o limite máximo de GCJOs permitido.
+              </p>
             </div>
-            <div className="w-full bg-blue-100 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full" 
-                style={{width: `${percentualUtilizacaoTotal}%`}}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-1 text-right">{percentualUtilizacaoTotal}% dos extras disponibilizados até agora</p>
-          </div>
+          )}
         </div>
       </div>
       
