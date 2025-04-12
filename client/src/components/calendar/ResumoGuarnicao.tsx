@@ -162,17 +162,26 @@ export default function ResumoGuarnicao({
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 
+        className={`bg-gradient-to-r 
+          ${operationType === 'escolaSegura' 
+            ? 'from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800' 
+            : 'from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700'
+          }
           text-white px-4 py-2.5 rounded-xl flex items-center 
           transition-all duration-200 shadow-md hover:shadow-lg
-          active:shadow-inner active:translate-y-0.5 transform"
+          active:shadow-inner active:translate-y-0.5 transform ml-2`}
       >
         <Users className="h-4 w-4 mr-2 drop-shadow-sm" />
         <span className="font-medium">Guarnição</span>
       </Button>
       
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-indigo-900 to-indigo-800 text-white border-0 shadow-2xl">
+        <DialogContent className={`sm:max-w-[700px] 
+          ${operationType === 'escolaSegura'
+            ? 'bg-gradient-to-br from-purple-900 to-purple-800'
+            : 'bg-gradient-to-br from-indigo-900 to-indigo-800'
+          } 
+          text-white border-0 shadow-2xl`}>
           <DialogHeader>
             <DialogTitle className="flex items-center text-2xl font-bold text-center text-white mb-4">
               <FileText className="h-6 w-6 mr-2 text-cyan-300" />
@@ -184,13 +193,13 @@ export default function ResumoGuarnicao({
           
           {/* Estatísticas Gerais */}
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-indigo-700 p-4 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-indigo-200 font-medium mb-1">Total de Escalas</span>
+            <div className={`${operationType === 'escolaSegura' ? 'bg-purple-700' : 'bg-indigo-700'} p-4 rounded-lg shadow-inner flex flex-col items-center`}>
+              <span className={`${operationType === 'escolaSegura' ? 'text-purple-200' : 'text-indigo-200'} font-medium mb-1`}>Total de Escalas</span>
               <span className="text-3xl font-bold text-white">{totalEscalas}</span>
             </div>
             
-            <div className="bg-indigo-700 p-4 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-indigo-200 font-medium mb-1">Guarnição Mais Escalada</span>
+            <div className={`${operationType === 'escolaSegura' ? 'bg-purple-700' : 'bg-indigo-700'} p-4 rounded-lg shadow-inner flex flex-col items-center`}>
+              <span className={`${operationType === 'escolaSegura' ? 'text-purple-200' : 'text-indigo-200'} font-medium mb-1`}>Guarnição Mais Escalada</span>
               <span className="text-3xl font-bold text-white">
                 {guarnicaoMaisEscalada || "N/A"}
               </span>
