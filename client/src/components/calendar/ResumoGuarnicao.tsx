@@ -392,7 +392,7 @@ export default function ResumoGuarnicao({
                           const autoTable = module.default;
                           
                           autoTable(pdf, {
-                            head: [['Militar', 'Dias de Serviço', 'Total']],
+                            head: [['Militar', 'Datas de Escala', 'Total']],
                             body: tableRows,
                             startY: 95,
                             margin: { top: 40 },
@@ -735,7 +735,7 @@ export default function ResumoGuarnicao({
                           const autoTable = module.default;
                           
                           autoTable(pdf, {
-                            head: [['Militar', 'Dias de Serviço', 'Total']],
+                            head: [['Militar', 'Datas de Escala', 'Total']],
                             body: tableRows,
                             startY: 95,
                             margin: { top: 40 },
