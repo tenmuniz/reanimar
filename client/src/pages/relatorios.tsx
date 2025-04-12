@@ -332,54 +332,62 @@ export default function Relatorios() {
         </div>
       </div>
       
-      {/* Cards de métricas principais - os dois cartões solicitados */}
+      {/* Cards de métricas principais - os dois cartões solicitados com informações mais claras */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Total de GCJOs */}
         <div className="bg-blue-50 rounded-lg border border-blue-100 p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 bg-blue-100 rounded-full p-2">
             <Activity className="h-5 w-5 text-blue-600" />
           </div>
-          <h3 className="text-sm font-medium text-blue-700 mb-1">GCJOs Utilizados</h3>
-          <div className="flex justify-between items-baseline">
-            <p className="text-3xl font-bold text-blue-800">{totalEscalas}</p>
-            <div className="text-sm">
-              <span className="text-gray-500">de </span>
-              <span className="font-medium text-blue-600">{totalExtrasDisponibilizados}</span>
-              <span className="text-gray-500"> disponíveis</span>
+          <h3 className="text-md font-semibold text-blue-700 mb-2">GCJOs Utilizados</h3>
+          
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="text-center p-3 bg-blue-100/70 rounded-lg">
+              <p className="text-sm font-medium text-blue-700 mb-1">PMF</p>
+              <div className="flex items-baseline justify-center">
+                <span className="text-3xl font-bold text-blue-800 mr-1">{totalEscalasPMF}</span>
+                <span className="text-sm text-blue-600">de {extrasDisponibilizadosPMF}</span>
+              </div>
+              <div className="mt-2 w-full bg-blue-200 rounded-full h-1.5">
+                <div 
+                  className="bg-blue-600 h-1.5 rounded-full" 
+                  style={{width: `${percentualUtilizacaoPMF}%`}}
+                />
+              </div>
+              <p className="text-xs text-blue-600 mt-1">{percentualUtilizacaoPMF}% utilizado</p>
+            </div>
+            
+            <div className="text-center p-3 bg-purple-100/70 rounded-lg">
+              <p className="text-sm font-medium text-purple-700 mb-1">Escola Segura</p>
+              <div className="flex items-baseline justify-center">
+                <span className="text-3xl font-bold text-purple-800 mr-1">{totalEscolasSegura}</span>
+                <span className="text-sm text-purple-600">de {extrasDisponibilizadosES}</span>
+              </div>
+              <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5">
+                <div 
+                  className="bg-purple-600 h-1.5 rounded-full" 
+                  style={{width: `${percentualUtilizacaoES}%`}}
+                />
+              </div>
+              <p className="text-xs text-purple-600 mt-1">{percentualUtilizacaoES}% utilizado</p>
             </div>
           </div>
           
-          <div className="flex space-x-4 mt-3">
-            <div className="flex items-center space-x-1">
-              <span className="bg-blue-200 text-blue-700 text-xs font-medium px-2 py-0.5 rounded">
-                PMF: {totalEscalasPMF}/{extrasDisponibilizadosPMF}
-              </span>
+          <div className="border-t border-blue-100 pt-3 mb-1">
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm font-medium text-gray-700">Total utilizado:</span>
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold text-blue-800 mr-1">{totalEscalas}</span>
+                <span className="text-sm text-gray-600">de {totalExtrasDisponibilizados}</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <span className="bg-purple-200 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">
-                ES: {totalEscolasSegura}/{extrasDisponibilizadosES}
-              </span>
-            </div>
-          </div>
-          
-          {/* Barra de progresso mostrando a distribuição */}
-          <div className="mt-3">
-            <div className="flex justify-between items-center text-xs mb-1">
-              <span className="font-medium text-gray-700">Utilização atual</span>
-              <span className="font-medium text-blue-700">{percentualUtilizacaoTotal}%</span>
-            </div>
-            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="mt-2 w-full bg-gray-100 rounded-full h-2">
               <div 
-                className="h-full bg-blue-600" 
+                className="bg-blue-700 h-2 rounded-full" 
                 style={{width: `${percentualUtilizacaoTotal}%`}}
-              ></div>
+              />
             </div>
-          </div>
-          
-          <div className="mt-2 pt-2 border-t border-blue-100">
-            <div className="flex justify-between items-center text-xs text-gray-500">
-              <span>Em relação ao mês: {percentualOcupacao}% da capacidade total</span>
-            </div>
+            <p className="text-xs text-gray-600 mt-1 text-right">{percentualUtilizacaoTotal}% dos extras disponibilizados até agora</p>
           </div>
         </div>
         
@@ -388,27 +396,41 @@ export default function Relatorios() {
           <div className="absolute top-4 right-4 bg-green-100 rounded-full p-2">
             <Calendar className="h-5 w-5 text-green-600" />
           </div>
-          <h3 className="text-sm font-medium text-green-700 mb-1">GCJOs Restantes</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <p className="text-3xl font-bold text-green-800">
-                {restantesPMF}
+          <h3 className="text-md font-semibold text-green-700 mb-2">GCJOs Restantes</h3>
+          
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="text-center p-3 bg-green-100/70 rounded-lg">
+              <p className="text-sm font-medium text-green-700 mb-1">PMF</p>
+              <p className="text-3xl font-bold text-green-800 mb-1">{restantesPMF}</p>
+              <p className="text-xs text-green-600">
+                <span className="font-medium">Capacidade Total: 90</span>
               </p>
-              <span className="text-sm font-normal text-green-600">PMF</span>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-purple-800">
-                {restantesES}
+            
+            <div className="text-center p-3 bg-purple-100/70 rounded-lg">
+              <p className="text-sm font-medium text-purple-700 mb-1">Escola Segura</p>
+              <p className="text-3xl font-bold text-purple-800 mb-1">{restantesES}</p>
+              <p className="text-xs text-purple-600">
+                <span className="font-medium">Capacidade Total: 60</span>
               </p>
-              <span className="text-sm font-normal text-purple-600">Escola Segura</span>
             </div>
           </div>
           
-          <p className="text-xs text-gray-500 mt-3">Capacidade máxima mensal</p>
-          <div className="flex justify-between mt-1 text-xs font-medium">
-            <span className="text-green-600">PMF: 90</span>
-            <span className="text-purple-600">ES: 60</span>
-            <span className="text-gray-700">Total: 150</span>
+          <div className="border-t border-green-100 pt-3">
+            <div className="flex justify-between items-baseline">
+              <span className="text-sm font-medium text-gray-700">Total restante:</span>
+              <span className="text-2xl font-bold text-green-800">{restantesTotal}</span>
+            </div>
+            <div className="mt-2 w-full bg-gray-100 rounded-full h-2">
+              <div 
+                className="bg-green-600 h-2 rounded-full" 
+                style={{width: `${(restantesTotal / 150) * 100}%`}}
+              />
+            </div>
+            <div className="mt-1 flex justify-between text-xs text-gray-600">
+              <span>Capacidade máxima mensal: 150</span>
+              <span>{Math.round((restantesTotal / 150) * 100)}% ainda disponível</span>
+            </div>
           </div>
         </div>
       </div>
