@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, Calendar, FileText } from "lucide-react";
+import { Users, Calendar, FileText, Printer, ChevronRight, X, Download } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
+import jsPDF from "jspdf";
+import 'jspdf-autotable';
+
+// Estendendo a interface para incluir os militares por dia na guarnição
+interface GuarnicaoData {
+  dias: number[];
+  total: number;
+  militaresPorDia?: Record<number, string[]>;
+}
 
 interface ResumoGuarnicaoProps {
   schedule: MonthSchedule;
@@ -19,7 +28,9 @@ export default function ResumoGuarnicao({
   operationType = 'pmf'
 }: ResumoGuarnicaoProps) {
   const [open, setOpen] = useState(false);
-  const [guarnicoesData, setGuarnicoesData] = useState<Record<string, { dias: number[], total: number }>>({});
+  const [guarnicoesData, setGuarnicoesData] = useState<Record<string, GuarnicaoData>>({});
+  const [guarnicaoSelecionada, setGuarnicaoSelecionada] = useState<string | null>(null);
+  const [detalheGuarnicaoAberto, setDetalheGuarnicaoAberto] = useState(false);
   
   // Atualizar os dados sempre que o modal for aberto ou os dados mudarem
   useEffect(() => {
@@ -65,12 +76,12 @@ export default function ResumoGuarnicao({
     const monthSchedule = schedule || {};
     
     // Objeto para armazenar contagem por guarnição
-    const guarnicoes: Record<string, { dias: number[], total: number }> = {
-      "EXPEDIENTE": { dias: [], total: 0 },
-      "ALFA": { dias: [], total: 0 },
-      "BRAVO": { dias: [], total: 0 },
-      "CHARLIE": { dias: [], total: 0 },
-      "OUTROS": { dias: [], total: 0 }
+    const guarnicoes: Record<string, GuarnicaoData> = {
+      "EXPEDIENTE": { dias: [], total: 0, militaresPorDia: {} },
+      "ALFA": { dias: [], total: 0, militaresPorDia: {} },
+      "BRAVO": { dias: [], total: 0, militaresPorDia: {} },
+      "CHARLIE": { dias: [], total: 0, militaresPorDia: {} },
+      "OUTROS": { dias: [], total: 0, militaresPorDia: {} }
     };
     
     // Verificar quais chaves estão disponíveis em monthSchedule
@@ -116,10 +127,21 @@ export default function ResumoGuarnicao({
         oficiais.forEach(militar => {
           if (militar) {
             const guarnicao = getGuarnicaoMilitar(militar);
+            
+            // Adicionar dia à lista de dias da guarnição
             if (!guarnicoes[guarnicao].dias.includes(dayNum)) {
               guarnicoes[guarnicao].dias.push(dayNum);
             }
+            
+            // Incrementar contagem total
             guarnicoes[guarnicao].total++;
+            
+            // Adicionar militar ao registro de militares por dia
+            if (!guarnicoes[guarnicao].militaresPorDia![dayNum]) {
+              guarnicoes[guarnicao].militaresPorDia![dayNum] = [];
+            }
+            
+            guarnicoes[guarnicao].militaresPorDia![dayNum].push(militar);
           }
         });
       }
@@ -175,6 +197,7 @@ export default function ResumoGuarnicao({
         <span className="font-medium">Guarnição</span>
       </Button>
       
+      {/* Modal principal de guarnições */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className={`sm:max-w-[700px] 
           ${operationType === 'escolaSegura'
@@ -279,10 +302,74 @@ export default function ResumoGuarnicao({
                       guarnicao === "CHARLIE" ? "bg-red-500" :
                       "bg-gray-500";
                     
+                    // Função para gerar PDF para esta guarnição
+                    const gerarPDFGuarnicao = () => {
+                      const pdf = new jsPDF();
+                      
+                      // Título do Documento
+                      pdf.setFontSize(16);
+                      pdf.setFont('helvetica', 'bold');
+                      pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicao}`, 105, 15, { align: 'center' });
+                      
+                      // Informações do mês
+                      pdf.setFontSize(11);
+                      pdf.setFont('helvetica', 'normal');
+                      pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
+                      pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
+                      
+                      // Cabeçalho
+                      pdf.setFontSize(12);
+                      pdf.setFont('helvetica', 'bold');
+                      
+                      // Dados para a tabela
+                      const tableRows: any[] = [];
+                      const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
+                      
+                      // Para cada dia, pegar os militares dessa guarnição
+                      diasOrdenados.forEach(dia => {
+                        if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
+                          dados.militaresPorDia[dia].forEach(militar => {
+                            tableRows.push([
+                              dia,
+                              militar
+                            ]);
+                          });
+                        }
+                      });
+                      
+                      // Adicionar tabela ao PDF
+                      (pdf as any).autoTable({
+                        head: [['Dia', 'Militar']],
+                        body: tableRows,
+                        startY: 35,
+                        margin: { top: 35 },
+                        styles: { fontSize: 10 },
+                        headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
+                        alternateRowStyles: { fillColor: [240, 240, 240] }
+                      });
+                      
+                      // Rodapé
+                      const pageCount = (pdf as any).internal.getNumberOfPages();
+                      for (let i = 1; i <= pageCount; i++) {
+                        pdf.setPage(i);
+                        pdf.setFontSize(8);
+                        pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                      }
+                      
+                      // Salvar o PDF
+                      pdf.save(`GCJO_${guarnicao}_${mesAno.replace(' ', '_')}.pdf`);
+                    };
+                    
+                    // Função para abrir o modal de detalhes
+                    const abrirDetalhesGuarnicao = () => {
+                      setGuarnicaoSelecionada(guarnicao);
+                      setDetalheGuarnicaoAberto(true);
+                    };
+                    
                     return (
                       <div 
                         key={guarnicao} 
-                        className="bg-indigo-900/40 rounded-lg overflow-hidden border border-indigo-700"
+                        className="bg-indigo-900/40 rounded-lg overflow-hidden border border-indigo-700 transition-all hover:shadow-xl"
                       >
                         <div className={`${corHeader} p-2 text-center font-bold text-white`}>
                           {guarnicao}
@@ -307,6 +394,27 @@ export default function ResumoGuarnicao({
                               ))}
                             </div>
                           </div>
+                          
+                          {/* Botões de ação */}
+                          <div className="flex justify-center gap-2 mt-3">
+                            <Button
+                              variant="outline"
+                              className="bg-white/10 hover:bg-white/20 text-white border-white/20 flex items-center p-1.5 h-auto text-xs"
+                              onClick={abrirDetalhesGuarnicao}
+                            >
+                              <Users className="h-3 w-3 mr-1" />
+                              Detalhes
+                            </Button>
+                            
+                            <Button
+                              variant="outline"
+                              className="bg-white/10 hover:bg-white/20 text-white border-white/20 flex items-center p-1.5 h-auto text-xs"
+                              onClick={gerarPDFGuarnicao}
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              PDF
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -320,6 +428,161 @@ export default function ResumoGuarnicao({
             <Calendar className="inline-block h-4 w-4 mr-1 mb-1" />
             Dados referentes ao mês de {mesAno} | Os militares são agrupados por guarnições conforme escala ordinária
           </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Modal de detalhes da guarnição selecionada */}
+      <Dialog open={detalheGuarnicaoAberto} onOpenChange={setDetalheGuarnicaoAberto}>
+        <DialogContent className={`sm:max-w-[700px] 
+          ${operationType === 'escolaSegura'
+            ? 'bg-gradient-to-br from-purple-900 to-purple-800'
+            : 'bg-gradient-to-br from-indigo-900 to-indigo-800'
+          } 
+          text-white border-0 shadow-2xl`}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-2xl font-bold text-center text-white mb-4">
+              <Users className="h-6 w-6 mr-2 text-cyan-300" />
+              <span className="bg-gradient-to-r from-cyan-300 to-cyan-500 text-transparent bg-clip-text">
+                DETALHES DA GUARNIÇÃO {guarnicaoSelecionada?.toUpperCase()}
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {guarnicaoSelecionada && guarnicoesData[guarnicaoSelecionada] && (
+            <>
+              {/* Cabeçalho com estatísticas */}
+              <div className={`${
+                guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700" :
+                guarnicaoSelecionada === "ALFA" ? "bg-green-700" :
+                guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700" :
+                guarnicaoSelecionada === "CHARLIE" ? "bg-red-700" :
+                "bg-gray-700"
+              } p-4 rounded-lg shadow-inner mb-4`}>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-bold text-white">Guarnição {guarnicaoSelecionada}</h3>
+                    <p className="text-sm text-white/80">Mês de referência: {mesAno}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-white/80">Total de escalas</div>
+                    <div className="text-2xl font-bold text-white">{guarnicoesData[guarnicaoSelecionada].total}</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Tabela de militares por dia */}
+              <div className="bg-indigo-800/40 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-semibold mb-3 text-white">
+                  Militares escalados por dia
+                </h3>
+                
+                <div className="overflow-y-auto max-h-[300px] rounded-lg border border-indigo-700">
+                  <table className="w-full">
+                    <thead className="bg-indigo-900/60 sticky top-0">
+                      <tr>
+                        <th className="p-2 text-left text-white font-medium">Dia</th>
+                        <th className="p-2 text-left text-white font-medium">Militar</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {guarnicaoSelecionada && guarnicoesData[guarnicaoSelecionada].militaresPorDia && 
+                        Object.entries(guarnicoesData[guarnicaoSelecionada].militaresPorDia!).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                          .map(([dia, militares]) => (
+                            militares.map((militar, idx) => (
+                              <tr key={`${dia}-${idx}`} className="border-t border-indigo-800/60 hover:bg-indigo-700/30">
+                                <td className="p-2 text-indigo-100">{dia}</td>
+                                <td className="p-2 text-indigo-100">{militar}</td>
+                              </tr>
+                            ))
+                          ))
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              {/* Botões de ação */}
+              <div className="flex justify-between">
+                <Button
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+                  onClick={() => setDetalheGuarnicaoAberto(false)}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Fechar
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  className={`${
+                    guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700 hover:bg-cyan-600" :
+                    guarnicaoSelecionada === "ALFA" ? "bg-green-700 hover:bg-green-600" :
+                    guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700 hover:bg-yellow-600" :
+                    guarnicaoSelecionada === "CHARLIE" ? "bg-red-700 hover:bg-red-600" :
+                    "bg-gray-700 hover:bg-gray-600"
+                  } text-white border-transparent shadow-md`}
+                  onClick={() => {
+                    if (guarnicaoSelecionada) {
+                      const pdf = new jsPDF();
+                      
+                      // Título do Documento
+                      pdf.setFontSize(16);
+                      pdf.setFont('helvetica', 'bold');
+                      pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 15, { align: 'center' });
+                      
+                      // Informações do mês
+                      pdf.setFontSize(11);
+                      pdf.setFont('helvetica', 'normal');
+                      pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
+                      pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
+                      
+                      // Dados para a tabela
+                      const tableRows: any[] = [];
+                      const dados = guarnicoesData[guarnicaoSelecionada];
+                      const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
+                      
+                      // Para cada dia, pegar os militares dessa guarnição
+                      diasOrdenados.forEach(dia => {
+                        if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
+                          dados.militaresPorDia[dia].forEach(militar => {
+                            tableRows.push([
+                              dia,
+                              militar
+                            ]);
+                          });
+                        }
+                      });
+                      
+                      // Adicionar tabela ao PDF
+                      (pdf as any).autoTable({
+                        head: [['Dia', 'Militar']],
+                        body: tableRows,
+                        startY: 35,
+                        margin: { top: 35 },
+                        styles: { fontSize: 10 },
+                        headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
+                        alternateRowStyles: { fillColor: [240, 240, 240] }
+                      });
+                      
+                      // Rodapé
+                      const pageCount = (pdf as any).internal.getNumberOfPages();
+                      for (let i = 1; i <= pageCount; i++) {
+                        pdf.setPage(i);
+                        pdf.setFontSize(8);
+                        pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                      }
+                      
+                      // Salvar o PDF
+                      pdf.save(`GCJO_${guarnicaoSelecionada}_${mesAno.replace(' ', '_')}.pdf`);
+                    }
+                  }}
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Exportar PDF
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
