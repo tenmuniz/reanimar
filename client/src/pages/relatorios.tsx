@@ -473,8 +473,74 @@ export default function Relatorios() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Sugestões de Otimização</CardTitle>
+                <CardDescription>Recomendações para melhor distribuição de carga</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px] overflow-y-auto space-y-4">
+                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+                  <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
+                    <Award className="h-4 w-4 mr-2" />
+                    Redistribuição de Carga
+                  </h4>
+                  <p className="text-sm text-blue-600 mb-3">
+                    {militaresNoLimite > 0 
+                      ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
+                      : "Nenhum militar atingiu o limite máximo de extras."
+                    }
+                  </p>
+                  <ul className="space-y-2">
+                    {Object.entries(dadosMilitares)
+                      .filter(([_, dados]) => dados.total >= 12)
+                      .slice(0, 3)
+                      .map(([nome, dados]) => (
+                        <li key={nome} className="text-sm flex items-center">
+                          <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
+                          <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                
+                <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+                  <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
+                    <Users className="h-4 w-4 mr-2" />
+                    Militares Menos Utilizados
+                  </h4>
+                  <p className="text-sm text-green-600 mb-3">
+                    Considere utilizar os seguintes militares nas próximas escalas:
+                  </p>
+                  <ul className="space-y-2">
+                    {Object.entries(dadosMilitares)
+                      .filter(([_, dados]) => dados.total < 5)
+                      .sort((a, b) => a[1].total - b[1].total)
+                      .slice(0, 5)
+                      .map(([nome, dados]) => (
+                        <li key={nome} className="text-sm flex items-center">
+                          <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                          <span><b>{nome}</b> possui apenas {dados.total} extras</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                
+                <div className="rounded-lg bg-purple-50 border border-purple-200 p-4">
+                  <h4 className="text-md font-semibold text-purple-700 mb-2 flex items-center">
+                    <BarChart4 className="h-4 w-4 mr-2" />
+                    Análise de Equilíbrio
+                  </h4>
+                  <p className="text-sm text-purple-600">
+                    A distribuição atual mostra uma concentração de extras em um pequeno grupo de militares.
+                    Considere distribuir as próximas escalas de forma mais equilibrada, priorizando militares
+                    com menos de 8 extras no período.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium">Distribuição por Operação</CardTitle>
-                <CardDescription>Comparativo de escalas entre operações</CardDescription>
+                <CardDescription>Comparativo de extras entre operações</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
                 <div className="h-full flex flex-col">
@@ -503,140 +569,14 @@ export default function Relatorios() {
                     <div className="flex items-center gap-1.5">
                       <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-sm"></div>
                       <span className="text-xs text-gray-600">
-                        PMF ({dadosOperacoes[0]?.value || 0} escalas)
+                        PMF ({dadosOperacoes[0]?.value || 0} extras)
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-sm"></div>
                       <span className="text-xs text-gray-600">
-                        Escola Segura ({dadosOperacoes[1]?.value || 0} escalas)
+                        Escola Segura ({dadosOperacoes[1]?.value || 0} extras)
                       </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Escalas por Dia da Semana</CardTitle>
-                <CardDescription>Distribuição das operações ao longo da semana</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px]">
-                <div className="h-full">
-                  {/* Gráfico de barras simples */}
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1 flex items-end space-x-4">
-                      {dadosDistribuicao.map((item, index) => (
-                        <div key={index} className="flex flex-col items-center justify-end h-full w-full">
-                          <div className="w-full flex flex-col items-center space-y-1">
-                            <div 
-                              className="w-8 rounded-t-md" 
-                              style={{
-                                height: `${Math.max(5, (item["Escola Segura"] || 0) * 15)}px`,
-                                backgroundColor: "#9333ea"
-                              }}
-                            ></div>
-                            <div 
-                              className="w-8 rounded-t-md" 
-                              style={{
-                                height: `${Math.max(5, (item["Polícia Mais Forte"] || 0) * 15)}px`,
-                                backgroundColor: "#2563eb"
-                              }}
-                            ></div>
-                          </div>
-                          <div className="text-xs mt-2">{item.name}</div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Legenda */}
-                    <div className="mt-6 flex justify-center space-x-6">
-                      <div className="flex items-center space-x-2">
-                        <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-sm"></div>
-                        <span className="text-xs">PMF</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-sm"></div>
-                        <span className="text-xs">Escola Segura</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Evolução das Escalas no Mês</CardTitle>
-                <CardDescription>Tendência diária de escalas para cada operação</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px]">
-                <div className="h-full w-full">
-                  {/* Tendência das escalas - timeline customizada */}
-                  <div className="h-full flex flex-col">
-                    {/* Timeline principal */}
-                    <div className="flex-1 p-4">
-                      <div className="w-full h-full flex items-center">
-                        {/* Linha horizontal do tempo */}
-                        <div className="h-0.5 bg-gray-200 w-full relative">
-                          {/* Pontos no gráfico para PMF */}
-                          {dadosTendencia
-                            .filter(d => d["Polícia Mais Forte"] > 0 || d["Escola Segura"] > 0)
-                            .map((item, index) => (
-                              <div key={`pmf-${index}`} className="absolute" style={{ left: `${index * 5}%` }}>
-                                {item["Polícia Mais Forte"] > 0 && (
-                                  <div 
-                                    className="absolute -translate-x-1/2 rounded-full cursor-pointer transition-all hover:scale-125"
-                                    style={{ 
-                                      width: `${Math.max(12, item["Polícia Mais Forte"] * 4 + 8)}px`, 
-                                      height: `${Math.max(12, item["Polícia Mais Forte"] * 4 + 8)}px`,
-                                      backgroundColor: "#2563eb",
-                                      bottom: "4px"
-                                    }}
-                                  >
-                                    <div className="tooltip opacity-0 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white shadow-lg rounded px-2 py-1 text-xs pointer-events-none transition-opacity">
-                                      {item.date}: {item["Polícia Mais Forte"]} escalas
-                                    </div>
-                                  </div>
-                                )}
-                                {item["Escola Segura"] > 0 && (
-                                  <div 
-                                    className="absolute -translate-x-1/2 rounded-full cursor-pointer transition-all hover:scale-125"
-                                    style={{ 
-                                      width: `${Math.max(12, item["Escola Segura"] * 4 + 8)}px`, 
-                                      height: `${Math.max(12, item["Escola Segura"] * 4 + 8)}px`,
-                                      backgroundColor: "#9333ea",
-                                      top: "4px"
-                                    }}
-                                  >
-                                    <div className="tooltip opacity-0 absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white shadow-lg rounded px-2 py-1 text-xs pointer-events-none transition-opacity">
-                                      {item.date}: {item["Escola Segura"]} escalas
-                                    </div>
-                                  </div>
-                                )}
-                                <div className="absolute text-xs -translate-x-1/2 whitespace-nowrap" style={{ top: "20px" }}>
-                                  {item.date.split("/")[0]}
-                                </div>
-                              </div>
-                            ))
-                          }
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Legenda */}
-                    <div className="mt-6 flex justify-center space-x-6">
-                      <div className="flex items-center space-x-2">
-                        <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-full"></div>
-                        <span className="text-xs">Polícia Mais Forte</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-full"></div>
-                        <span className="text-xs">Escola Segura</span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -652,7 +592,7 @@ export default function Relatorios() {
             <Card className="md:col-span-2">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium">Top 10 Militares Mais Escalados</CardTitle>
-                <CardDescription>Ranking de militares com mais escalas no período</CardDescription>
+                <CardDescription>Ranking de militares com mais extras no período</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
                 <div className="h-full w-full flex flex-col p-4">
@@ -817,233 +757,7 @@ export default function Relatorios() {
           </div>
         </TabsContent>
         
-        {/* Movendo o conteúdo de "Sugestões de Otimização" para a aba correta */}
-        <TabsContent value="otimizacao" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Sugestões de Otimização</CardTitle>
-                <CardDescription>Recomendações para melhor distribuição de carga</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px] overflow-y-auto space-y-4">
-                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-                  <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
-                    <Award className="h-4 w-4 mr-2" />
-                    Redistribuição de Carga
-                  </h4>
-                  <p className="text-sm text-blue-600 mb-3">
-                    {militaresNoLimite > 0 
-                      ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
-                      : "Nenhum militar atingiu o limite máximo de extras."
-                    }
-                  </p>
-                  <ul className="space-y-2">
-                    {Object.entries(dadosMilitares)
-                      .filter(([_, dados]) => dados.total >= 12)
-                      .slice(0, 3)
-                      .map(([nome, dados]) => (
-                        <li key={nome} className="text-sm flex items-center">
-                          <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
-                          <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-                  <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
-                    Militares Menos Utilizados
-                  </h4>
-                  <p className="text-sm text-green-600 mb-3">
-                    Considere utilizar os seguintes militares nas próximas escalas:
-                  </p>
-                  <ul className="space-y-2">
-                    {Object.entries(dadosMilitares)
-                      .filter(([_, dados]) => dados.total < 5)
-                      .sort((a, b) => a[1].total - b[1].total)
-                      .slice(0, 5)
-                      .map(([nome, dados]) => (
-                        <li key={nome} className="text-sm flex items-center">
-                          <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
-                          <span><b>{nome}</b> possui apenas {dados.total} extras</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg bg-purple-50 border border-purple-200 p-4">
-                  <h4 className="text-md font-semibold text-purple-700 mb-2 flex items-center">
-                    <BarChart4 className="h-4 w-4 mr-2" />
-                    Análise de Equilíbrio
-                  </h4>
-                  <p className="text-sm text-purple-600">
-                    A distribuição atual mostra uma concentração de extras em um pequeno grupo de militares.
-                    Considere distribuir as próximas escalas de forma mais equilibrada, priorizando militares
-                    com menos de 8 extras no período.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Análise de Distribuição</CardTitle>
-                <CardDescription>Impacto consolidado das operações extraordinárias</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px]">
-                <div className="h-full flex flex-col justify-center items-center space-y-6">
-                  <div className="grid grid-cols-3 w-full gap-4 mb-4">
-                    <div className="flex flex-col items-center justify-center bg-green-50 rounded-lg p-4 border border-green-200">
-                      <span className="text-xs text-green-600 font-medium">Abaixo de 8</span>
-                      <span className="text-2xl font-bold text-green-700">
-                        {Object.values(dadosMilitares).filter(d => d.total < 8).length}
-                      </span>
-                      <span className="text-xs text-green-600">militares</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center bg-amber-50 rounded-lg p-4 border border-amber-200">
-                      <span className="text-xs text-amber-600 font-medium">Entre 8 e 11</span>
-                      <span className="text-2xl font-bold text-amber-700">
-                        {Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length}
-                      </span>
-                      <span className="text-xs text-amber-600">militares</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center bg-red-50 rounded-lg p-4 border border-red-200">
-                      <span className="text-xs text-red-600 font-medium">12 ou mais</span>
-                      <span className="text-2xl font-bold text-red-700">
-                        {Object.values(dadosMilitares).filter(d => d.total >= 12).length}
-                      </span>
-                      <span className="text-xs text-red-600">militares</span>
-                    </div>
-                  </div>
-                  
-                  {/* Gráfico em formato de rosca personalizado */}
-                  <div className="h-64 my-4 flex items-center justify-center">
-                    <div className="relative w-48 h-48">
-                      {/* SVG customizado para gráfico de rosca */}
-                      <svg className="w-full h-full" viewBox="0 0 100 100">
-                        {/* Dados para o gráfico */}
-                        {(() => {
-                          const seguroCount = Object.values(dadosMilitares).filter(d => d.total < 8).length;
-                          const alertaCount = Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length;
-                          const criticoCount = Object.values(dadosMilitares).filter(d => d.total >= 12).length;
-                          const total = seguroCount + alertaCount + criticoCount;
-                          
-                          // Calcular percentuais e ângulos
-                          const seguroPercent = Math.round((seguroCount / total) * 100);
-                          const alertaPercent = Math.round((alertaCount / total) * 100);
-                          const criticoPercent = Math.round((criticoCount / total) * 100);
-                          
-                          const seguroAngle = (seguroPercent / 100) * 360;
-                          const alertaAngle = (alertaPercent / 100) * 360;
-                          const criticoAngle = (criticoPercent / 100) * 360;
-                          
-                          // Configurações do gráfico
-                          const centerX = 50;
-                          const centerY = 50;
-                          const radius = 40;
-                          const thickness = 15;
-                          
-                          // Criar os paths SVG para os segmentos
-                          return (
-                            <>
-                              {/* Segmento Verde */}
-                              {seguroCount > 0 && (
-                                <path 
-                                  d={`M ${centerX + radius * Math.cos(0)} ${centerY + radius * Math.sin(0)} 
-                                      A ${radius} ${radius} 0 ${seguroAngle > 180 ? 1 : 0} 1 
-                                      ${centerX + radius * Math.cos(seguroAngle * Math.PI / 180)} 
-                                      ${centerY + radius * Math.sin(seguroAngle * Math.PI / 180)} 
-                                      L ${centerX + (radius - thickness) * Math.cos(seguroAngle * Math.PI / 180)} 
-                                      ${centerY + (radius - thickness) * Math.sin(seguroAngle * Math.PI / 180)} 
-                                      A ${radius - thickness} ${radius - thickness} 0 ${seguroAngle > 180 ? 1 : 0} 0
-                                      ${centerX + (radius - thickness) * Math.cos(0)}
-                                      ${centerY + (radius - thickness) * Math.sin(0)} Z`}
-                                  fill="#2563eb"
-                                />
-                              )}
-                              
-                              {/* Segmento Amarelo */}
-                              {alertaCount > 0 && (
-                                <path 
-                                  d={`M ${centerX + radius * Math.cos(seguroAngle * Math.PI / 180)} 
-                                      ${centerY + radius * Math.sin(seguroAngle * Math.PI / 180)} 
-                                      A ${radius} ${radius} 0 ${alertaAngle > 180 ? 1 : 0} 1 
-                                      ${centerX + radius * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)} 
-                                      ${centerY + radius * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} 
-                                      L ${centerX + (radius - thickness) * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)} 
-                                      ${centerY + (radius - thickness) * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} 
-                                      A ${radius - thickness} ${radius - thickness} 0 ${alertaAngle > 180 ? 1 : 0} 0
-                                      ${centerX + (radius - thickness) * Math.cos(seguroAngle * Math.PI / 180)}
-                                      ${centerY + (radius - thickness) * Math.sin(seguroAngle * Math.PI / 180)} Z`}
-                                  fill="#f59e0b"
-                                />
-                              )}
-                              
-                              {/* Segmento Vermelho */}
-                              {criticoCount > 0 && (
-                                <path 
-                                  d={`M ${centerX + radius * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)} 
-                                      ${centerY + radius * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} 
-                                      A ${radius} ${radius} 0 ${criticoAngle > 180 ? 1 : 0} 1 
-                                      ${centerX + radius * Math.cos((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
-                                      ${centerY + radius * Math.sin((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
-                                      L ${centerX + (radius - thickness) * Math.cos((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
-                                      ${centerY + (radius - thickness) * Math.sin((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
-                                      A ${radius - thickness} ${radius - thickness} 0 ${criticoAngle > 180 ? 1 : 0} 0
-                                      ${centerX + (radius - thickness) * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)}
-                                      ${centerY + (radius - thickness) * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} Z`}
-                                  fill="#ef4444"
-                                />
-                              )}
-                              
-                              {/* Texto central */}
-                              <text 
-                                x={centerX} 
-                                y={centerY} 
-                                textAnchor="middle" 
-                                dominantBaseline="middle"
-                                fontSize="12"
-                                fontWeight="bold"
-                              >
-                                {seguroPercent}%
-                              </text>
-                              <text 
-                                x={centerX} 
-                                y={centerY + 10} 
-                                textAnchor="middle" 
-                                dominantBaseline="middle"
-                                fontSize="6"
-                              >
-                                Zona Segura
-                              </text>
-                            </>
-                          );
-                        })()}
-                      </svg>
-                    </div>
-                    
-                    {/* Legenda do gráfico */}
-                    <div className="ml-4 space-y-2">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-blue-500 rounded-sm mr-2"></div>
-                        <span className="text-xs">Zona Segura ({Object.values(dadosMilitares).filter(d => d.total < 8).length})</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-amber-500 rounded-sm mr-2"></div>
-                        <span className="text-xs">Zona de Alerta ({Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length})</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 bg-red-500 rounded-sm mr-2"></div>
-                        <span className="text-xs">Zona Crítica ({Object.values(dadosMilitares).filter(d => d.total >= 12).length})</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+
       </Tabs>
     </div>
   );
