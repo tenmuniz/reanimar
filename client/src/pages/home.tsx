@@ -229,62 +229,35 @@ export default function Home() {
   const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Header - Versão redesenhada com layout mais limpo */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 text-white border-b-4 border-yellow-500 shadow-2xl relative overflow-hidden">
-        {/* Padrões de fundo para dar sensação de profundidade */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+R3JpZDwvdGl0bGU+PHBhdGggZD0iTTYwIDYwSDBWMGg2MHY2MHptLTI2LThIMjZ2LTRoOHY0em0tOC0yNGg4djRoLTh2LTR6bTI0IDE2aC00djhoLTh2NGg4djhoNHYtOGg4di00aC04di04em0wLTE2djRoLTR2LTRoNHptLTI0LThWNGg4djRoLThWOHptMjQtNGgtOHY4aDR2NGg0VjR6bS0yNCAyMGg4djRoLTh2LTR6bTAgMTZ2LTRoOHY0aC04eiIgZmlsbD0iIzIwMzQ3YiIgZmlsbC1vcGFjaXR5PSIwLjIiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg==')]"
-          style={{ opacity: 0.1 }}></div>
-        
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/40"></div>
-        
-        {/* Efeito de brilho no topo */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-white to-blue-400 opacity-50"></div>
-        
-        <div className="container mx-auto px-4 py-6 flex flex-row items-center justify-between relative z-10">
-          <div className="mr-4">
-            {/* Destaque para 20ª CIPM com maior importância */}
-            <div className="flex items-baseline mb-2">
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-yellow-300 to-white">
-                  20ª CIPM
-                </span>
+    <div className="min-h-screen font-sans">
+      {/* Header com título e seletor de mês */}
+      <header className="bg-white shadow-lg border-b border-blue-100 py-6 mb-6">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-blue-900">
+                EXTRAORDINÁRIO <span className="text-yellow-500">•</span> <span className="text-2xl font-semibold text-blue-700">Escala PMF</span>
               </h1>
-              <span className="ml-2 bg-blue-700 text-white font-bold px-3 py-1 rounded-md shadow-lg text-xs">
-                POLÍCIA MAIS FORTE
-              </span>
+              <p className="text-blue-600 text-sm mt-1">Gerencie as escalas PMF e controle o limite de GCJO por militar</p>
             </div>
             
-            {/* Subtítulo com efeito de profundidade */}
-            <div className="bg-blue-800/50 px-4 py-2 rounded-lg shadow-inner transform skew-x-2">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-shadow-lg flex items-center">
-                SISTEMA DE ESCALA 
-                <span className="ml-2 bg-yellow-500 text-blue-900 font-bold text-sm px-2 py-0.5 rounded-full shadow-md border border-yellow-400">
-                  PMF
-                </span>
-              </h2>
+            {/* Seletor de mês com estilo premium */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-5 py-3 rounded-lg shadow-lg mt-4 md:mt-0">
+              <MonthSelector
+                currentDate={currentDate}
+                onPreviousMonth={handlePreviousMonth}
+                onNextMonth={handleNextMonth}
+              />
             </div>
-          </div>
-          
-          {/* Seletor de mês com efeito neomórfico */}
-          <div className="bg-gradient-to-b from-blue-800 to-blue-950 px-5 py-3 rounded-lg border border-blue-700 shadow-[inset_0_1px_4px_rgba(0,0,0,0.6),0_10px_20px_rgba(0,0,0,0.2)] w-64">
-            <MonthSelector
-              currentDate={currentDate}
-              onPreviousMonth={handlePreviousMonth}
-              onNextMonth={handleNextMonth}
-            />
           </div>
         </div>
       </header>
       
       {/* Main content */}
-      <main className="container mx-auto px-4 py-6">
-        {/* Calendar controls - Versão melhorada com efeitos 3D */}
-        <div className="mb-8 relative">
-          {/* Barra decorativa para agrupar os controles */}
-          <div className="absolute -left-4 -right-4 h-20 bg-gradient-to-r from-blue-800/10 via-blue-700/10 to-blue-800/10 rounded-lg -z-10 shadow-inner"></div>
-          
-          <div className="flex flex-wrap gap-3 justify-center sm:justify-start items-center py-3">
+      <main className="container mx-auto px-4 mb-8">
+        {/* Barra de botões e ações */}
+        <div className="bg-white p-4 mb-6 rounded-xl shadow-lg border border-gray-100">
+          <div className="flex flex-wrap gap-3 items-center">
             {/* Botão de salvar com efeito 3D */}
             <button
               onClick={saveSchedule}
