@@ -456,28 +456,20 @@ export default function Relatorios() {
       </div>
       
       {/* Tabs de diferentes visualizações */}
-      <Tabs defaultValue="visaoGeral" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="visaoGeral" className="flex items-center gap-2">
-            <BarChart4 className="h-4 w-4" />
-            <span>Visão Geral</span>
+      <Tabs defaultValue="otimizacao" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="otimizacao" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            <span>Sugestões de Otimização</span>
           </TabsTrigger>
-          <TabsTrigger value="porMilitar" className="flex items-center gap-2">
+          <TabsTrigger value="distribuicao" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
-            <span>Por Militar</span>
-          </TabsTrigger>
-          <TabsTrigger value="porData" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Por Data</span>
-          </TabsTrigger>
-          <TabsTrigger value="tendencias" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            <span>Tendências</span>
+            <span>Distribuição de Extras</span>
           </TabsTrigger>
         </TabsList>
         
-        {/* Conteúdo da Visão Geral */}
-        <TabsContent value="visaoGeral" className="space-y-4">
+        {/* Conteúdo de Sugestões de Otimização */}
+        <TabsContent value="otimizacao" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
@@ -653,8 +645,8 @@ export default function Relatorios() {
           </div>
         </TabsContent>
         
-        {/* Conteúdo de Por Militar */}
-        <TabsContent value="porMilitar" className="space-y-4">
+        {/* Conteúdo de Distribuição de Extras */}
+        <TabsContent value="distribuicao" className="space-y-4">
           {/* Cards na primeira linha */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="md:col-span-2">
@@ -826,129 +818,7 @@ export default function Relatorios() {
         </TabsContent>
         
         {/* Conteúdo de Por Data */}
-        <TabsContent value="porData" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Distribuição Mensal</CardTitle>
-                <CardDescription>Mapa de calor das escalas por dia do mês</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="grid grid-cols-7 gap-1 p-4">
-                  {Array(30).fill(0).map((_, i) => {
-                    const dia = i + 1;
-                    const pmf = pmfSchedule[dia] ? Object.values(pmfSchedule[dia]).filter(Boolean).length : 0;
-                    const es = escolaSeguraSchedule[dia] ? Object.values(escolaSeguraSchedule[dia]).filter(Boolean).length : 0;
-                    const total = pmf + es;
-                    
-                    let bgColor = "bg-gray-100";
-                    if (total > 0) {
-                      if (total >= 5) bgColor = "bg-blue-500 text-white";
-                      else if (total >= 4) bgColor = "bg-blue-400 text-white";
-                      else if (total >= 3) bgColor = "bg-blue-300";
-                      else if (total >= 2) bgColor = "bg-blue-200";
-                      else bgColor = "bg-blue-100";
-                    }
-                    
-                    return (
-                      <div 
-                        key={i} 
-                        className={`aspect-square rounded-lg flex flex-col items-center justify-center ${bgColor} text-center p-1 transition-all hover:scale-105`}
-                      >
-                        <div className="text-sm font-medium">{dia}</div>
-                        {total > 0 && (
-                          <div className="text-xs">{total}</div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Distribuição por Dia da Semana</CardTitle>
-                <CardDescription>Comparativo entre dias da semana</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px]">
-                <BarChart
-                  data={dadosPorDia.map((dia) => ({
-                    name: dia.name,
-                    "Polícia Mais Forte": dia.pmf,
-                    "Escola Segura": dia.escolaSegura
-                  }))}
-                  index="name"
-                  categories={["Polícia Mais Forte", "Escola Segura"]}
-                  colors={["blue", "purple"]}
-                  valueFormatter={(value) => `${value} escalas`}
-                  className="h-full"
-                  stack
-                />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Histórico Diário de Escalas</CardTitle>
-              <CardDescription>Detalhamento de todas as datas com escalas no período</CardDescription>
-            </CardHeader>
-            <CardContent className="h-[350px] overflow-y-auto px-0">
-              <table className="w-full">
-                <thead className="sticky top-0 bg-white">
-                  <tr className="border-b">
-                    <th className="text-left p-3">Data</th>
-                    <th className="text-center p-3">Dia Semana</th>
-                    <th className="text-center p-3">PMF</th>
-                    <th className="text-center p-3">Escola Segura</th>
-                    <th className="text-center p-3">Total</th>
-                    <th className="text-center p-3">Ocupação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array(30).fill(0).map((_, i) => {
-                    const dia = i + 1;
-                    const data = new Date(2025, 3, dia);
-                    const diaSemana = data.toLocaleDateString('pt-BR', { weekday: 'short' });
-                    const pmf = pmfSchedule[dia] ? Object.values(pmfSchedule[dia]).filter(Boolean).length : 0;
-                    const es = escolaSeguraSchedule[dia] ? Object.values(escolaSeguraSchedule[dia]).filter(Boolean).length : 0;
-                    const total = pmf + es;
-                    const maxPmf = 3;
-                    const maxEs = 2;
-                    const maxTotal = maxPmf + maxEs;
-                    const ocupacao = Math.round((total / maxTotal) * 100);
-                    
-                    let statusColor = "bg-green-100 text-green-800 border-green-200";
-                    if (ocupacao < 50) {
-                      statusColor = "bg-red-100 text-red-800 border-red-200";
-                    } else if (ocupacao < 80) {
-                      statusColor = "bg-amber-100 text-amber-800 border-amber-200";
-                    }
-                    
-                    return (
-                      <tr key={dia} className={`border-b hover:bg-gray-50 ${i % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
-                        <td className="p-3 font-medium">{data.toLocaleDateString('pt-BR')}</td>
-                        <td className="p-3 text-center">{diaSemana}</td>
-                        <td className="p-3 text-center">{pmf} <span className="text-xs text-gray-500">/{maxPmf}</span></td>
-                        <td className="p-3 text-center">{es} <span className="text-xs text-gray-500">/{maxEs}</span></td>
-                        <td className="p-3 text-center font-semibold">{total}</td>
-                        <td className="p-3 text-center">
-                          <div className="flex items-center space-x-2">
-                            <Progress value={ocupacao} className="h-2 w-20" />
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
-                              {ocupacao}%
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+
         
         {/* Conteúdo de Tendências */}
         <TabsContent value="tendencias" className="space-y-4">
