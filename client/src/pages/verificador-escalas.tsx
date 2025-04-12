@@ -131,35 +131,6 @@ export default function VerificadorEscalas() {
     setIsVerificando(true);
     const conflitosEncontrados: ConflitosEscala[] = [];
     
-    // TESTES DE CONFLITO - Escalas conhecidas por gerar conflitos
-    // Sabemos que temos SD PM MARVÃO na guarnicão BRAVO nos dias 4-9, 24-30, e na PMF no dia 7
-    // Sabemos que temos 1º SGT PM OLIMAR na guarnicão BRAVO nos dias 4-9, 24-30, e na PMF no dia 7
-    
-    // Exemplo: Vamos adicionar alguns conflitos simulados para demonstrar a funcionalidade:
-    conflitosEncontrados.push({
-      dia: 7,
-      militar: "1º SGT PM OLIMAR", 
-      guarnicaoOrdinaria: "BRAVO",
-      operacao: "PMF"
-    });
-    
-    conflitosEncontrados.push({
-      dia: 7,
-      militar: "SD PM MARVÃO", 
-      guarnicaoOrdinaria: "BRAVO",
-      operacao: "PMF"
-    });
-    
-    // Adicionando mais alguns conflitos para tornar a lista mais visível e rolável
-    for (let i = 1; i <= 10; i++) {
-      conflitosEncontrados.push({
-        dia: i + 10,
-        militar: `SD PM EXEMPLO ${i}`, 
-        guarnicaoOrdinaria: i % 3 === 0 ? "ALFA" : (i % 3 === 1 ? "BRAVO" : "CHARLIE"),
-        operacao: "PMF"
-      });
-    }
-    
     if (!combinedSchedulesData?.schedules) {
       toast({
         title: "Erro ao verificar conflitos",
