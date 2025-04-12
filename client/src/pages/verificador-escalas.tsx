@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -115,7 +114,7 @@ export default function VerificadorEscalas() {
   const [currentDate] = useState(new Date(2025, 3, 1)); // Abril 2025 (mês indexado em 0, então 3 = abril)
 
   // Obter dados da escala PMF
-  const { data: combinedSchedulesData, dataUpdatedAt } = useQuery<{ schedules: CombinedSchedules }>({
+  const { data: combinedSchedulesData, dataUpdatedAt, refetch } = useQuery<{ schedules: CombinedSchedules }>({
     queryKey: ["/api/combined-schedules", currentDate.getFullYear(), currentDate.getMonth()],
     queryFn: async () => {
       const response = await fetch(
@@ -130,21 +129,25 @@ export default function VerificadorEscalas() {
     refetchInterval: 5000
   });
 
-  const verificarConflitos = () => {
+  const verificarConflitos = async () => {
     setIsVerificando(true);
-    const conflitosEncontrados: ConflitosEscala[] = [];
-    
-    if (!combinedSchedulesData?.schedules) {
-      toast({
-        title: "Erro ao verificar conflitos",
-        description: "Não foi possível carregar os dados das escalas.",
-        variant: "destructive"
-      });
-      setIsVerificando(false);
-      return;
-    }
     
     try {
+      // Forçar uma atualização dos dados antes de verificar
+      await refetch();
+      
+      if (!combinedSchedulesData?.schedules) {
+        toast({
+          title: "Erro ao verificar conflitos",
+          description: "Não foi possível carregar os dados das escalas.",
+          variant: "destructive"
+        });
+        setIsVerificando(false);
+        return;
+      }
+      
+      const conflitosEncontrados: ConflitosEscala[] = [];
+      
       // Obtém os dados da escala PMF - Abril 2025
       // Em algumas consultas o formato retornado pode variar entre "2025-3" e "2025-4" 
       // (zero-based vs one-based)
@@ -155,7 +158,6 @@ export default function VerificadorEscalas() {
       
       console.log("Dados brutos combinados:", combinedSchedulesData.schedules);
       console.log("Dados brutos PMF:", combinedSchedulesData.schedules.pmf);
-      
       console.log("Dados da escala PMF:", pmfSchedule);
       
       // Para cada dia no mês
