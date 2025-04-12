@@ -23,18 +23,18 @@ export default function MonthSelector({
         variant="ghost"
         size="icon"
         onClick={onPreviousMonth}
-        className="p-2 hover:bg-blue-700 rounded-full text-white"
+        className="p-1.5 bg-blue-700/50 hover:bg-blue-700 rounded-lg text-white transition-colors duration-200"
       >
-        <ChevronLeft className="h-6 w-6" />
+        <ChevronLeft className="h-5 w-5" />
       </Button>
       
-      <div className="flex items-center">
-        <Calendar className="h-6 w-6 mr-2 text-yellow-300" />
-        <div className="text-center">
-          <span className="font-bold text-2xl text-white tracking-wide">
+      <div className="flex items-center bg-blue-800/50 px-3 py-1.5 rounded-md">
+        <Calendar className="h-5 w-5 mr-2 text-blue-200" />
+        <div className="flex flex-col items-center">
+          <span className="font-bold text-sm text-white tracking-wide leading-tight">
             {monthName}
           </span>
-          <span className="font-bold text-xl text-yellow-300 ml-2">
+          <span className="text-xs text-blue-200">
             {year}
           </span>
         </div>
@@ -44,9 +44,9 @@ export default function MonthSelector({
         variant="ghost"
         size="icon"
         onClick={onNextMonth}
-        className="p-2 hover:bg-blue-700 rounded-full text-white"
+        className="p-1.5 bg-blue-700/50 hover:bg-blue-700 rounded-lg text-white transition-colors duration-200"
       >
-        <ChevronRight className="h-6 w-6" />
+        <ChevronRight className="h-5 w-5" />
       </Button>
     </div>
   );

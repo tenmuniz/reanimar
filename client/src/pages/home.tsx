@@ -258,26 +258,19 @@ export default function Home() {
         {/* Barra de botões e ações */}
         <div className="bg-white p-4 mb-6 rounded-xl shadow-lg border border-gray-100">
           <div className="flex flex-wrap gap-3 items-center">
-            {/* Botão de salvar com efeito 3D */}
+            {/* Botão de salvar escala */}
             <button
               onClick={saveSchedule}
-              className="relative group overflow-hidden bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 
-                text-white font-bold px-5 py-3 rounded-lg flex items-center transform transition-all duration-200 
-                border border-green-400 shadow-[0_8px_0_rgb(22,101,52),0_15px_20px_rgba(0,0,0,0.3)]
-                hover:shadow-[0_4px_0_rgb(22,101,52),0_8px_15px_rgba(0,0,0,0.3)]
-                active:translate-y-4 active:shadow-[0_0px_0_rgb(22,101,52),0_0px_10px_rgba(0,0,0,0.2)]"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center 
+                transition-colors duration-200 shadow-md"
             >
-              {/* Efeito de brilho no hover */}
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/30 to-white/0 
-                transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-              
-              <Save className="h-5 w-5 mr-2 drop-shadow-lg" />
-              <span>Salvar Escala</span>
+              <Save className="h-4 w-4 mr-2" />
+              <span className="font-medium">Salvar Escala</span>
             </button>
             
-            {/* Botões para os diálogos com estilo neomórfico */}
-            <div className="flex gap-3 ml-2">
-              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-200">
+            {/* Botões de ações e análises */}
+            <div className="flex gap-2 ml-1">
+              <div>
                 <ResumoEscala
                   schedule={schedule}
                   currentDate={currentDate}
@@ -285,7 +278,7 @@ export default function Home() {
                 />
               </div>
               
-              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-200">
+              <div>
                 <ResumoGuarnicao 
                   schedule={schedule}
                   currentDate={currentDate}
@@ -294,7 +287,7 @@ export default function Home() {
                 />
               </div>
               
-              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-200">
+              <div>
                 <VerificadorInconsistencias 
                   schedule={schedule}
                   currentDate={currentDate}
