@@ -113,33 +113,40 @@ export default function OfficerSelect({
 
   return (
     <div className="officer-select">
-      <Label className="block text-sm font-medium text-gray-700 mb-1">
-        Policial {position}
-      </Label>
+      <div className="flex justify-between items-center mb-1">
+        <Label className="text-xs font-semibold text-slate-600">
+          Policial {position}
+        </Label>
+        {selectedOfficer && (
+          <span className="text-xs text-blue-700 bg-blue-50 px-1 py-0.5 rounded">
+            {selectedOfficer.includes("CAP") || selectedOfficer.includes("TEN") ? "Oficial" : "Praça"}
+          </span>
+        )}
+      </div>
       
       {/* Exibição do policial selecionado com opção para mudar/remover */}
       {selectedOfficer ? (
         <div className="flex items-center">
-          <div className={`border ${limitReachedOfficers.includes(selectedOfficer) 
-              ? 'border-red-500 bg-red-50 text-red-700 border-l-4 border-l-red-600' 
-              : 'border-gray-300 bg-white'} 
-              rounded-md shadow-sm p-2 text-sm flex-1 truncate`}>
+          <div className={`${limitReachedOfficers.includes(selectedOfficer) 
+              ? 'border border-yellow-400 bg-yellow-50 text-yellow-800 border-l-4 border-l-yellow-500' 
+              : 'border border-slate-200 bg-white text-slate-800'} 
+              rounded px-3 py-2 text-sm flex-1 truncate`}>
             <span className={limitReachedOfficers.includes(selectedOfficer) ? 'line-through' : ''}>
               {selectedOfficer}
             </span>
             {limitReachedOfficers.includes(selectedOfficer) && (
-              <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded flex items-center">
+              <span className="ml-1 bg-yellow-200 text-yellow-800 text-xs font-bold inline-flex items-center px-1.5 py-0.5 rounded">
                 <AlertTriangle className="h-3 w-3 mr-1" />
-                LIMITE ATINGIDO
+                LIMITE
               </span>
             )}
           </div>
           <button 
-            className="ml-2 p-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full shadow-sm hover:from-red-600 hover:to-red-700 transition-all duration-200 hover:shadow-md flex items-center justify-center transform hover:scale-110 active:scale-95"
+            className="ml-2 p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center justify-center"
             onClick={() => onChange(null)}
             title="Remover policial da escala"
           >
-            <Trash2 className="h-4 w-4" strokeWidth={2.5} />
+            <X className="h-4 w-4" />
           </button>
         </div>
       ) : (
@@ -147,7 +154,7 @@ export default function OfficerSelect({
           value={selectedOfficer || PLACEHOLDER_VALUE}
           onValueChange={handleChange}
         >
-          <SelectTrigger className="w-full rounded-md border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-200 text-sm min-h-[40px]">
+          <SelectTrigger className="w-full rounded border border-slate-200 shadow-sm text-sm min-h-[42px] bg-slate-50/50">
             <SelectValue placeholder="-- Selecione um policial --" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px] overflow-y-auto w-[300px]">
@@ -155,12 +162,12 @@ export default function OfficerSelect({
             
             {/* AVISO DE LIMITE NO TOPO QUANDO HÁ MILITARES BLOQUEADOS */}
             {limitReachedOfficers.length > 0 && (
-              <div className="px-2 py-1 bg-red-100 border-l-4 border-red-600 my-1 text-xs">
-                <p className="font-bold text-red-800 flex items-center">
-                  <AlertTriangle className="h-3 w-3 mr-1 text-red-600" />
+              <div className="px-3 py-2 bg-yellow-50 border-l-4 border-yellow-500 my-1.5 text-xs rounded-r">
+                <p className="font-bold text-yellow-800 flex items-center">
+                  <AlertTriangle className="h-3 w-3 mr-1 text-yellow-600" />
                   MILITARES BLOQUEADOS
                 </p>
-                <p className="text-red-600">
+                <p className="text-yellow-700">
                   {limitReachedOfficers.length} {limitReachedOfficers.length === 1 ? 'militar atingiu' : 'militares atingiram'} o limite de 12 serviços
                 </p>
               </div>
@@ -178,13 +185,13 @@ export default function OfficerSelect({
                       value={officer}
                       disabled={disabledOfficers.includes(officer) || hasReachedLimit}
                       className={hasReachedLimit 
-                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
+                        ? "bg-yellow-50 text-yellow-800 line-through border-l-4 border-yellow-500 pl-2 opacity-75" 
                         : ""}
                     >
                       {officer}
                       {hasReachedLimit && (
-                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
-                          ⛔ BLOQUEADO (12)
+                        <span className="ml-1 bg-yellow-100 text-yellow-800 text-xs font-medium inline-block px-1.5 py-0.5 rounded">
+                          Limite 12
                         </span>
                       )}
                     </SelectItem>

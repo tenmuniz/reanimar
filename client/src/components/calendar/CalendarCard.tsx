@@ -293,63 +293,53 @@ export default function CalendarCard({
 
   return (
     <div 
-      className={`day-card relative bg-white rounded-xl overflow-hidden transform transition-all duration-200 hover:scale-[1.02]
-        ${assignedCount === 0 ? 'shadow-md hover:shadow-lg' : 'shadow-lg hover:shadow-xl'}`} 
+      className={`day-card relative bg-white rounded-md overflow-hidden transition-all duration-200
+        ${assignedCount === 0 ? 'border border-gray-200 hover:shadow-md' : 
+          assignedCount === 3 ? 'border-2 border-green-500 hover:shadow-lg' : 
+          'border-2 border-orange-500 hover:shadow-lg'}`} 
       id={`dia-${day}`}
-      style={{
-        boxShadow: assignedCount === 3 
-          ? '0 10px 25px -5px rgba(16, 185, 129, 0.25), 0 8px 10px -6px rgba(16, 185, 129, 0.2)' 
-          : assignedCount > 0 
-            ? '0 10px 25px -5px rgba(239, 68, 68, 0.25), 0 8px 10px -6px rgba(239, 68, 68, 0.2)'
-            : ''
-      }}
     >
-      {/* Corner fold effect */}
-      <div className={`absolute top-0 right-0 w-8 h-8 ${headerBgColor} shadow-sm transform rotate-90 origin-top-right z-10 opacity-60`}></div>
+      {/* Barra de limite - mostrada apenas quando um militar selecionado já atingiu o limite */}
+      {showLimitWarning && (
+        <div className="absolute top-0 left-0 right-0 bg-yellow-500 text-xs text-center py-0.5 font-medium text-yellow-900 z-10">
+          Militar atingiu o limite de 12 serviços
+        </div>
+      )}
       
-      {/* Status bar lateral indicando completo/incompleto */}
-      <div className={`absolute left-0 top-0 bottom-0 w-1.5 
-        ${assignedCount === 3 
-          ? 'bg-gradient-to-b from-green-400 to-green-600' 
+      {/* Header com a data e dia da semana */}
+      <div className={`flex items-center justify-between ${
+        assignedCount === 3 
+          ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
           : assignedCount > 0 
-            ? 'bg-gradient-to-b from-red-400 to-red-600' 
-            : 'bg-gradient-to-b from-gray-300 to-gray-400'}`
-        }></div>
-      
-      {/* Header melhorado e mais destacado */}
-      <div className={`${headerClasses} relative overflow-hidden border-b-2 border-opacity-70 shadow-md`}>
-        {/* Efeito de brilho no header */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU+RG90czwvdGl0bGU+PHBhdGggZD0iTTY0IDY0SDBWMGg2NHY2NHpNNCAxaDJ2MkgzVjFoMXptOCAwaDJWM2gtMnptOCAwaDF2Mkg5VjFoMTF6bTgtMXYyaC0yVjBoMnptOCAwaDJ2MmgtMnptOCAwaDJWM2gtMlY5em04IDBoMnYyaC0yem04IDBWMmgtMnYyaC0ydjJoNHYtNHptLThWNGgtMnYyaC0ydjJoNFY0ek40VjIuNDIyaDJWMmgtMnptMTIgMGgyVjJoLTJ6bTI4IDBoMlY1NGgtMnoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+')]"
-          style={{ opacity: 0.15 }}></div>
-          
-        <h3 className={`${dayTextClasses} text-xl font-extrabold drop-shadow-sm`}>
-          Dia {day}
-        </h3>
-        <span className={`text-xs font-bold ${weekdayBadgeClass} px-3 py-1.5 rounded-md shadow-md`}>
-          {weekday}
-        </span>
-      </div>
-      
-      {/* Corpo do card com um fundo mais elaborado */}
-      <div className="p-5 space-y-4 relative bg-gradient-to-b from-white to-gray-50">
-        {/* Padrão decorativo para adicionar mais textura */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white opacity-50"></div>
-          
-        {/* Counter badge - número de policiais selecionados */}
-        <div className="absolute top-3 right-3">
-          <span className={`inline-flex items-center justify-center h-7 w-7 text-sm font-bold rounded-full 
-            ${assignedCount === 3 
-              ? 'bg-green-500 text-white ring-2 ring-green-200' 
-              : assignedCount > 0 
-                ? 'bg-amber-500 text-white' 
-                : 'bg-gray-200 text-gray-500'}`}>
-            {assignedCount}/3
-          </span>
+            ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
+            : 'bg-slate-100 text-slate-700'
+      } px-4 py-3`}>
+        <div className="flex flex-col">
+          <span className="text-2xl font-bold leading-none">{day}</span>
+          <span className="text-xs opacity-90 capitalize">{weekday}</span>
         </div>
         
-        {/* Officer selects com maior espaçamento e bordas mais suaves */}
-        <div className="space-y-4 pt-2">
-          {[0, 1, 2].map((position) => (
+        <div className="text-right">
+          <div className={`text-xs font-medium px-2 py-1 rounded-full ${
+            assignedCount === 3 
+              ? 'bg-green-700/30 text-white' 
+              : assignedCount > 0 
+                ? 'bg-orange-700/30 text-white'
+                : 'bg-slate-200 text-slate-700'
+          }`}>
+            {assignedCount === 0 ? '0/3' : 
+             assignedCount === 3 ? 'Completo' : 
+             `${assignedCount}/3`}
+          </div>
+        </div>
+      </div>
+      
+      {/* Corpo do card */}
+      <div className="p-4 space-y-3">
+        {/* Seletores de oficiais */}
+        {[0, 1, 2].map((position) => (
+          <div key={`select-${day}-${position}`} className="relative">
+            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-10 bg-blue-500 opacity-80 rounded-r-md"></div>
             <OfficerSelect
               key={`day-${day}-position-${position}`}
               position={position + 1}
@@ -362,23 +352,32 @@ export default function CalendarCard({
               limitReachedOfficers={limitReachedOfficers}
               onChange={(value) => handleOfficerChange(position, value)}
             />
-          ))}
-        </div>
+          </div>
+        ))}
         
-        {/* Alerta destacado de limite atingido com maior destaque */}
+        {/* Status da guarnição */}
+        {assignedCount === 3 && (
+          <div className="mt-2 text-center">
+            <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-100 text-green-800 font-medium">
+              <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Guarnição completa
+            </span>
+          </div>
+        )}
+        
+        {/* Alerta de limite atingido */}
         {showLimitWarning && (
-          <Alert className="mt-4 bg-gradient-to-r from-red-100 to-red-200 border-l-4 border-red-500 text-red-900 shadow-md">
-            <div className="flex">
-              <AlertCircle className="h-7 w-7 text-red-600 mr-2" strokeWidth={2} />
-              <AlertDescription className="text-sm font-bold">
-                ⚠️ <span className="underline decoration-red-500">LIMITE ATINGIDO</span>: Um ou mais militares neste dia já atingiram 12 escalas no mês.
-                <br/>
-                <span className="text-xs bg-red-200 px-2 py-1 mt-1 inline-block rounded">
-                  REGRA DE NEGÓCIO: É PROIBIDO ESCALAR UM MILITAR MAIS DE 12 VEZES NO MÊS.
-                </span>
-              </AlertDescription>
+          <div className="mt-2 p-2 bg-yellow-100 border-l-4 border-yellow-500 rounded text-yellow-800 text-xs">
+            <div className="flex items-start">
+              <AlertCircle className="h-4 w-4 text-yellow-600 mr-1 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Limite de 12 serviços atingido</p>
+                <p className="mt-0.5">Um ou mais militares neste dia já atingiram o limite mensal.</p>
+              </div>
             </div>
-          </Alert>
+          </div>
         )}
       </div>
     </div>
