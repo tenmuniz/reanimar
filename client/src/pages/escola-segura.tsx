@@ -328,10 +328,10 @@ export default function EscolaSegura() {
         <div className="mb-8">
           <div className="bg-white p-4 rounded-xl shadow-lg border border-purple-100">
             <div className="flex flex-wrap gap-3 items-center">
-              {/* Botão de salvar escala */}
+              {/* Botão de salvar escala com cor verde igual ao PMF */}
               <button
                 onClick={saveSchedule}
-                className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
                   text-white px-5 py-2.5 rounded-xl flex items-center 
                   transition-all duration-200 shadow-md hover:shadow-lg
                   active:shadow-inner active:translate-y-0.5 transform"
