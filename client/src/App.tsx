@@ -64,7 +64,7 @@ function NavBar() {
             <div className="hidden md:flex items-center">
               <div className="flex items-center px-3 py-1.5 bg-blue-50 rounded-l-full border border-blue-100">
                 <Users className="h-3.5 w-3.5 text-blue-500 mr-1.5" />
-                <span className="text-xs font-medium text-blue-700">48 escalas</span>
+                <span className="text-xs font-medium text-blue-700">GCJO: 48</span>
               </div>
               
               <div className="flex items-center px-3 py-1.5 bg-purple-50 border-t border-b border-purple-100">
@@ -74,7 +74,7 @@ function NavBar() {
               
               <div className="flex items-center px-3 py-1.5 bg-amber-50 rounded-r-full border border-amber-100">
                 <Clock className="h-3.5 w-3.5 text-amber-500 mr-1.5" />
-                <span className="text-xs font-medium text-amber-700">Atualizado 12/04</span>
+                <span className="text-xs font-medium text-amber-700">12/04/2025</span>
               </div>
             </div>
             
