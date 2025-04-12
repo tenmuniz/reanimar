@@ -195,9 +195,9 @@ export default function VerificadorSimples() {
           <div className="flex items-center">
             <AlertTriangle className="h-8 w-8 mr-3" />
             <div>
-              <h1 className="text-2xl font-bold">Verificador de Inconsistências</h1>
+              <h1 className="text-2xl font-bold">VERIFICADOR DE CONFLITOS</h1>
               <p className="text-orange-100">
-                Militares em serviço ordinário e também escalados em operações extraordinárias
+                Detecta militares em serviço ordinário e também escalados em operações extraordinárias
               </p>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function VerificadorSimples() {
         <div className="bg-amber-800 text-white p-3 flex items-center justify-between">
           <div className="flex items-center">
             <AlertTriangle className="h-5 w-5 mr-2" />
-            <h2 className="text-lg font-bold">Inconsistências Encontradas</h2>
+            <h2 className="text-lg font-bold">CONFLITOS ENCONTRADOS</h2>
           </div>
           <div className="bg-amber-600 px-3 py-0.5 rounded-full text-white font-bold">
             {inconsistencias.length} {inconsistencias.length === 1 ? 'ocorrência' : 'ocorrências'}
