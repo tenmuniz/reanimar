@@ -331,7 +331,7 @@ export default function EscolaSegura() {
               {/* Botão de salvar escala */}
               <button
                 onClick={saveSchedule}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 
+                className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 
                   text-white px-5 py-2.5 rounded-xl flex items-center 
                   transition-all duration-200 shadow-md hover:shadow-lg
                   active:shadow-inner active:translate-y-0.5 transform"

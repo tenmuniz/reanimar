@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface MonthSelectorProps {
   currentDate: Date;
@@ -22,13 +23,26 @@ export default function MonthSelector({
   
   // Calcular progresso do mês (para a barra de progresso)
   const progressPercent = Math.round((currentDay / daysInMonth) * 100);
+  
+  // Determinar as cores com base na página atual
+  const [location] = useLocation();
+  const isEscolaSegura = location === "/escola-segura";
+  
+  // Cores dinâmicas baseadas na página
+  const bgExterno = isEscolaSegura ? "bg-purple-600" : "bg-blue-600";
+  const bgInterno = isEscolaSegura ? "bg-purple-500" : "bg-blue-500";
+  const bgBarraVazia = isEscolaSegura ? "bg-purple-400/30" : "bg-blue-400/30";
+  const bgBarraCheia = isEscolaSegura ? "bg-purple-300" : "bg-blue-300";
+  const bgStatus = isEscolaSegura ? "bg-purple-400/20" : "bg-blue-400/20";
+  const indicadorCor = isEscolaSegura ? "bg-purple-200" : "bg-blue-200";
+  const textoCor = isEscolaSegura ? "text-purple-100" : "text-blue-100";
 
   return (
     <div className="flex justify-end mb-8">
-      {/* Container exterior com fundo azul exatamente como na imagem */}
-      <div className="relative bg-blue-600 rounded-3xl overflow-hidden shadow-xl p-4 max-w-xs">
-        {/* Card interno com fundo azul mais claro */}
-        <div className="bg-blue-500 rounded-2xl overflow-hidden shadow-inner">
+      {/* Container exterior com fundo dinâmico baseado na página */}
+      <div className={`relative ${bgExterno} rounded-3xl overflow-hidden shadow-xl p-4 max-w-xs`}>
+        {/* Card interno com fundo mais claro */}
+        <div className={`${bgInterno} rounded-2xl overflow-hidden shadow-inner`}>
           {/* Conteúdo principal */}
           <div className="p-4">
             {/* Progresso do mês */}
@@ -58,18 +72,18 @@ export default function MonthSelector({
             </div>
             
             {/* Barra de progresso */}
-            <div className="h-1 bg-blue-400/30 rounded-full overflow-hidden mb-4">
+            <div className={`h-1 ${bgBarraVazia} rounded-full overflow-hidden mb-4`}>
               <div 
-                className="h-full bg-blue-300"
+                className={`h-full ${bgBarraCheia}`}
                 style={{ width: `${progressPercent}%` }}
               ></div>
             </div>
             
             {/* Status e botões de navegação */}
             <div className="flex items-center justify-between">
-              <div className="inline-flex items-center px-2 py-1 bg-blue-400/20 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-200 mr-1.5"></span>
-                <span className="text-xs text-blue-100">Escala ativa</span>
+              <div className={`inline-flex items-center px-2 py-1 ${bgStatus} rounded-full`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${indicadorCor} mr-1.5`}></span>
+                <span className={`text-xs ${textoCor}`}>Escala ativa</span>
               </div>
               
               <div className="flex space-x-1">
