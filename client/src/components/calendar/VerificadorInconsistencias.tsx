@@ -215,13 +215,16 @@ export default function VerificadorInconsistencias({
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="relative bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 flex items-center px-3 py-2 rounded-md shadow-sm"
+        className="relative bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 
+          text-white px-4 py-2.5 rounded-xl flex items-center 
+          transition-all duration-200 shadow-md hover:shadow-lg
+          active:shadow-inner active:translate-y-0.5 transform"
       >
-        <AlertCircle className="h-4 w-4 mr-2 text-amber-500" />
+        <AlertCircle className="h-4 w-4 mr-2 drop-shadow-sm" />
         <span className="font-medium">Verificar</span>
         
         {inconsistencias.length > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold">
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold animate-pulse shadow-md">
             {inconsistencias.length}
           </span>
         )}

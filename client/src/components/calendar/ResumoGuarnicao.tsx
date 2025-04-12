@@ -125,9 +125,12 @@ export default function ResumoGuarnicao({
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 flex items-center px-3 py-2 rounded-md shadow-sm"
+        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 
+          text-white px-4 py-2.5 rounded-xl flex items-center 
+          transition-all duration-200 shadow-md hover:shadow-lg
+          active:shadow-inner active:translate-y-0.5 transform"
       >
-        <Users className="h-4 w-4 mr-2 text-blue-600" />
+        <Users className="h-4 w-4 mr-2 drop-shadow-sm" />
         <span className="font-medium">Guarnição</span>
       </Button>
       
