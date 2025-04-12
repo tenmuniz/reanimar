@@ -200,7 +200,7 @@ export default function ResumoGuarnicao({
       
       {/* Modal principal de guarnições */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className={`sm:max-w-[90%] max-h-[90vh] overflow-y-auto 
+        <DialogContent className={`sm:max-w-[80%] w-fit max-h-[90vh] overflow-y-auto 
           ${operationType === 'escolaSegura'
             ? 'bg-gradient-to-br from-purple-900 to-purple-800'
             : 'bg-gradient-to-br from-indigo-900 to-indigo-800'
@@ -558,7 +558,7 @@ export default function ResumoGuarnicao({
       
       {/* Modal de detalhes da guarnição selecionada */}
       <Dialog open={detalheGuarnicaoAberto} onOpenChange={setDetalheGuarnicaoAberto}>
-        <DialogContent className={`sm:max-w-[90%] w-[900px] max-h-[90vh] overflow-y-auto
+        <DialogContent className={`sm:max-w-[75%] w-[800px] max-h-[90vh] overflow-y-auto
           ${operationType === 'escolaSegura'
             ? 'bg-gradient-to-br from-purple-900 to-purple-800'
             : 'bg-gradient-to-br from-indigo-900 to-indigo-800'
