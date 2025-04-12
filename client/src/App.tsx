@@ -53,7 +53,7 @@ function NavBar() {
                 </span>
               </h1>
               <div className="flex items-center">
-                <span className="text-xs font-medium text-gray-500">Sistema Integrado de Gestão - GCJO</span>
+                <span className="text-xs font-medium text-gray-500">Sistema de Gestão - 20ªCIPM</span>
               </div>
             </div>
           </div>
@@ -194,7 +194,7 @@ function Footer() {
               </div>
               <span className="text-lg font-bold text-gray-800">EXTRAORDINÁRIO</span>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Sistema de Gestão de GCJO</p>
+            <p className="text-sm text-gray-500 mt-1">Sistema de Gestão - 20ªCIPM</p>
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
