@@ -261,21 +261,21 @@ export default function EscolaSegura() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-wrap justify-between items-center">
             {/* Título e subtítulo com design moderno */}
-            <div className="relative z-10 bg-white/10 p-6 rounded-2xl backdrop-blur-md shadow-lg border border-white/20 max-w-2xl">
-              <div className="inline-flex items-center mb-2 bg-purple-700/30 px-3 py-1 rounded-full">
-                <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mr-2"></span>
-                <span className="text-xs text-purple-100 font-medium tracking-wide">OPERAÇÃO ESCOLA SEGURA</span>
+            <div className="relative z-10 bg-white/10 p-4 rounded-2xl backdrop-blur-md shadow-lg border border-white/20 max-w-2xl">
+              <div className="flex items-center justify-between">
+                <div className="inline-flex items-center mb-1 bg-purple-700/30 px-2 py-0.5 rounded-full">
+                  <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mr-1.5"></span>
+                  <span className="text-xs text-purple-100 font-medium tracking-wide">OPERAÇÃO ESCOLA SEGURA</span>
+                </div>
               </div>
               
-              <h1 className="text-4xl font-black text-white mb-1">
-                <span className="text-4xl font-bold text-purple-100">
-                  ESCOLA SEGURA
-                </span>
-                <span className="px-2 text-yellow-400">•</span>
-                <span className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-purple-100 to-indigo-200">Extraordinário</span>
-              </h1>
-              
-              {/* Ícones de funcionalidades removidos conforme solicitado */}
+              <div className="flex flex-col items-start">
+                <h1 className="text-4xl font-extrabold text-purple-100 leading-tight mb-0">ESCOLA SEGURA</h1>
+                <div className="flex items-center">
+                  <span className="text-yellow-400 mr-1.5">•</span>
+                  <span className="text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-purple-100 to-indigo-200">Extraordinário</span>
+                </div>
+              </div>
             </div>
             
             {/* Seletor de mês com estilo premium */}
