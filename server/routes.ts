@@ -97,68 +97,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Year and month are required" });
       }
       
-      // Configurar cabeçalhos anti-cache
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
-      res.setHeader('Surrogate-Control', 'no-store');
-      
-      // Converter para números
       const yearNum = parseInt(year as string);
       const monthNum = parseInt(month as string);
       
-      // Buscar dados diretamente para garantir que temos os dados corretos
-      const pmfSchedule = await storage.getSchedule('pmf', yearNum, monthNum);
-      const esSchedule = await storage.getSchedule('escolaSegura', yearNum, monthNum);
-      
-      // Imprimir formato dos dados para depuração
-      console.log("Dados PMF originais:", JSON.stringify(pmfSchedule));
-      console.log("Dados ES originais:", JSON.stringify(esSchedule));
-
-      // Extrai dados do formato correto para PMF
-      let pmfData = {};
-      
-      // Verifica várias possíveis estruturas para garantir que obtemos os dados
-      if (pmfSchedule && typeof pmfSchedule === 'object') {
-        if (pmfSchedule["2025"] && pmfSchedule["2025"]["4"]) {
-          pmfData = pmfSchedule["2025"]["4"];
-        } else if (pmfSchedule["schedule"] && pmfSchedule["schedule"]["2025"] && pmfSchedule["schedule"]["2025"]["4"]) {
-          pmfData = pmfSchedule["schedule"]["2025"]["4"];
-        } else if (pmfSchedule["1"] !== undefined) {
-          // Formato simplificado onde temos dias como chaves diretamente
-          pmfData = pmfSchedule;
-        }
-      }
-      
-      // Extrai dados do formato correto para Escola Segura
-      let esData = {};
-      
-      // Verifica várias possíveis estruturas para garantir que obtemos os dados
-      if (esSchedule && typeof esSchedule === 'object') {
-        if (esSchedule["2025"] && esSchedule["2025"]["4"]) {
-          esData = esSchedule["2025"]["4"];
-        } else if (esSchedule["schedule"] && esSchedule["schedule"]["2025"] && esSchedule["schedule"]["2025"]["4"]) {
-          esData = esSchedule["schedule"]["2025"]["4"];
-        } else if (esSchedule["1"] !== undefined) {
-          // Formato simplificado onde temos dias como chaves diretamente
-          esData = esSchedule;
-        }
-      }
-      
-      // Montar objeto de resposta com formato simples e direto
-      const schedules = {
-        pmf: pmfData,
-        escolaSegura: esData
-      };
-      
-      // Log para depuração
-      console.log("Dados obtidos do banco:", JSON.stringify(schedules));
-      
-      // Garantir que não tem cache
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
-      res.setHeader('Surrogate-Control', 'no-store');
+      // Buscar dados das duas operações
+      const schedules = await storage.getCombinedSchedules(yearNum, monthNum);
       
       // Retornar dados
       res.json({ schedules });
@@ -172,17 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Rota para página de visualização pública - com cabeçalhos anti-cache
-  app.get("/visualizacao-publica", (req, res) => {
-    // Configurar cabeçalhos anti-cache
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.setHeader('Surrogate-Control', 'no-store');
-    
-    // Enviar o arquivo HTML
-    res.sendFile(path.resolve(process.cwd(), "public/visualizacao.html"));
-  });
+
 
   const httpServer = createServer(app);
 
