@@ -19,7 +19,7 @@ interface Inconsistencia {
 export default function VerificadorSimples() {
   const { toast } = useToast();
   const [inconsistencias, setInconsistencias] = useState<Inconsistencia[]>([]);
-  const [carregando, setCarregando] = useState(true);
+  const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   
   // Função para obter quem está em cada guarnição
@@ -70,15 +70,8 @@ export default function VerificadorSimples() {
     }
   });
   
-  // Verificar inconsistências quando os dados são carregados
-  // Definir dados de escala ordinária manualmente para garantir os conflitos
-  useEffect(() => {
-    // Verificar se os dados foram carregados
-    if (!loadingPMF && !loadingEscolaSegura && pmfSchedule && escolaSeguraSchedule) {
-      // Dados da escala ordinária definidos diretamente (sem depender da API)
-      verificarInconsistencias();
-    }
-  }, [pmfSchedule, escolaSeguraSchedule, loadingPMF, loadingEscolaSegura]);
+  // Não verificar automaticamente ao carregar
+  // Deixar o usuário iniciar a verificação manualmente clicando no botão
   
   // Função para verificar inconsistências
   const verificarInconsistencias = () => {
