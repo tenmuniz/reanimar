@@ -18,54 +18,48 @@ export default function MonthSelector({
 
   return (
     <div className="flex items-center justify-center w-full max-w-xs mx-auto mb-6">
-      {/* Design completamente novo sem fundo azul */}
-      <div className="flex items-center justify-center">
-        {/* Botão anterior com novo design */}
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="flex items-center gap-4">
+        {/* Botão anterior - Estilo limpo circular sem fundo */}
+        <button
           onClick={onPreviousMonth}
-          className="h-12 w-12 flex items-center justify-center rounded-full 
-                  text-slate-700 bg-white hover:bg-slate-100 transition-all duration-200 
-                  mr-2 shadow-md hover:shadow-lg border border-slate-200"
+          className="w-12 h-12 flex items-center justify-center rounded-full 
+                    bg-white shadow-lg hover:shadow-xl transition-all duration-200
+                    border border-gray-200 text-gray-600 hover:text-gray-900"
         >
           <ChevronLeft className="h-6 w-6" />
-        </Button>
+        </button>
         
-        {/* Botão central do mês com degradê vistoso */}
-        <div className="relative flex items-center justify-center bg-gradient-to-br from-orange-500 to-orange-600
-                    py-4 px-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-300
-                    border-2 border-orange-300 overflow-hidden">
-          {/* Efeito de brilho */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent shine-effect"></div>
-          
+        {/* Botão central do mês - Estilo completamente novo */}
+        <div 
+          className="relative flex items-center justify-center 
+                  bg-gradient-to-r from-orange-500 to-orange-400 
+                  px-5 py-2.5 rounded-xl shadow-lg
+                  overflow-hidden"
+        >
           {/* Conteúdo */}
           <div className="flex items-center justify-center z-10">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mr-3">
+            {/* Ícone de calendário */}
+            <div className="mr-3">
               <Calendar className="h-5 w-5 text-white" />
             </div>
-            <div className="flex flex-col items-start">
-              <span className="font-extrabold text-xl text-white leading-tight drop-shadow-sm tracking-wide">
-                {monthName}
-              </span>
-              <span className="text-sm font-medium text-white/90 tracking-wider">
-                {year}
-              </span>
+            
+            {/* Texto */}
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-white tracking-wide">{monthName}</span>
+              <span className="text-sm text-white/80">{year}</span>
             </div>
           </div>
         </div>
         
-        {/* Botão próximo com novo design */}
-        <Button
-          variant="ghost"
-          size="icon"
+        {/* Botão próximo - Estilo limpo circular sem fundo */}
+        <button
           onClick={onNextMonth}
-          className="h-12 w-12 flex items-center justify-center rounded-full 
-                  text-slate-700 bg-white hover:bg-slate-100 transition-all duration-200 
-                  ml-2 shadow-md hover:shadow-lg border border-slate-200"
+          className="w-12 h-12 flex items-center justify-center rounded-full 
+                    bg-white shadow-lg hover:shadow-xl transition-all duration-200
+                    border border-gray-200 text-gray-600 hover:text-gray-900"
         >
           <ChevronRight className="h-6 w-6" />
-        </Button>
+        </button>
       </div>
     </div>
   );
