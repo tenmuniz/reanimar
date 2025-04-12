@@ -457,9 +457,9 @@ export default function VerificadorEscalas() {
               placeholder="Filtrar por nome do militar..."
               value={filtroMilitar}
               onChange={(e) => setFiltroMilitar(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
+              className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-12 bg-gradient-to-r from-blue-50 to-white text-blue-800 font-medium shadow-sm"
             />
-            <div className="absolute left-3 top-2.5 text-gray-400">
+            <div className="absolute left-4 top-3.5 text-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -469,12 +469,12 @@ export default function VerificadorEscalas() {
           <div className="rounded-lg border overflow-hidden">
             <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50">
               <Table>
-                <TableHeader className="bg-slate-100 sticky top-0 z-10">
+                <TableHeader className="bg-gradient-to-r from-blue-50 to-blue-100 sticky top-0 z-10">
                   <TableRow>
-                    <TableHead className="w-[80px] text-center font-medium">Dia</TableHead>
-                    <TableHead className="font-medium">Militar</TableHead>
-                    <TableHead className="w-[180px] font-medium">Guarnição</TableHead>
-                    <TableHead className="w-[120px] text-center font-medium">Operação</TableHead>
+                    <TableHead className="w-[80px] text-center font-bold text-blue-800">Dia</TableHead>
+                    <TableHead className="font-bold text-blue-800">Militar</TableHead>
+                    <TableHead className="w-[180px] font-bold text-blue-800">Guarnição</TableHead>
+                    <TableHead className="w-[120px] text-center font-bold text-blue-800">Operação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -521,8 +521,10 @@ export default function VerificadorEscalas() {
             </div>
           </div>
           
-          <div className="mt-3 flex justify-center text-center text-sm text-gray-500">
-            <p>Use a barra de rolagem para visualizar todos os {conflitos.length} conflitos</p>
+          <div className="mt-3 flex justify-center text-center">
+            <p className="text-blue-600 bg-blue-50 py-2 px-4 rounded-full border border-blue-200 shadow-sm text-sm font-medium">
+              <span className="mr-1">📋</span> Total: {conflitos.length} conflitos encontrados
+            </p>
           </div>
           
           <div className="mt-4 bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200 shadow-md">
@@ -578,10 +580,10 @@ export default function VerificadorEscalas() {
           </div>
           
           <div className="py-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+            <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 rounded-full mx-auto flex items-center justify-center mb-4 shadow-md border border-green-200">
+              <CheckCircle className="h-10 w-10 text-green-600" />
             </div>
-            <h3 className="text-xl font-medium text-gray-800 mb-2">Nenhum conflito encontrado</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">Nenhum conflito encontrado</h3>
             <p className="text-gray-600 max-w-lg mx-auto">
               Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e as operações PMF/Escola Segura.
               Todos os militares estão escalados corretamente sem sobreposição de serviços.
