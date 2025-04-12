@@ -249,33 +249,65 @@ export default function EscolaSegura() {
 
   return (
     <div className="min-h-screen font-sans">
-      {/* Header com título e seletor de mês - versão moderna e colorida para Escola Segura */}
-      <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 py-8 mb-6 shadow-xl relative overflow-hidden">
-        {/* Elementos decorativos de fundo */}
+      {/* Header com título e seletor de mês - versão luxuosa para Escola Segura */}
+      <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 py-10 mb-6 shadow-2xl relative overflow-hidden">
+        {/* Elementos decorativos de fundo aprimorados */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute -top-20 -left-20 w-80 h-80 bg-purple-500 opacity-20 rounded-full filter blur-3xl"></div>
-          <div className="absolute -bottom-40 -right-20 w-96 h-96 bg-indigo-600 opacity-20 rounded-full filter blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-pink-500 opacity-10 rounded-full filter blur-3xl"></div>
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-fuchsia-500 opacity-15 rounded-full filter blur-3xl animate-pulse-slow"></div>
+          <div className="absolute -bottom-40 -right-20 w-[30rem] h-[30rem] bg-violet-600 opacity-15 rounded-full filter blur-3xl"></div>
+          <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-pink-500 opacity-10 rounded-full filter blur-3xl"></div>
+          
+          {/* Elementos gráficos adicionais */}
+          <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent"></div>
+          <div className="absolute bottom-0 right-0 w-full h-24 bg-gradient-to-l from-purple-900/40 via-transparent to-transparent"></div>
+          
+          {/* Padrão geométrico sutil */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0yNSAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0yMCAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zNSAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik00MCAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAyNXYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAyMHYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAzNXYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCA0MHYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KPC9zdmc+')]
+            opacity-30"></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-wrap justify-between items-center">
-            {/* Título e subtítulo com design moderno */}
-            <div className="relative z-10 bg-white/10 p-4 rounded-2xl backdrop-blur-md shadow-lg border border-white/20 max-w-2xl">
-              <div className="flex items-center justify-between">
-                <div className="inline-flex items-center mb-1 bg-purple-700/30 px-2 py-0.5 rounded-full">
-                  <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mr-1.5"></span>
-                  <span className="text-xs text-purple-100 font-medium tracking-wide">OPERAÇÃO ESCOLA SEGURA</span>
+            {/* Título e subtítulo com design premium */}
+            <div className="relative z-10 bg-gradient-to-br from-white/15 to-white/5 p-6 rounded-2xl backdrop-blur-md shadow-[0_20px_50px_rgba(76,29,149,0.4)] border border-white/20 max-w-2xl transform hover:scale-[1.02] transition-all duration-300">
+              {/* Emblema superior */}
+              <div className="flex items-center mb-2">
+                <div className="bg-gradient-to-r from-purple-600 to-fuchsia-500 px-3 py-1.5 rounded-full flex items-center 
+                  border border-purple-400/30 shadow-lg shadow-purple-900/20">
+                  <div className="w-2 h-2 bg-purple-300 rounded-full mr-2 animate-pulse"></div>
+                  <span className="text-xs font-bold tracking-wider text-white uppercase">Operação Escola Segura</span>
                 </div>
               </div>
               
+              {/* Divisor decorativo */}
+              <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent mb-4"></div>
+              
+              {/* Conteúdo principal */}
               <div className="flex flex-col items-start">
-                <h1 className="text-4xl font-extrabold text-purple-100 leading-tight mb-0">ESCOLA SEGURA</h1>
-                <div className="flex items-center">
-                  <span className="text-yellow-400 mr-1.5">•</span>
-                  <span className="text-xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-purple-100 to-indigo-200">Extraordinário</span>
+                {/* Título principal com efeito de brilho */}
+                <div className="relative">
+                  <h1 className="text-5xl font-black text-white leading-tight mb-1 tracking-tight">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-white to-purple-200
+                      drop-shadow-[0_2px_2px_rgba(130,0,255,0.3)]">
+                      ESCOLA SEGURA
+                    </span>
+                  </h1>
+                  
+                  {/* Reflexo sutil */}
+                  <div className="absolute -bottom-1 left-0 w-full h-4 bg-gradient-to-b from-purple-300/20 to-transparent blur-sm"></div>
+                </div>
+                
+                {/* Subtítulo com separador elegante */}
+                <div className="flex items-center mt-1">
+                  <div className="h-8 w-1.5 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded-full mr-3 shadow-lg shadow-yellow-600/20"></div>
+                  <span className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-100 via-white to-purple-100">
+                    Extraordinário
+                  </span>
                 </div>
               </div>
+              
+              {/* Decoração de canto */}
+              <div className="absolute -bottom-1 -right-1 w-16 h-16 bg-gradient-to-br from-purple-500/20 to-fuchsia-600/20 rounded-full blur-xl"></div>
             </div>
             
             {/* Seletor de mês com estilo premium */}
