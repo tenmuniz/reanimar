@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, Calendar, FileText, Printer, ChevronRight, X, Download } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, Calendar, FileText, Printer, ChevronRight, X, Download, User } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
-import { formatMonthYear } from "@/lib/utils";
+import { formatMonthYear, getWeekdayName } from "@/lib/utils";
 import jsPDF from "jspdf";
 import 'jspdf-autotable';
 
@@ -594,35 +595,153 @@ export default function ResumoGuarnicao({
                 </div>
               </div>
               
-              {/* Tabela de militares por dia */}
+              {/* Tabs para diferentes visualizações */}
               <div className="bg-indigo-800/40 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-semibold mb-3 text-white">
-                  Militares escalados por dia
-                </h3>
-                
-                <div className="overflow-y-auto max-h-[300px] rounded-lg border border-indigo-700">
-                  <table className="w-full">
-                    <thead className="bg-indigo-900/60 sticky top-0">
-                      <tr>
-                        <th className="p-2 text-left text-white font-medium">Dia</th>
-                        <th className="p-2 text-left text-white font-medium">Militar</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <Tabs defaultValue="por-dia" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger 
+                      value="por-dia"
+                      className={`${
+                        guarnicaoSelecionada === "EXPEDIENTE" ? "data-[state=active]:bg-cyan-600" :
+                        guarnicaoSelecionada === "ALFA" ? "data-[state=active]:bg-green-600" :
+                        guarnicaoSelecionada === "BRAVO" ? "data-[state=active]:bg-yellow-600" :
+                        guarnicaoSelecionada === "CHARLIE" ? "data-[state=active]:bg-red-600" :
+                        "data-[state=active]:bg-gray-600"
+                      } data-[state=active]:text-white`}
+                    >
+                      <Calendar className="h-4 w-4 mr-1.5" />
+                      Por Dia
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="por-militar"
+                      className={`${
+                        guarnicaoSelecionada === "EXPEDIENTE" ? "data-[state=active]:bg-cyan-600" :
+                        guarnicaoSelecionada === "ALFA" ? "data-[state=active]:bg-green-600" :
+                        guarnicaoSelecionada === "BRAVO" ? "data-[state=active]:bg-yellow-600" :
+                        guarnicaoSelecionada === "CHARLIE" ? "data-[state=active]:bg-red-600" :
+                        "data-[state=active]:bg-gray-600"
+                      } data-[state=active]:text-white`}
+                    >
+                      <User className="h-4 w-4 mr-1.5" />
+                      Por Militar
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  {/* Visualização por dia */}
+                  <TabsContent value="por-dia">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {guarnicaoSelecionada && guarnicoesData[guarnicaoSelecionada].militaresPorDia && 
-                        Object.entries(guarnicoesData[guarnicaoSelecionada].militaresPorDia!).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                        Object.entries(guarnicoesData[guarnicaoSelecionada].militaresPorDia!)
+                          .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
                           .map(([dia, militares]) => (
-                            militares.map((militar, idx) => (
-                              <tr key={`${dia}-${idx}`} className="border-t border-indigo-800/60 hover:bg-indigo-700/30">
-                                <td className="p-2 text-indigo-100">{dia}</td>
-                                <td className="p-2 text-indigo-100">{militar}</td>
-                              </tr>
-                            ))
+                            <div 
+                              key={`dia-${dia}`} 
+                              className={`${
+                                guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-800/30" :
+                                guarnicaoSelecionada === "ALFA" ? "bg-green-800/30" :
+                                guarnicaoSelecionada === "BRAVO" ? "bg-yellow-800/30" :
+                                guarnicaoSelecionada === "CHARLIE" ? "bg-red-800/30" :
+                                "bg-gray-800/30"
+                              } p-3 rounded-lg border border-indigo-700/50 hover:shadow-lg transition-all`}
+                            >
+                              <div className="flex justify-between items-center mb-2">
+                                <div className={`${
+                                  guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700" :
+                                  guarnicaoSelecionada === "ALFA" ? "bg-green-700" :
+                                  guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700" :
+                                  guarnicaoSelecionada === "CHARLIE" ? "bg-red-700" :
+                                  "bg-gray-700"
+                                } text-white font-bold py-1 px-3 rounded-full text-sm`}>
+                                  Dia {dia}
+                                </div>
+                                <span className="text-xs text-indigo-200">{getWeekdayName(parseInt(dia), currentDate.getMonth() + 1, currentDate.getFullYear())}</span>
+                              </div>
+                              
+                              <div className="space-y-1">
+                                {militares.map((militar, idx) => (
+                                  <div 
+                                    key={`militar-${dia}-${idx}`}
+                                    className="bg-indigo-900/50 p-2 rounded text-sm text-white flex items-center"
+                                  >
+                                    <User className="h-3 w-3 mr-2 text-indigo-300" />
+                                    {militar}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           ))
                       }
-                    </tbody>
-                  </table>
-                </div>
+                    </div>
+                  </TabsContent>
+                  
+                  {/* Visualização por militar */}
+                  <TabsContent value="por-militar">
+                    {guarnicaoSelecionada && guarnicoesData[guarnicaoSelecionada].militaresPorDia && (() => {
+                      // Organizar dados por militares
+                      const militaresPorDia = guarnicoesData[guarnicaoSelecionada].militaresPorDia || {};
+                      const militaresInfo: Record<string, { nome: string, dias: number[] }> = {};
+                      
+                      // Para cada dia, processar os militares
+                      Object.entries(militaresPorDia).forEach(([dia, militares]) => {
+                        const diaNum = parseInt(dia, 10);
+                        
+                        militares.forEach(militar => {
+                          if (!militaresInfo[militar]) {
+                            militaresInfo[militar] = { nome: militar, dias: [] };
+                          }
+                          militaresInfo[militar].dias.push(diaNum);
+                        });
+                      });
+                      
+                      // Converter para array e ordenar por nome
+                      const militaresArray = Object.values(militaresInfo).sort((a, b) => 
+                        a.nome.localeCompare(b.nome)
+                      );
+                      
+                      return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {militaresArray.map((info, idx) => (
+                            <div 
+                              key={`info-militar-${idx}`}
+                              className="bg-indigo-900/30 p-4 rounded-lg border border-indigo-700/50 hover:shadow-lg transition-all"
+                            >
+                              <div className="flex justify-between items-center mb-3">
+                                <h4 className="font-bold text-white">{info.nome}</h4>
+                                <div className={`${
+                                  guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700" :
+                                  guarnicaoSelecionada === "ALFA" ? "bg-green-700" :
+                                  guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700" :
+                                  guarnicaoSelecionada === "CHARLIE" ? "bg-red-700" :
+                                  "bg-gray-700"
+                                } text-white text-xs px-2 py-1 rounded-full`}>
+                                  {info.dias.length} dias
+                                </div>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-1">
+                                {info.dias.sort((a, b) => a - b).map(dia => (
+                                  <span 
+                                    key={`dia-${info.nome}-${dia}`}
+                                    className={`${
+                                      guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700/80" :
+                                      guarnicaoSelecionada === "ALFA" ? "bg-green-700/80" :
+                                      guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700/80" :
+                                      guarnicaoSelecionada === "CHARLIE" ? "bg-red-700/80" :
+                                      "bg-gray-700/80"
+                                    } text-white text-xs rounded-md p-1.5 flex items-center`}
+                                  >
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    Dia {dia}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </TabsContent>
+                </Tabs>
               </div>
               
               {/* Botões de ação */}
