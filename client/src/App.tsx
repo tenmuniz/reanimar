@@ -39,8 +39,8 @@ function NavBar() {
         {/* Barra superior com logomark e informações de usuário */}
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-xl shadow-md relative">
-              <Shield className="h-6 w-6 text-white" />
+            <div className="p-0.5 rounded-xl shadow-md relative flex items-center justify-center">
+              <img src="/assets/brasao-cipm.jpg" alt="Brasão da 20ª CIPM" className="h-10 w-auto rounded-xl" />
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -185,12 +185,8 @@ function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
             <div className="flex items-center">
-              <div className={`bg-gradient-to-br ${
-                isEscolaSegura 
-                  ? "from-purple-600 to-purple-800" 
-                  : "from-blue-600 to-indigo-700"
-              } p-1.5 rounded-lg shadow-lg mr-2`}>
-                <Shield className="h-5 w-5 text-white drop-shadow-sm" />
+              <div className="p-0.5 rounded-lg shadow-lg mr-2">
+                <img src="/assets/brasao-cipm.jpg" alt="Brasão da 20ª CIPM" className="h-8 w-auto rounded-lg" />
               </div>
               <span className="text-lg font-bold text-gray-800">EXTRAORDINÁRIO</span>
             </div>
