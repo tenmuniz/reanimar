@@ -332,154 +332,79 @@ export default function Relatorios() {
         </div>
       </div>
       
-      {/* Cards de métricas principais - baseados na imagem de referência */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {/* Total de GCJOs */}
-        <div className="bg-blue-50 rounded-lg border border-blue-100 p-5 relative overflow-hidden">
-          <div className="absolute top-4 right-4 bg-blue-100 rounded-full p-2">
-            <Activity className="h-5 w-5 text-blue-600" />
-          </div>
-          <h3 className="text-sm font-medium text-blue-700 mb-1">GCJOs Utilizados</h3>
-          <div className="flex justify-between items-baseline">
-            <p className="text-3xl font-bold text-blue-800">{totalEscalas}</p>
-            <div className="text-sm">
-              <span className="text-gray-500">de </span>
-              <span className="font-medium text-blue-600">{totalExtrasDisponibilizados}</span>
-              <span className="text-gray-500"> disponíveis</span>
-            </div>
-          </div>
-          
-          <div className="flex space-x-4 mt-3">
-            <div className="flex items-center space-x-1">
-              <span className="bg-blue-200 text-blue-700 text-xs font-medium px-2 py-0.5 rounded">
-                PMF: {totalEscalasPMF}/{extrasDisponibilizadosPMF}
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span className="bg-purple-200 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">
-                ES: {totalEscolasSegura}/{extrasDisponibilizadosES}
-              </span>
-            </div>
-          </div>
-          
-          {/* Barra de progresso mostrando a distribuição */}
-          <div className="mt-3">
-            <div className="flex justify-between items-center text-xs mb-1">
-              <span className="font-medium text-gray-700">Utilização atual</span>
-              <span className="font-medium text-blue-700">{percentualUtilizacaoTotal}%</span>
-            </div>
-            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-600" 
-                style={{width: `${percentualUtilizacaoTotal}%`}}
-              ></div>
-            </div>
-          </div>
-          
-          <div className="mt-2 pt-2 border-t border-blue-100">
-            <div className="flex justify-between items-center text-xs text-gray-500">
-              <span>Em relação ao mês: {percentualOcupacao}% da capacidade total</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* GCJOs Restantes */}
-        <div className="bg-green-50 rounded-lg border border-green-100 p-5 relative overflow-hidden">
-          <div className="absolute top-4 right-4 bg-green-100 rounded-full p-2">
-            <Calendar className="h-5 w-5 text-green-600" />
-          </div>
-          <h3 className="text-sm font-medium text-green-700 mb-1">GCJOs Restantes</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <p className="text-3xl font-bold text-green-800">
-                {restantesPMF}
-              </p>
-              <span className="text-sm font-normal text-green-600">PMF</span>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-purple-800">
-                {restantesES}
-              </p>
-              <span className="text-sm font-normal text-purple-600">Escola Segura</span>
-            </div>
-          </div>
-          
-          <p className="text-xs text-gray-500 mt-3">Capacidade máxima mensal</p>
-          <div className="flex justify-between mt-1 text-xs font-medium">
-            <span className="text-green-600">PMF: 90</span>
-            <span className="text-purple-600">ES: 60</span>
-            <span className="text-gray-700">Total: 150</span>
-          </div>
-        </div>
-        
-        {/* Próximo ao Limite */}
+      {/* Cards de métricas principais - apenas os dois cartões solicitados */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Próximo ao Limite - exatamente como na imagem */}
         <div className="bg-amber-50 rounded-lg border border-amber-100 p-5 relative overflow-hidden">
-          <div className="absolute top-4 right-4 bg-amber-100 rounded-full p-2">
-            <AlertTriangle className="h-5 w-5 text-amber-600" />
+          <div className="absolute top-3 right-3">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
           </div>
-          <h3 className="text-sm font-medium text-amber-700 mb-1">Próximo ao Limite</h3>
+          <h3 className="text-base font-semibold text-amber-800 mb-2">Próximo ao Limite</h3>
           
-          <p className="text-3xl font-bold text-amber-800">
+          <p className="text-4xl font-bold text-amber-800 mb-1">
             {Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total < 12).length}
           </p>
           
-          <p className="text-xs text-amber-600 mt-2">
+          <p className="text-sm text-amber-700 mb-4">
             Militares com 10-11 escalas
           </p>
           
-          <div className="mt-3 flex space-x-1">
-            <div className="bg-amber-100 rounded-md p-2 flex-1 text-center">
-              <p className="text-xs text-amber-600">Baixa</p>
-              <p className="text-sm font-bold text-amber-800">
+          <div className="grid grid-cols-3 gap-1">
+            <div className="bg-amber-100/70 rounded p-2 text-center">
+              <p className="text-xs font-medium text-amber-800">Baixa</p>
+              <p className="text-xl font-bold text-amber-900">
                 {Object.values(dadosMilitares).filter(d => d.total < 5).length}
               </p>
             </div>
-            <div className="bg-amber-100 rounded-md p-2 flex-1 text-center">
-              <p className="text-xs text-amber-600">Média</p>
-              <p className="text-sm font-bold text-amber-800">
+            <div className="bg-amber-100/70 rounded p-2 text-center">
+              <p className="text-xs font-medium text-amber-800">Média</p>
+              <p className="text-xl font-bold text-amber-900">
                 {Object.values(dadosMilitares).filter(d => d.total >= 5 && d.total < 10).length}
               </p>
             </div>
-            <div className="bg-amber-100 rounded-md p-2 flex-1 text-center">
-              <p className="text-xs text-amber-600">Alta</p>
-              <p className="text-sm font-bold text-amber-800">
+            <div className="bg-amber-100/70 rounded p-2 text-center">
+              <p className="text-xs font-medium text-amber-800">Alta</p>
+              <p className="text-xl font-bold text-amber-900">
                 {Object.values(dadosMilitares).filter(d => d.total >= 10).length}
               </p>
             </div>
           </div>
         </div>
         
-        {/* No Limite */}
+        {/* No Limite - exatamente como na imagem */}
         <div className="bg-red-50 rounded-lg border border-red-100 p-5 relative overflow-hidden">
-          <div className="absolute top-4 right-4 bg-red-100 rounded-full p-2">
-            <Clock className="h-5 w-5 text-red-600" />
+          <div className="absolute top-3 right-3">
+            <Clock className="h-5 w-5 text-red-500" />
           </div>
-          <h3 className="text-sm font-medium text-red-700 mb-1">No Limite</h3>
+          <h3 className="text-base font-semibold text-red-800 mb-2">No Limite</h3>
           
-          <p className="text-3xl font-bold text-red-800">
+          <p className="text-4xl font-bold text-red-800 mb-1">
             {militaresNoLimite}
           </p>
           
-          <p className="text-xs text-red-600 mt-2">
+          <p className="text-sm text-red-700 mb-3">
             Militares com 12+ escalas
           </p>
           
-          <div className="mt-4">
-            <div className="relative w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-red-600 h-2 rounded-full" style={{ width: `${(militaresNoLimite / Object.keys(dadosMilitares).length) * 100}%` }}></div>
+          <div className="mt-1 mb-3">
+            <div className="flex items-center">
+              <div className="w-full bg-red-100 rounded-full h-2 mr-1">
+                <div className="bg-red-500 h-2 rounded-full" style={{ width: `${(militaresNoLimite / Object.keys(dadosMilitares).length) * 100}%` }}></div>
+              </div>
+              <span className="text-xs text-red-700">{((militaresNoLimite / Object.keys(dadosMilitares).length) * 100).toFixed(1)}%</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {((militaresNoLimite / Object.keys(dadosMilitares).length) * 100).toFixed(1)}% do efetivo
+            <p className="text-xs text-red-600 mt-1">
+              do efetivo
             </p>
           </div>
           
           {militaresNoLimite > 0 && (
-            <div className="mt-3 bg-red-100 border border-red-200 rounded-md p-2">
-              <p className="text-xs text-red-700 flex items-center">
-                <AlertTriangle className="h-3 w-3 mr-1" />
+            <div className="mt-2 bg-red-100 border border-red-200 rounded p-3">
+              <p className="text-xs text-red-800 flex items-center font-medium">
+                <AlertTriangle className="h-3.5 w-3.5 mr-1.5 text-red-600" />
                 <span>Ação Requerida</span>
               </p>
-              <p className="text-xs text-red-600 mt-1">
+              <p className="text-xs text-red-700 mt-1">
                 Há {militaresNoLimite} militar(es) que atingiram o limite máximo de GCJOs permitido.
               </p>
             </div>
