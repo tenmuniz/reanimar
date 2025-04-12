@@ -219,9 +219,32 @@ export default function Relatorios() {
   }));
   
   // Calcular total de escalas e máximo possível
-  const totalEscalasPMF = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.pmf, 0);
-  const totalEscolasSegura = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.escolaSegura, 0);
+  // Contagem manual de extras utilizados para cada operação
+  let contadorPMF = 0;
+  let contadorES = 0;
+  
+  // Contar extras da PMF
+  Object.values(pmfSchedule).forEach(escalaDia => {
+    if (Array.isArray(escalaDia)) {
+      contadorPMF += escalaDia.filter(militar => militar !== null).length;
+    }
+  });
+  
+  // Contar extras da Escola Segura
+  Object.values(escolaSeguraSchedule).forEach(escalaDia => {
+    if (Array.isArray(escalaDia)) {
+      contadorES += escalaDia.filter(militar => militar !== null).length;
+    }
+  });
+  
+  // Atualizar contadores com os valores reais
+  const totalEscalasPMF = contadorPMF;
+  const totalEscolasSegura = contadorES;
   const totalEscalas = totalEscalasPMF + totalEscolasSegura;
+  
+  console.log("Contagem real de extras PMF:", totalEscalasPMF);
+  console.log("Contagem real de extras Escola Segura:", totalEscolasSegura);
+  console.log("Total real de extras:", totalEscalas);
   
   // Calcular máximos possíveis e disponibilizados
   // Data atual para comparação
