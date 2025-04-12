@@ -289,170 +289,136 @@ export default function Relatorios() {
         </div>
       </div>
       
-      {/* Cards de métricas principais */}
+      {/* Cards de métricas principais - baseados na imagem de referência */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-600 mb-1">Total de GCJO</p>
-                <h3 className="text-2xl font-bold text-blue-800">{totalEscalas}</h3>
-                <div className="text-xs flex items-center gap-1 text-blue-600 mt-1">
-                  <span className="bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">
-                    PMF: {totalEscalasPMF}
-                  </span>
-                  <span className="bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200 text-purple-600">
-                    ES: {totalEscolasSegura}
-                  </span>
-                </div>
-              </div>
-              <div className="bg-blue-200 p-3 rounded-full">
-                <Activity className="h-6 w-6 text-blue-700" />
-              </div>
+        {/* Total de GCJOs */}
+        <div className="bg-blue-50 rounded-lg border border-blue-100 p-5 relative overflow-hidden">
+          <div className="absolute top-4 right-4 bg-blue-100 rounded-full p-2">
+            <Activity className="h-5 w-5 text-blue-600" />
+          </div>
+          <h3 className="text-sm font-medium text-blue-700 mb-1">Total de GCJO</h3>
+          <p className="text-3xl font-bold text-blue-800">{totalEscalas}</p>
+          <div className="flex space-x-4 mt-3">
+            <div className="flex items-center space-x-1">
+              <span className="bg-blue-200 text-blue-700 text-xs font-medium px-2 py-0.5 rounded">PMF: {totalEscalasPMF}</span>
             </div>
-            <div className="mt-3 flex flex-col space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 w-16">Total:</span>
-                <Progress className="bg-blue-100" value={percentualOcupacao} />
-                <span className="text-xs text-gray-500 w-12 text-right">{percentualOcupacao}%</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 w-16">PMF:</span>
-                <Progress className="bg-blue-100" value={percentualOcupacaoPMF} />
-                <span className="text-xs text-gray-500 w-12 text-right">{percentualOcupacaoPMF}%</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 w-16">E. Segura:</span>
-                <Progress className="bg-purple-100" value={percentualOcupacaoES} />
-                <span className="text-xs text-gray-500 w-12 text-right">{percentualOcupacaoES}%</span>
-              </div>
+            <div className="flex items-center space-x-1">
+              <span className="bg-purple-200 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">ES: {totalEscolasSegura}</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          
+          {/* Barra de progresso mostrando a distribuição */}
+          <div className="w-full h-1.5 bg-gray-100 rounded-full mt-3 overflow-hidden">
+            <div className="h-full bg-blue-500" style={{width: `${(totalEscalasPMF / totalEscalas) * 100 || 0}%`}}></div>
+          </div>
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>{Math.round((totalEscalasPMF / totalEscalas) * 100) || 0}%</span>
+            <span>{Math.round((totalEscolasSegura / totalEscalas) * 100) || 0}%</span>
+          </div>
+        </div>
         
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-600 mb-1">GCJOs Restantes</p>
-                <h3 className="text-2xl font-bold text-green-800">{restantesTotal}</h3>
-                <div className="text-xs flex items-center gap-1 text-green-600 mt-1">
-                  <span className="bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200 text-blue-600">
-                    PMF: {restantesPMF}
-                  </span>
-                  <span className="bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200 text-purple-600">
-                    ES: {restantesES}
-                  </span>
-                </div>
-              </div>
-              <div className="bg-green-200 p-3 rounded-full">
-                <Calendar className="h-6 w-6 text-green-700" />
-              </div>
+        {/* GCJOs Restantes */}
+        <div className="bg-green-50 rounded-lg border border-green-100 p-5 relative overflow-hidden">
+          <div className="absolute top-4 right-4 bg-green-100 rounded-full p-2">
+            <Calendar className="h-5 w-5 text-green-600" />
+          </div>
+          <h3 className="text-sm font-medium text-green-700 mb-1">GCJOs Restantes</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <p className="text-3xl font-bold text-green-800">
+                {maximoEscalasPMF - totalEscalasPMF}
+              </p>
+              <span className="text-sm font-normal text-green-600">PMF</span>
             </div>
-            <div className="flex flex-col mt-3 bg-green-50 rounded-lg p-2 border border-green-200">
-              <h4 className="text-xs font-medium text-green-700 mb-1">Capacidade Máxima</h4>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="flex flex-col items-center bg-white rounded p-1 shadow-sm">
-                  <span className="text-xs text-gray-500">PMF</span>
-                  <span className="text-sm font-medium text-blue-600">{maximoEscalasPMF}</span>
-                </div>
-                <div className="flex flex-col items-center bg-white rounded p-1 shadow-sm">
-                  <span className="text-xs text-gray-500">E.S.</span>
-                  <span className="text-sm font-medium text-purple-600">{maximoEscolasSegura}</span>
-                </div>
-                <div className="flex flex-col items-center bg-white rounded p-1 shadow-sm">
-                  <span className="text-xs text-gray-500">Total</span>
-                  <span className="text-sm font-medium text-green-600">{maximoEscalasTotal}</span>
-                </div>
-              </div>
+            <div>
+              <p className="text-3xl font-bold text-purple-800">
+                {maximoEscolasSegura - totalEscolasSegura}
+              </p>
+              <span className="text-sm font-normal text-purple-600">Escola Segura</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+          
+          <p className="text-xs text-gray-500 mt-3">Capacidade máxima mensal</p>
+          <div className="flex justify-between mt-1 text-xs font-medium">
+            <span className="text-green-600">PMF: 90</span>
+            <span className="text-purple-600">ES: 60</span>
+            <span className="text-gray-700">Total: 150</span>
+          </div>
+        </div>
         
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-amber-600 mb-1">Próximo ao Limite</p>
-                <h3 className="text-2xl font-bold text-amber-800">{militaresProximosLimite}</h3>
-                <p className="text-xs text-amber-600 mt-1">
-                  Militares com 10-11 escalas
-                </p>
-              </div>
-              <div className="bg-amber-200 p-3 rounded-full">
-                <AlertTriangle className="h-6 w-6 text-amber-700" />
-              </div>
+        {/* Próximo ao Limite */}
+        <div className="bg-amber-50 rounded-lg border border-amber-100 p-5 relative overflow-hidden">
+          <div className="absolute top-4 right-4 bg-amber-100 rounded-full p-2">
+            <AlertTriangle className="h-5 w-5 text-amber-600" />
+          </div>
+          <h3 className="text-sm font-medium text-amber-700 mb-1">Próximo ao Limite</h3>
+          
+          <p className="text-3xl font-bold text-amber-800">
+            {Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total < 12).length}
+          </p>
+          
+          <p className="text-xs text-amber-600 mt-2">
+            Militares com 10-11 escalas
+          </p>
+          
+          <div className="mt-3 flex space-x-1">
+            <div className="bg-amber-100 rounded-md p-2 flex-1 text-center">
+              <p className="text-xs text-amber-600">Baixa</p>
+              <p className="text-sm font-bold text-amber-800">
+                {Object.values(dadosMilitares).filter(d => d.total < 5).length}
+              </p>
             </div>
-            
-            <div className="mt-3">
-              <div className="text-xs mb-1 font-medium text-amber-700">Distribuição de Carga</div>
-              <div className="flex items-center gap-2">
-                <Progress 
-                  className="bg-amber-100" 
-                  value={(militaresProximosLimite / Object.keys(dadosMilitares).length) * 100} 
-                />
-                <span className="text-xs text-gray-500">{Math.round((militaresProximosLimite / Object.keys(dadosMilitares).length) * 100)}%</span>
-              </div>
-              
-              <div className="grid grid-cols-3 mt-2 gap-1 text-center">
-                <div className="text-xs bg-green-50 p-1 rounded border border-green-100 text-green-700">
-                  <div>{Object.values(dadosMilitares).filter(d => d.total < 7).length}</div>
-                  <div className="text-[10px]">Baixa</div>
-                </div>
-                <div className="text-xs bg-amber-50 p-1 rounded border border-amber-100 text-amber-700">
-                  <div>{Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length}</div>
-                  <div className="text-[10px]">Média</div>
-                </div>
-                <div className="text-xs bg-red-50 p-1 rounded border border-red-100 text-red-700">
-                  <div>{militaresProximosLimite + militaresNoLimite}</div>
-                  <div className="text-[10px]">Alta</div>
-                </div>
-              </div>
+            <div className="bg-amber-100 rounded-md p-2 flex-1 text-center">
+              <p className="text-xs text-amber-600">Média</p>
+              <p className="text-sm font-bold text-amber-800">
+                {Object.values(dadosMilitares).filter(d => d.total >= 5 && d.total < 10).length}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="bg-amber-100 rounded-md p-2 flex-1 text-center">
+              <p className="text-xs text-amber-600">Alta</p>
+              <p className="text-sm font-bold text-amber-800">
+                {Object.values(dadosMilitares).filter(d => d.total >= 10).length}
+              </p>
+            </div>
+          </div>
+        </div>
         
-        <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-red-600 mb-1">No Limite</p>
-                <h3 className="text-2xl font-bold text-red-800">{militaresNoLimite}</h3>
-                <p className="text-xs text-red-600 mt-1">
-                  Militares com 12+ escalas
-                </p>
-              </div>
-              <div className="bg-red-200 p-3 rounded-full">
-                <Clock className="h-6 w-6 text-red-700" />
-              </div>
+        {/* No Limite */}
+        <div className="bg-red-50 rounded-lg border border-red-100 p-5 relative overflow-hidden">
+          <div className="absolute top-4 right-4 bg-red-100 rounded-full p-2">
+            <Clock className="h-5 w-5 text-red-600" />
+          </div>
+          <h3 className="text-sm font-medium text-red-700 mb-1">No Limite</h3>
+          
+          <p className="text-3xl font-bold text-red-800">
+            {militaresNoLimite}
+          </p>
+          
+          <p className="text-xs text-red-600 mt-2">
+            Militares com 12+ escalas
+          </p>
+          
+          <div className="mt-4">
+            <div className="relative w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-red-600 h-2 rounded-full" style={{ width: `${(militaresNoLimite / Object.keys(dadosMilitares).length) * 100}%` }}></div>
             </div>
-            
-            <div className="mt-3 flex flex-col space-y-2">
-              <div className="flex flex-col">
-                <div className="text-xs mb-1 font-medium text-red-700">Status de Alertas</div>
-                <div className="flex items-center gap-2">
-                  <Progress 
-                    className="bg-red-100" 
-                    value={(militaresNoLimite / Object.keys(dadosMilitares).length) * 100} 
-                  />
-                  <span className="text-xs text-gray-500">{Math.round((militaresNoLimite / Object.keys(dadosMilitares).length) * 100)}%</span>
-                </div>
-              </div>
-              
-              {militaresNoLimite > 0 ? (
-                <div className="text-xs bg-red-100 p-2 rounded border border-red-200 text-red-700">
-                  <div className="font-medium mb-1">⚠️ Ação Requerida</div>
-                  <div>Há {militaresNoLimite} {militaresNoLimite === 1 ? 'militar' : 'militares'} que atingiram o limite máximo de GCJOs permitido.</div>
-                </div>
-              ) : (
-                <div className="text-xs bg-green-100 p-2 rounded border border-green-200 text-green-700">
-                  <div className="font-medium mb-1">✅ Situação Normal</div>
-                  <div>Não há militares que atingiram o limite máximo de GCJOs.</div>
-                </div>
-              )}
+            <p className="text-xs text-gray-500 mt-1">
+              {((militaresNoLimite / Object.keys(dadosMilitares).length) * 100).toFixed(1)}% do efetivo
+            </p>
+          </div>
+          
+          {militaresNoLimite > 0 && (
+            <div className="mt-3 bg-red-100 border border-red-200 rounded-md p-2">
+              <p className="text-xs text-red-700 flex items-center">
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                <span>Ação Requerida</span>
+              </p>
+              <p className="text-xs text-red-600 mt-1">
+                Há {militaresNoLimite} militar(es) que atingiram o limite máximo de GCJOs permitido.
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
       </div>
       
       {/* Tabs de diferentes visualizações */}
