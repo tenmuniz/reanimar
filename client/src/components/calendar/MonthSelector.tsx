@@ -18,27 +18,29 @@ export default function MonthSelector({
 
   return (
     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
-      {/* Container principal com fundo azul */}
-      <div className="flex items-center justify-between w-full bg-blue-600 rounded-xl p-1.5 shadow-lg">
+      {/* Container principal idêntico à imagem de referência */}
+      <div className="flex items-center justify-between w-full bg-blue-600 rounded-2xl p-2 shadow-lg">
         {/* Botão anterior */}
         <Button
           variant="ghost"
           size="icon"
           onClick={onPreviousMonth}
-          className="h-10 w-10 rounded-lg bg-blue-700 text-white hover:bg-blue-800 shadow-md 
-                  hover:shadow-lg active:shadow-inner transition-all duration-200"
+          className="h-10 w-10 flex items-center justify-center rounded-full text-white
+                  hover:bg-blue-500/20 transition-all duration-200 border-none shadow-none"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-6 w-6" />
         </Button>
         
-        {/* Botão do mês com estilo laranja */}
-        <div className="flex items-center justify-center bg-gradient-to-r from-orange-600 to-orange-500 
-                    px-7 py-3 rounded-lg shadow-md transform hover:scale-105 transition-all duration-200
+        {/* Botão central do mês - EXATAMENTE igual à imagem */}
+        <div className="flex items-center justify-center bg-orange-500
+                    py-3 px-5 rounded-xl shadow-md transform hover:scale-105 transition-all duration-200
                     border border-orange-400">
-          <Calendar className="h-5 w-5 mr-3 text-white" />
-          <div className="flex flex-col items-center">
-            <span className="font-bold text-base text-white">{monthName}</span>
-            <span className="text-xs font-medium text-orange-100">{year}</span>
+          <div className="flex items-center justify-center">
+            <Calendar className="h-5 w-5 mr-2 text-white" />
+            <div className="flex flex-col items-start">
+              <span className="font-bold text-lg text-white leading-tight">{monthName}</span>
+              <span className="text-xs font-medium text-white/80">{year}</span>
+            </div>
           </div>
         </div>
         
@@ -47,10 +49,10 @@ export default function MonthSelector({
           variant="ghost"
           size="icon"
           onClick={onNextMonth}
-          className="h-10 w-10 rounded-lg bg-blue-700 text-white hover:bg-blue-800 shadow-md 
-                  hover:shadow-lg active:shadow-inner transition-all duration-200"
+          className="h-10 w-10 flex items-center justify-center rounded-full text-white
+                  hover:bg-blue-500/20 transition-all duration-200 border-none shadow-none"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
     </div>
