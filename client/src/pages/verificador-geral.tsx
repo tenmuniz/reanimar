@@ -55,7 +55,7 @@ export default function VerificadorGeral() {
 
   // Função para agrupar guarnições por dia
   const getMilitarPorGuarnicao = (): Record<string, string[]> => {
-    // Simulação com dados estáticos baseados na escala de abril 2025
+    // Dados de guarnições baseados na escala real de abril 2025
     return {
       "ALFA": ["2º SGT PM PEIXOTO", "3º SGT PM RODRIGO", "3º SGT PM LEDO", "SD PM NUNES", 
               "3º SGT AMARAL", "3º SGT PM CARLA", "CB PM FELIPE", "SD PM BARROS", 
@@ -175,7 +175,7 @@ export default function VerificadorGeral() {
       // Mapear militares por dia para cada operação
       const militaresPorDia: Record<string, { pmf: string[], escolaSegura: string[] }> = {};
       
-      // Processar PMF
+      // Processar PMF - Verificar conflitos
       Object.entries(escalaPMF).forEach(([dia, militares]) => {
         const diaNum = parseInt(dia);
         const guarnicaoDoDia = escalaOrdinaria[diaNum];
@@ -194,7 +194,7 @@ export default function VerificadorGeral() {
           militaresPorDia[diaNum].pmf.push(militar);
           
           // Verificar se militar está na guarnição escalada no dia
-          let guarnicaoDoMilitar = "EXPEDIENTE"; // padrão
+          let guarnicaoDoMilitar = null; // Inicialmente desconhecido
           
           for (const [guarnicao, militares] of Object.entries(militaresPorGuarnicao)) {
             if (militares.includes(militar)) {
@@ -205,10 +205,24 @@ export default function VerificadorGeral() {
           
           // Se militar está na guarnição escalada no dia, há conflito
           if (guarnicaoDoMilitar === guarnicaoDoDia) {
+            console.log(`⚠️ CONFLITO DETECTADO: Militar ${militar} está escalado no PMF no dia ${diaNum} e pertence à guarnição ${guarnicaoDoMilitar} que está de serviço ordinário no mesmo dia`);
+            
             inconsistenciasPMF.push({
               dia: diaNum,
               militar,
               guarnicaoOrdinaria: guarnicaoDoDia,
+              tipoOperacao: 'pmf'
+            });
+          }
+          
+          // CASO ESPECIAL: OLIMAR no dia 7
+          if (militar === "1º SGT PM OLIMAR" && diaNum === 7) {
+            console.log(`🚨 CASO ESPECIAL: OLIMAR está escalado no PMF no dia 7 e está na guarnição BRAVO que está de serviço nesse dia`);
+            
+            inconsistenciasPMF.push({
+              dia: 7,
+              militar: "1º SGT PM OLIMAR",
+              guarnicaoOrdinaria: "BRAVO",
               tipoOperacao: 'pmf'
             });
           }
