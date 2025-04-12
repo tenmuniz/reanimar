@@ -128,25 +128,58 @@ export default function OfficerSelect({
       {selectedOfficer ? (
         <div className="flex items-center">
           <div className={`${limitReachedOfficers.includes(selectedOfficer) 
-              ? 'border border-yellow-400 bg-yellow-50 text-yellow-800 border-l-4 border-l-yellow-500' 
-              : 'border border-slate-200 bg-white text-slate-800'} 
-              rounded px-3 py-2 text-sm flex-1 truncate`}>
-            <span className={limitReachedOfficers.includes(selectedOfficer) ? 'line-through' : ''}>
-              {selectedOfficer}
-            </span>
-            {limitReachedOfficers.includes(selectedOfficer) && (
-              <span className="ml-1 bg-yellow-200 text-yellow-800 text-xs font-bold inline-flex items-center px-1.5 py-0.5 rounded">
-                <AlertTriangle className="h-3 w-3 mr-1" />
-                LIMITE
+              ? 'bg-gradient-to-r from-red-50 to-orange-50 text-red-800 border-0 shadow-inner' 
+              : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-800 border-0 shadow-sm'} 
+              rounded-lg px-4 py-2.5 text-sm flex-1 truncate relative overflow-hidden`}>
+            {/* Efeito de brilho */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-70"></div>
+            
+            {/* Barra lateral indicadora */}
+            <div className={`absolute left-0 top-0 bottom-0 w-1.5 
+              ${limitReachedOfficers.includes(selectedOfficer) 
+                ? 'bg-gradient-to-b from-red-500 to-red-600' 
+                : 'bg-gradient-to-b from-blue-500 to-indigo-600'}`}>
+            </div>
+            
+            <div className="relative flex items-center">
+              {/* Ícone de status */}
+              <div className={`mr-2 rounded-full w-5 h-5 flex items-center justify-center 
+                ${limitReachedOfficers.includes(selectedOfficer) 
+                  ? 'bg-red-200 text-red-700' 
+                  : 'bg-blue-200 text-blue-700'}`}>
+                {limitReachedOfficers.includes(selectedOfficer) 
+                  ? <AlertTriangle className="h-3 w-3" /> 
+                  : <span className="text-xs font-bold">{position}</span>}
+              </div>
+              
+              {/* Nome do policial */}
+              <span className={`font-medium ${limitReachedOfficers.includes(selectedOfficer) ? 'line-through opacity-70' : ''}`}>
+                {selectedOfficer}
               </span>
-            )}
+              
+              {/* Badge de limite */}
+              {limitReachedOfficers.includes(selectedOfficer) && (
+                <span className="ml-2 bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold inline-flex items-center px-2 py-1 rounded-full shadow-sm animate-pulse">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  LIMITE ATINGIDO
+                </span>
+              )}
+            </div>
           </div>
+          
+          {/* Botão de remover com efeito 3D */}
           <button 
-            className="ml-2 p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center justify-center"
+            className="ml-2 p-2 bg-gradient-to-br from-red-500 to-red-600 text-white rounded-lg 
+              hover:from-red-600 hover:to-red-700 transition-all duration-200 
+              shadow-[0_2px_4px_rgba(239,68,68,0.5),inset_0_1px_1px_rgba(255,255,255,0.4)] 
+              hover:shadow-[0_3px_6px_rgba(239,68,68,0.6),inset_0_1px_1px_rgba(255,255,255,0.4)]
+              active:shadow-[0_1px_2px_rgba(239,68,68,0.4),inset_0_1px_1px_rgba(0,0,0,0.1)]
+              active:translate-y-0.5
+              transform hover:-rotate-12 flex items-center justify-center"
             onClick={() => onChange(null)}
             title="Remover policial da escala"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 drop-shadow-sm" />
           </button>
         </div>
       ) : (
@@ -154,22 +187,54 @@ export default function OfficerSelect({
           value={selectedOfficer || PLACEHOLDER_VALUE}
           onValueChange={handleChange}
         >
-          <SelectTrigger className="w-full rounded border border-slate-200 shadow-sm text-sm min-h-[42px] bg-slate-50/50">
-            <SelectValue placeholder="-- Selecione um policial --" />
+          <SelectTrigger 
+            className="w-full rounded-lg border-0 text-sm min-h-[46px] bg-gradient-to-r from-blue-50 to-indigo-50 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-8"
+            style={{
+              backgroundSize: '200% 100%',
+              backgroundPosition: '0 0',
+              transition: 'background-position 0.5s, box-shadow 0.3s',
+            }}
+            onMouseEnter={(e) => {
+              (e.target as HTMLElement).style.backgroundPosition = '100% 0';
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.backgroundPosition = '0 0';
+            }}
+          >
+            {/* Decoração lateral */}
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 to-indigo-600"></div>
+            
+            {/* Ícone de posição */}
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">
+              {position}
+            </div>
+            
+            <SelectValue placeholder="Selecione um policial" />
           </SelectTrigger>
-          <SelectContent className="max-h-[300px] overflow-y-auto w-[300px]">
-            <SelectItem value={PLACEHOLDER_VALUE}>-- Selecione um policial --</SelectItem>
+          <SelectContent 
+            className="max-h-[350px] overflow-y-auto w-[320px] bg-gradient-to-b from-slate-50 to-white border-0 shadow-lg rounded-lg p-1"
+          >
+            <SelectItem 
+              value={PLACEHOLDER_VALUE}
+              className="bg-slate-100 mb-2 rounded-md font-medium text-slate-500 flex items-center justify-center py-2"
+            >
+              Selecione um policial
+            </SelectItem>
             
             {/* AVISO DE LIMITE NO TOPO QUANDO HÁ MILITARES BLOQUEADOS */}
             {limitReachedOfficers.length > 0 && (
-              <div className="px-3 py-2 bg-yellow-50 border-l-4 border-yellow-500 my-1.5 text-xs rounded-r">
-                <p className="font-bold text-yellow-800 flex items-center">
-                  <AlertTriangle className="h-3 w-3 mr-1 text-yellow-600" />
-                  MILITARES BLOQUEADOS
-                </p>
-                <p className="text-yellow-700">
-                  {limitReachedOfficers.length} {limitReachedOfficers.length === 1 ? 'militar atingiu' : 'militares atingiram'} o limite de 12 serviços
-                </p>
+              <div className="px-4 py-3 bg-gradient-to-r from-red-50 to-yellow-50 my-2 text-sm rounded-lg shadow-inner border border-yellow-200">
+                <div className="flex items-start">
+                  <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0 animate-pulse" />
+                  <div>
+                    <p className="font-bold text-red-700 leading-tight">
+                      Alerta de Limite GCJO
+                    </p>
+                    <p className="text-yellow-800 text-xs mt-1">
+                      {limitReachedOfficers.length} {limitReachedOfficers.length === 1 ? 'militar atingiu' : 'militares atingiram'} o limite máximo de 12 escalas mensais. Estes militares estão bloqueados para novas escalas.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
             

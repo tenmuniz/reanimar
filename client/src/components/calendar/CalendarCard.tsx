@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Shield, CheckCircle, UserCheck, Users } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { getWeekdayClass } from "@/lib/utils";
 import OfficerSelect from "./OfficerSelect";
 import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface CalendarCardProps {
   day: number;
@@ -293,88 +294,139 @@ export default function CalendarCard({
 
   return (
     <div 
-      className={`day-card relative bg-white rounded-md overflow-hidden transition-all duration-200
-        ${assignedCount === 0 ? 'border border-gray-200 hover:shadow-md' : 
-          assignedCount === 3 ? 'border-2 border-green-500 hover:shadow-lg' : 
-          'border-2 border-orange-500 hover:shadow-lg'}`} 
+      className={`day-card relative rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-[1.02]
+        ${assignedCount === 0 
+          ? 'bg-gradient-to-br from-slate-50 to-slate-100 shadow-md' 
+          : assignedCount === 3 
+            ? 'bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg' 
+            : 'bg-gradient-to-br from-amber-50 to-amber-100 shadow-lg'}`} 
       id={`dia-${day}`}
+      style={{
+        boxShadow: assignedCount === 3 
+          ? '0 10px 15px -3px rgba(0, 200, 83, 0.2), 0 4px 6px -4px rgba(0, 200, 83, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.6)' 
+          : assignedCount > 0 
+            ? '0 10px 15px -3px rgba(237, 137, 54, 0.2), 0 4px 6px -4px rgba(237, 137, 54, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.6)' 
+            : '0 10px 15px -3px rgba(100, 116, 139, 0.1), 0 4px 6px -4px rgba(100, 116, 139, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6)'
+      }}
     >
       {/* Barra de limite - mostrada apenas quando um militar selecionado já atingiu o limite */}
       {showLimitWarning && (
-        <div className="absolute top-0 left-0 right-0 bg-yellow-500 text-xs text-center py-0.5 font-medium text-yellow-900 z-10">
-          Militar atingiu o limite de 12 serviços
+        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-red-500 to-red-600 text-xs text-center py-1 font-medium text-white z-10 shadow-md">
+          <AlertCircle className="h-3 w-3 inline-block mr-1 animate-pulse" />
+          Limite de 12 serviços atingido
         </div>
       )}
       
-      {/* Header com a data e dia da semana */}
-      <div className={`flex items-center justify-between ${
-        assignedCount === 3 
-          ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
-          : assignedCount > 0 
-            ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
-            : 'bg-slate-100 text-slate-700'
-      } px-4 py-3`}>
-        <div className="flex flex-col">
-          <span className="text-2xl font-bold leading-none">{day}</span>
-          <span className="text-xs opacity-90 capitalize">{weekday}</span>
-        </div>
+      {/* Header com a data e dia da semana - Visual mais 3D e moderno */}
+      <div 
+        className={`flex items-center justify-between px-5 py-4 
+          ${assignedCount === 3 
+            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' 
+            : assignedCount > 0 
+              ? 'bg-gradient-to-r from-amber-500 to-amber-600'
+              : weekdayClass
+          } text-white relative overflow-hidden`}
+      >
+        {/* Efeito brilho no header */}
+        <div className="absolute top-0 left-0 w-full h-full bg-white opacity-20 transform -skew-x-45"></div>
         
-        <div className="text-right">
-          <div className={`text-xs font-medium px-2 py-1 rounded-full ${
-            assignedCount === 3 
-              ? 'bg-green-700/30 text-white' 
-              : assignedCount > 0 
-                ? 'bg-orange-700/30 text-white'
-                : 'bg-slate-200 text-slate-700'
-          }`}>
-            {assignedCount === 0 ? '0/3' : 
-             assignedCount === 3 ? 'Completo' : 
-             `${assignedCount}/3`}
+        {/* Círculo do dia com efeito 3D */}
+        <div className="flex items-center space-x-3 relative z-10">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white text-slate-800 font-bold text-xl shadow-[0_4px_6px_rgba(0,0,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.6)]">
+            {day}
+          </div>
+          <div>
+            <div className="font-bold text-lg leading-none capitalize mb-0.5 drop-shadow-md">{weekday}</div>
+            <div className="text-xs opacity-90">{day}/{month}/{year}</div>
           </div>
         </div>
+        
+        {/* Badge animado com contagem */}
+        <Badge
+          className={`${
+            assignedCount === 3 
+              ? 'bg-white text-emerald-700 border-emerald-300' 
+              : assignedCount > 0 
+                ? 'bg-white text-amber-700 border-amber-300'
+                : 'bg-white/90 text-slate-600 border-slate-300'
+          } font-bold py-1 px-3 rounded-full text-sm shadow-md relative z-10 border`}
+        >
+          {assignedCount === 3 
+            ? <><CheckCircle className="h-4 w-4 mr-1 inline-block text-emerald-500" /> Completo</>
+            : <><Users className="h-4 w-4 mr-1 inline-block" /> {assignedCount}/3</>
+          }
+        </Badge>
       </div>
       
-      {/* Corpo do card */}
-      <div className="p-4 space-y-3">
-        {/* Seletores de oficiais */}
-        {[0, 1, 2].map((position) => (
-          <div key={`select-${day}-${position}`} className="relative">
-            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-10 bg-blue-500 opacity-80 rounded-r-md"></div>
-            <OfficerSelect
-              key={`day-${day}-position-${position}`}
-              position={position + 1}
-              officers={officers}
-              selectedOfficer={selections[position]}
-              disabledOfficers={[
-                ...selectedOfficers.filter((officer) => officer !== selections[position]),
-                ...disabledOfficers
-              ]}
-              limitReachedOfficers={limitReachedOfficers}
-              onChange={(value) => handleOfficerChange(position, value)}
-            />
-          </div>
-        ))}
-        
-        {/* Status da guarnição */}
-        {assignedCount === 3 && (
-          <div className="mt-2 text-center">
-            <span className="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-100 text-green-800 font-medium">
-              <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+      {/* Corpo do card com efeito de vidro e 3D */}
+      <div className="p-5 space-y-4 relative">
+        {/* Status visual rápido */}
+        <div className="flex justify-center mb-1">
+          {assignedCount === 3 ? (
+            <div className="inline-flex items-center bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+              <Shield className="h-4 w-4 mr-2 text-emerald-600" />
               Guarnição completa
-            </span>
-          </div>
-        )}
+            </div>
+          ) : assignedCount > 0 ? (
+            <div className="inline-flex items-center bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+              <AlertCircle className="h-4 w-4 mr-2 text-amber-600" />
+              Guarnição incompleta
+            </div>
+          ) : (
+            <div className="inline-flex items-center bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+              <Users className="h-4 w-4 mr-2 text-slate-500" />
+              Sem escalados
+            </div>
+          )}
+        </div>
         
-        {/* Alerta de limite atingido */}
+        {/* Seletores de oficiais com estilo moderno */}
+        <div className="space-y-3 relative">
+          {[0, 1, 2].map((position) => (
+            <div 
+              key={`select-${day}-${position}`} 
+              className={`relative rounded-xl overflow-hidden transition-all duration-200
+                ${selections[position] ? 'bg-white/70 shadow-md' : 'bg-white/30'}
+                ${position === 0 ? 'border-l-4 border-blue-500' : 
+                  position === 1 ? 'border-l-4 border-indigo-500' : 
+                  'border-l-4 border-purple-500'}`}
+            >
+              <OfficerSelect
+                key={`day-${day}-position-${position}`}
+                position={position + 1}
+                officers={officers}
+                selectedOfficer={selections[position]}
+                disabledOfficers={[
+                  ...selectedOfficers.filter((officer) => officer !== selections[position]),
+                  ...disabledOfficers
+                ]}
+                limitReachedOfficers={limitReachedOfficers}
+                onChange={(value) => handleOfficerChange(position, value)}
+              />
+              
+              {/* Indicador visual de posição */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <Badge 
+                  className={`h-6 w-6 rounded-full p-0 flex items-center justify-center 
+                    ${selections[position] 
+                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0' 
+                      : 'bg-slate-200 text-slate-600 border-0'}`}
+                >
+                  {position + 1}
+                </Badge>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {/* Alerta de limite atingido com estilo mais chamativo */}
         {showLimitWarning && (
-          <div className="mt-2 p-2 bg-yellow-100 border-l-4 border-yellow-500 rounded text-yellow-800 text-xs">
+          <div className="mt-3 bg-gradient-to-r from-red-50 to-yellow-50 border-l-4 border-red-500 rounded-lg p-3 text-red-800 text-sm shadow-inner">
             <div className="flex items-start">
-              <AlertCircle className="h-4 w-4 text-yellow-600 mr-1 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0 animate-pulse" />
               <div>
-                <p className="font-semibold">Limite de 12 serviços atingido</p>
-                <p className="mt-0.5">Um ou mais militares neste dia já atingiram o limite mensal.</p>
+                <p className="font-bold">Militares com limite de 12 serviços atingido!</p>
+                <p className="mt-1 text-sm opacity-90">Não é possível adicionar mais escalas para este(s) militar(es) neste mês, conforme regras do GCJO.</p>
               </div>
             </div>
           </div>
