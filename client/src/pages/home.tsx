@@ -249,46 +249,14 @@ export default function Home() {
               </div>
               
               <h1 className="text-4xl font-black text-white mb-1">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-blue-100 to-indigo-200">
-                  EXTRAORDINÁRIO
+                <span className="text-4xl font-bold text-blue-100">
+                  POLÍCIA MAIS FORTE
                 </span>
                 <span className="px-2 text-yellow-400">•</span>
-                <span className="text-3xl font-bold text-blue-200">Escala PMF</span>
+                <span className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-blue-100 to-indigo-200">Extraordinário</span>
               </h1>
               
-              <p className="text-blue-100 text-base mt-1 max-w-2xl leading-relaxed">
-                Gerencie as escalas da Polícia Mais Forte com eficiência e controle o limite de GCJO por militar
-              </p>
-              
-              {/* Ícones de funcionalidades */}
-              <div className="flex mt-4 space-x-2">
-                <div className="bg-blue-800/40 p-2 rounded-lg border border-blue-700/50 flex items-center">
-                  <div className="bg-blue-700/50 p-1.5 rounded-md mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  </div>
-                  <span className="text-xs text-blue-100">Escala Mensal</span>
-                </div>
-                
-                <div className="bg-blue-800/40 p-2 rounded-lg border border-blue-700/50 flex items-center">
-                  <div className="bg-blue-700/50 p-1.5 rounded-md mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <span className="text-xs text-blue-100">Limite de 12 serviços</span>
-                </div>
-                
-                <div className="bg-blue-800/40 p-2 rounded-lg border border-blue-700/50 flex items-center">
-                  <div className="bg-blue-700/50 p-1.5 rounded-md mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <span className="text-xs text-blue-100">Verificador</span>
-                </div>
-              </div>
+              {/* Ícones de funcionalidades removidos conforme solicitado */}
             </div>
             
             {/* Seletor de mês com estilo premium */}
