@@ -2,7 +2,7 @@ import { Switch, Route, useLocation, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, FileCheck } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
@@ -59,11 +59,23 @@ function NavBar() {
             </div>
           </div>
           
-          <div className="flex items-center gap-5">
-            {/* Status do sistema */}
-            <div className="hidden md:flex items-center px-3 py-1.5 bg-green-50 rounded-full border border-green-100">
-              <Activity className="h-3.5 w-3.5 text-green-500 mr-1.5" />
-              <span className="text-xs font-medium text-green-700">Sistema operacional</span>
+          <div className="flex items-center gap-2">
+            {/* Estatísticas rápidas */}
+            <div className="hidden md:flex items-center">
+              <div className="flex items-center px-3 py-1.5 bg-blue-50 rounded-l-full border border-blue-100">
+                <Users className="h-3.5 w-3.5 text-blue-500 mr-1.5" />
+                <span className="text-xs font-medium text-blue-700">48 escalas</span>
+              </div>
+              
+              <div className="flex items-center px-3 py-1.5 bg-purple-50 border-t border-b border-purple-100">
+                <Shield className="h-3.5 w-3.5 text-purple-500 mr-1.5" />
+                <span className="text-xs font-medium text-purple-700">16 guarniçoes</span>
+              </div>
+              
+              <div className="flex items-center px-3 py-1.5 bg-amber-50 rounded-r-full border border-amber-100">
+                <Clock className="h-3.5 w-3.5 text-amber-500 mr-1.5" />
+                <span className="text-xs font-medium text-amber-700">Atualizado 12/04</span>
+              </div>
             </div>
             
             {/* Notificações */}
@@ -160,14 +172,14 @@ function NavBar() {
               <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-green-600 group-hover:shadow-md group-hover:shadow-green-400/20">
                 <BarChart4 className="h-4 w-4 text-gray-500 group-hover:text-white" />
               </div>
-              <span className="text-sm font-medium">Estatísticas</span>
+              <span className="text-sm font-medium">Relatórios</span>
             </a>
             
             <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-indigo-50/60 hover:shadow-md hover:border hover:border-indigo-100">
               <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-indigo-600 group-hover:shadow-md group-hover:shadow-indigo-400/20">
-                <User className="h-4 w-4 text-gray-500 group-hover:text-white" />
+                <FileCheck className="h-4 w-4 text-gray-500 group-hover:text-white" />
               </div>
-              <span className="text-sm font-medium">Militares</span>
+              <span className="text-sm font-medium">Exportar PDF</span>
             </a>
           </div>
         </nav>
