@@ -410,17 +410,7 @@ export default function CalendarCard({
                 onChange={(value) => handleOfficerChange(position, value)}
               />
               
-              {/* Indicador visual de posição */}
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <Badge 
-                  className={`h-6 w-6 rounded-full p-0 flex items-center justify-center 
-                    ${selections[position] 
-                      ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0' 
-                      : 'bg-slate-200 text-slate-600 border-0'}`}
-                >
-                  {position + 1}
-                </Badge>
-              </div>
+              {/* Removido o indicador visual de posição com números */}
             </div>
           ))}
         </div>

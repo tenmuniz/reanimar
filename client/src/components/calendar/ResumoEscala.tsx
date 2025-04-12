@@ -304,7 +304,6 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
   
   // REIMPLEMENTAÇÃO TOTAL DO RESUMO - Garantir contagem precisa
   const generateResumo = () => {
-    // Não precisamos mais desta chave composta, os dados já vêm no formato correto
     // Obtém os dados do schedule atual - importante ter os dados mais recentes
     const monthSchedule = schedule || {};
     
@@ -325,35 +324,48 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
     // Criar um contador simples de dias escalados por militar
     const contador: Record<string, { dias: number[], total: number }> = {};
     
+    // Obter o mês atual e ano atual para montar a chave correta
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // JavaScript meses são 0-11
+    const monthKey = `${year}-${month}`;
+    
+    // Obter os dados específicos do mês atual
+    const monthlyData = monthSchedule[monthKey] || {};
+    
     // Iterar sobre cada dia do mês no schedule
-    if (monthSchedule) {
-      Object.entries(monthSchedule).forEach(([day, daySchedule]) => {
-        // Converter para número
-        const dayNum = parseInt(day, 10);
-        
-        // Verificar cada posição no dia
-        if (Array.isArray(daySchedule)) {
-          daySchedule.forEach(militar => {
-            // Só processar se houver um militar escalado
-            if (militar) {
-              // Inicializar contador para este militar se ainda não existe
-              if (!contador[militar]) {
-                contador[militar] = {
-                  dias: [],
-                  total: 0
-                };
-              }
-              
-              // Adicionar apenas se ainda não contabilizamos este dia
-              if (!contador[militar].dias.includes(dayNum)) {
-                contador[militar].dias.push(dayNum);
-                contador[militar].total++;
-              }
+    Object.entries(monthlyData).forEach(([day, oficiais]) => {
+      // Converter para número
+      const dayNum = parseInt(day, 10);
+      
+      // Verificar cada posição no dia
+      if (Array.isArray(oficiais)) {
+        oficiais.forEach(militar => {
+          // Só processar se houver um militar escalado
+          if (militar) {
+            // Inicializar contador para este militar se ainda não existe
+            if (!contador[militar]) {
+              contador[militar] = {
+                dias: [],
+                total: 0
+              };
             }
-          });
-        }
-      });
-    }
+            
+            // Adicionar apenas se ainda não contabilizamos este dia
+            if (!contador[militar].dias.includes(dayNum)) {
+              contador[militar].dias.push(dayNum);
+              contador[militar].total++;
+            }
+          }
+        });
+      }
+    });
+    
+    // Logging importante para debug
+    console.log("DADOS PROCESSADOS PARA O MÊS", monthKey, ":", 
+      Object.keys(monthlyData).length > 0 ? "Encontrados" : "VAZIO (0 dias)");
+    
+    // Contagem detalhada por militar
+    console.log("MILITARES ESCALADOS:", Object.keys(contador).join(", ") || "NENHUM");
     
     // Log detalhado para verificação
     console.log("CONTAGEM FINAL DE SERVIÇOS:", 

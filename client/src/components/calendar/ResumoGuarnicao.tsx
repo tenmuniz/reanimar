@@ -61,7 +61,6 @@ export default function ResumoGuarnicao({
   };
 
   const generateResumoGuarnicoes = () => {
-    // Não precisamos mais da chave, os dados já vêm no formato correto
     // Obter dados do mês atual
     const monthSchedule = schedule || {};
     
@@ -74,24 +73,40 @@ export default function ResumoGuarnicao({
       "OUTROS": { dias: [], total: 0 }
     };
     
+    // Obter o mês atual e ano atual para montar a chave correta
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // JavaScript meses são 0-11
+    const monthKey = `${year}-${month}`;
+    
+    // Obter os dados específicos do mês atual
+    const monthlyData = monthSchedule[monthKey] || {};
+    
+    console.log("RESUMO GUARNIÇÃO: Processando dados do mês", monthKey);
+    console.log("DADOS DISPONÍVEIS:", monthlyData);
+    
     // Analisar cada dia e militar para identificar guarnição
-    if (monthSchedule) {
-      Object.entries(monthSchedule).forEach(([day, daySchedule]) => {
-        const dayNum = parseInt(day, 10);
-        
-        if (Array.isArray(daySchedule)) {
-          daySchedule.forEach(militar => {
-            if (militar) {
-              const guarnicao = getGuarnicaoMilitar(militar);
-              if (!guarnicoes[guarnicao].dias.includes(dayNum)) {
-                guarnicoes[guarnicao].dias.push(dayNum);
-              }
-              guarnicoes[guarnicao].total++;
+    Object.entries(monthlyData).forEach(([day, oficiais]) => {
+      const dayNum = parseInt(day, 10);
+      
+      if (Array.isArray(oficiais)) {
+        oficiais.forEach(militar => {
+          if (militar) {
+            const guarnicao = getGuarnicaoMilitar(militar);
+            if (!guarnicoes[guarnicao].dias.includes(dayNum)) {
+              guarnicoes[guarnicao].dias.push(dayNum);
             }
-          });
-        }
-      });
-    }
+            guarnicoes[guarnicao].total++;
+          }
+        });
+      }
+    });
+    
+    // Debug detalhado
+    console.log("CONTAGEM POR GUARNIÇÃO:", 
+      Object.entries(guarnicoes)
+        .filter(([_, dados]) => dados.total > 0)
+        .map(([guarnicao, dados]) => `${guarnicao}: ${dados.total} serviços em ${dados.dias.length} dias`)
+    );
     
     // Remover guarnição OUTROS se não tiver nenhum registro
     if (guarnicoes["OUTROS"].total === 0) {
