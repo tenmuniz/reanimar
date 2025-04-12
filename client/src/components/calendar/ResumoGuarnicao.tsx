@@ -304,60 +304,69 @@ export default function ResumoGuarnicao({
                     
                     // Função para gerar PDF para esta guarnição
                     const gerarPDFGuarnicao = () => {
-                      const pdf = new jsPDF();
-                      
-                      // Título do Documento
-                      pdf.setFontSize(16);
-                      pdf.setFont('helvetica', 'bold');
-                      pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicao}`, 105, 15, { align: 'center' });
-                      
-                      // Informações do mês
-                      pdf.setFontSize(11);
-                      pdf.setFont('helvetica', 'normal');
-                      pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
-                      pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
-                      
-                      // Cabeçalho
-                      pdf.setFontSize(12);
-                      pdf.setFont('helvetica', 'bold');
-                      
-                      // Dados para a tabela
-                      const tableRows: any[] = [];
-                      const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
-                      
-                      // Para cada dia, pegar os militares dessa guarnição
-                      diasOrdenados.forEach(dia => {
-                        if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
-                          dados.militaresPorDia[dia].forEach(militar => {
-                            tableRows.push([
-                              dia,
-                              militar
-                            ]);
+                      try {
+                        const pdf = new jsPDF();
+                        
+                        // Título do Documento
+                        pdf.setFontSize(16);
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicao}`, 105, 15, { align: 'center' });
+                        
+                        // Informações do mês
+                        pdf.setFontSize(11);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
+                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
+                        
+                        // Cabeçalho
+                        pdf.setFontSize(12);
+                        pdf.setFont('helvetica', 'bold');
+                        
+                        // Dados para a tabela
+                        const tableRows: any[] = [];
+                        const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
+                        
+                        // Para cada dia, pegar os militares dessa guarnição
+                        diasOrdenados.forEach(dia => {
+                          if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
+                            dados.militaresPorDia[dia].forEach(militar => {
+                              tableRows.push([
+                                dia,
+                                militar
+                              ]);
+                            });
+                          }
+                        });
+                        
+                        // Importando a função autoTable e usando na instância do PDF
+                        import('jspdf-autotable').then((module) => {
+                          const autoTable = module.default;
+                          
+                          autoTable(pdf, {
+                            head: [['Dia', 'Militar']],
+                            body: tableRows,
+                            startY: 35,
+                            margin: { top: 35 },
+                            styles: { fontSize: 10 },
+                            headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
+                            alternateRowStyles: { fillColor: [240, 240, 240] }
                           });
-                        }
-                      });
-                      
-                      // Adicionar tabela ao PDF
-                      (pdf as any).autoTable({
-                        head: [['Dia', 'Militar']],
-                        body: tableRows,
-                        startY: 35,
-                        margin: { top: 35 },
-                        styles: { fontSize: 10 },
-                        headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
-                        alternateRowStyles: { fillColor: [240, 240, 240] }
-                      });
-                      
-                      // Rodapé
-                      const pageCount = (pdf as any).internal.getNumberOfPages();
-                      for (let i = 1; i <= pageCount; i++) {
-                        pdf.setPage(i);
-                        pdf.setFontSize(8);
-                        pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                          
+                          // Rodapé
+                          const pageCount = pdf.getNumberOfPages();
+                          for (let i = 1; i <= pageCount; i++) {
+                            pdf.setPage(i);
+                            pdf.setFontSize(8);
+                            pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                          }
+                          
+                          // Salvar o PDF
+                          pdf.save(`GCJO_${guarnicao}_${mesAno.replace(' ', '_')}.pdf`);
+                        });
+                      } catch (error) {
+                        console.error("Erro ao gerar PDF:", error);
+                        alert("Erro ao gerar PDF. Tente novamente.");
                       }
-                      
-                      // Salvar o PDF
-                      pdf.save(`GCJO_${guarnicao}_${mesAno.replace(' ', '_')}.pdf`);
                     };
                     
                     // Função para abrir o modal de detalhes
@@ -523,57 +532,66 @@ export default function ResumoGuarnicao({
                   } text-white border-transparent shadow-md`}
                   onClick={() => {
                     if (guarnicaoSelecionada) {
-                      const pdf = new jsPDF();
-                      
-                      // Título do Documento
-                      pdf.setFontSize(16);
-                      pdf.setFont('helvetica', 'bold');
-                      pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 15, { align: 'center' });
-                      
-                      // Informações do mês
-                      pdf.setFontSize(11);
-                      pdf.setFont('helvetica', 'normal');
-                      pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
-                      pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
-                      
-                      // Dados para a tabela
-                      const tableRows: any[] = [];
-                      const dados = guarnicoesData[guarnicaoSelecionada];
-                      const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
-                      
-                      // Para cada dia, pegar os militares dessa guarnição
-                      diasOrdenados.forEach(dia => {
-                        if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
-                          dados.militaresPorDia[dia].forEach(militar => {
-                            tableRows.push([
-                              dia,
-                              militar
-                            ]);
+                      try {
+                        const pdf = new jsPDF();
+                        
+                        // Título do Documento
+                        pdf.setFontSize(16);
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 15, { align: 'center' });
+                        
+                        // Informações do mês
+                        pdf.setFontSize(11);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
+                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
+                        
+                        // Dados para a tabela
+                        const tableRows: any[] = [];
+                        const dados = guarnicoesData[guarnicaoSelecionada];
+                        const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
+                        
+                        // Para cada dia, pegar os militares dessa guarnição
+                        diasOrdenados.forEach(dia => {
+                          if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
+                            dados.militaresPorDia[dia].forEach(militar => {
+                              tableRows.push([
+                                dia,
+                                militar
+                              ]);
+                            });
+                          }
+                        });
+                        
+                        // Importando a função autoTable e usando na instância do PDF
+                        import('jspdf-autotable').then((module) => {
+                          const autoTable = module.default;
+                          
+                          autoTable(pdf, {
+                            head: [['Dia', 'Militar']],
+                            body: tableRows,
+                            startY: 35,
+                            margin: { top: 35 },
+                            styles: { fontSize: 10 },
+                            headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
+                            alternateRowStyles: { fillColor: [240, 240, 240] }
                           });
-                        }
-                      });
-                      
-                      // Adicionar tabela ao PDF
-                      (pdf as any).autoTable({
-                        head: [['Dia', 'Militar']],
-                        body: tableRows,
-                        startY: 35,
-                        margin: { top: 35 },
-                        styles: { fontSize: 10 },
-                        headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
-                        alternateRowStyles: { fillColor: [240, 240, 240] }
-                      });
-                      
-                      // Rodapé
-                      const pageCount = (pdf as any).internal.getNumberOfPages();
-                      for (let i = 1; i <= pageCount; i++) {
-                        pdf.setPage(i);
-                        pdf.setFontSize(8);
-                        pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                          
+                          // Rodapé
+                          const pageCount = pdf.getNumberOfPages();
+                          for (let i = 1; i <= pageCount; i++) {
+                            pdf.setPage(i);
+                            pdf.setFontSize(8);
+                            pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                          }
+                          
+                          // Salvar o PDF
+                          pdf.save(`GCJO_${guarnicaoSelecionada}_${mesAno.replace(' ', '_')}.pdf`);
+                        });
+                      } catch (error) {
+                        console.error("Erro ao gerar PDF:", error);
+                        alert("Erro ao gerar PDF. Tente novamente.");
                       }
-                      
-                      // Salvar o PDF
-                      pdf.save(`GCJO_${guarnicaoSelecionada}_${mesAno.replace(' ', '_')}.pdf`);
                     }
                   }}
                 >
