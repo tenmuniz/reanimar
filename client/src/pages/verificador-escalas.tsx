@@ -358,140 +358,161 @@ export default function VerificadorEscalas() {
         </Card>
       </div>
 
-      {/* Diálogo de resultados com botão de fechar explícito */}
-      <Dialog 
-        open={open} 
-        onOpenChange={setOpen}
-      >
-        <DialogContent className="max-w-4xl bg-gradient-to-br from-slate-50 to-slate-100 border-0 shadow-2xl">
-          <button
-            onClick={fecharDialogo}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-            <span className="sr-only">Fechar</span>
-          </button>
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-2xl font-bold mb-4">
+      {/* Resultados exibidos diretamente quando há conflitos (sem diálogo) */}
+      {open && conflitos.length > 0 && (
+        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-fade-in-down">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center">
               <ClipboardList className="h-6 w-6 mr-2 text-blue-600" />
-              <span className="bg-gradient-to-r from-blue-700 to-blue-600 text-transparent bg-clip-text">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 text-transparent bg-clip-text">
                 Resultado da Verificação de Conflitos
-              </span>
-            </DialogTitle>
-          </DialogHeader>
-          
-          {conflitos.length > 0 ? (
-            <>
-              <div className="mb-6">
-                <Alert variant="destructive" className="bg-red-50 border-red-200">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Atenção! Conflitos encontrados</AlertTitle>
-                  <AlertDescription>
-                    Foram encontrados {conflitos.length} conflitos entre a escala ordinária e a operação PMF.
-                    Militares não podem estar escalados em dois serviços no mesmo dia.
-                  </AlertDescription>
-                </Alert>
-                
-                <div className="mt-4 mb-4">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Filtrar por nome do militar..."
-                      value={filtroMilitar}
-                      onChange={(e) => setFiltroMilitar(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
-                    />
-                    <div className="absolute left-3 top-2.5 text-gray-400">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="rounded-lg border overflow-hidden">
-                  <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                    <Table>
-                      <TableHeader className="bg-slate-100 sticky top-0 z-10">
-                        <TableRow>
-                          <TableHead className="w-[80px] text-center font-medium">Dia</TableHead>
-                          <TableHead className="font-medium">Militar</TableHead>
-                          <TableHead className="w-[180px] font-medium">Guarnição</TableHead>
-                          <TableHead className="w-[120px] text-center font-medium">Operação</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {conflitrosFiltrados.map((conflito, index) => (
-                          <TableRow key={index} className="hover:bg-slate-50">
-                            <TableCell className="text-center font-medium">
-                              {conflito.dia}/04
-                            </TableCell>
-                            <TableCell>{conflito.militar}</TableCell>
-                            <TableCell>
-                              <Badge variant={
-                                conflito.guarnicaoOrdinaria === "ALFA" ? "secondary" :
-                                conflito.guarnicaoOrdinaria === "BRAVO" ? "destructive" :
-                                conflito.guarnicaoOrdinaria === "CHARLIE" ? "default" :
-                                "outline"
-                              }>
-                                {conflito.guarnicaoOrdinaria}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <Badge variant="default" className="bg-blue-600">
-                                {conflito.operacao}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-                
-                <div className="mt-3 flex justify-center text-center text-sm text-gray-500">
-                  <p>Use a barra de rolagem para visualizar todos os {conflitos.length} conflitos</p>
-                </div>
-              </div>
-              
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h3 className="text-amber-800 font-medium mb-1 flex items-center">
-                  <AlertCircle className="h-4 w-4 mr-1" />
-                  Recomendação
-                </h3>
-                <p className="text-amber-700 text-sm">
-                  Recomenda-se remover estes militares da escala da operação PMF nos dias em que 
-                  já estão escalados em seu serviço ordinário, para evitar conflitos de escalas.
-                </p>
-              </div>
-            </>
-          ) : (
-            <div className="py-8 text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-medium text-gray-800 mb-2">Nenhum conflito encontrado</h3>
-              <p className="text-gray-600 max-w-lg mx-auto">
-                Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e a operação PMF.
-                Todos os militares estão escalados corretamente sem sobreposição de serviços.
-              </p>
+              </h2>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            <button
+              onClick={fecharDialogo}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          
+          <Alert variant="destructive" className="bg-red-50 border-red-200 mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Atenção! Conflitos encontrados</AlertTitle>
+            <AlertDescription>
+              Foram encontrados {conflitos.length} conflitos entre a escala ordinária e a operação PMF.
+              Militares não podem estar escalados em dois serviços no mesmo dia.
+            </AlertDescription>
+          </Alert>
+          
+          <div className="relative mb-4">
+            <input
+              type="text"
+              placeholder="Filtrar por nome do militar..."
+              value={filtroMilitar}
+              onChange={(e) => setFiltroMilitar(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
+            />
+            <div className="absolute left-3 top-2.5 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="rounded-lg border overflow-hidden">
+            <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              <Table>
+                <TableHeader className="bg-slate-100 sticky top-0 z-10">
+                  <TableRow>
+                    <TableHead className="w-[80px] text-center font-medium">Dia</TableHead>
+                    <TableHead className="font-medium">Militar</TableHead>
+                    <TableHead className="w-[180px] font-medium">Guarnição</TableHead>
+                    <TableHead className="w-[120px] text-center font-medium">Operação</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {conflitrosFiltrados.map((conflito, index) => (
+                    <TableRow key={index} className="hover:bg-slate-50">
+                      <TableCell className="text-center font-medium">
+                        {conflito.dia}/04
+                      </TableCell>
+                      <TableCell>{conflito.militar}</TableCell>
+                      <TableCell>
+                        <Badge variant={
+                          conflito.guarnicaoOrdinaria === "ALFA" ? "secondary" :
+                          conflito.guarnicaoOrdinaria === "BRAVO" ? "destructive" :
+                          conflito.guarnicaoOrdinaria === "CHARLIE" ? "default" :
+                          "outline"
+                        }>
+                          {conflito.guarnicaoOrdinaria}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="default" className="bg-blue-600">
+                          {conflito.operacao}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          
+          <div className="mt-3 flex justify-center text-center text-sm text-gray-500">
+            <p>Use a barra de rolagem para visualizar todos os {conflitos.length} conflitos</p>
+          </div>
+          
+          <div className="mt-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
+            <h3 className="text-amber-800 font-medium mb-1 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              Recomendação
+            </h3>
+            <p className="text-amber-700 text-sm">
+              Recomenda-se remover estes militares da escala da operação PMF nos dias em que 
+              já estão escalados em seu serviço ordinário, para evitar conflitos de escalas.
+            </p>
+          </div>
+        </div>
+      )}
+      
+      {/* Mensagem de sucesso quando não há conflitos */}
+      {open && conflitos.length === 0 && (
+        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-fade-in-down">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center">
+              <CheckCircle className="h-6 w-6 mr-2 text-green-600" />
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-600 text-transparent bg-clip-text">
+                Verificação Concluída
+              </h2>
+            </div>
+            <button
+              onClick={fecharDialogo}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="py-8 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">Nenhum conflito encontrado</h3>
+            <p className="text-gray-600 max-w-lg mx-auto">
+              Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e a operação PMF.
+              Todos os militares estão escalados corretamente sem sobreposição de serviços.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
