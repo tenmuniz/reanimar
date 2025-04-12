@@ -569,7 +569,12 @@ export default function Relatorios() {
                   </div>
                   
                   <div className="text-center mt-4">
-                    <div className="text-xs text-gray-500">Total de {Object.values(dadosMilitares).length} militares</div>
+                    <div className="inline-flex items-center px-3 py-1.5 bg-gray-100 rounded-full shadow-sm border border-gray-200">
+                      <Users className="h-4 w-4 text-gray-600 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Total de</span>
+                      <span className="text-lg font-bold text-blue-600 mx-1.5">{Object.values(dadosMilitares).length}</span>
+                      <span className="text-sm font-medium text-gray-700">militares</span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
