@@ -70,11 +70,8 @@ export default function VerificadorSimples() {
   });
   
   // Verificar inconsistências quando os dados são carregados
-  useEffect(() => {
-    if (pmfSchedule && escolaSeguraSchedule && !loadingPMF && !loadingEscolaSegura) {
-      verificarInconsistencias();
-    }
-  }, [pmfSchedule, escolaSeguraSchedule]);
+  // Não verificar automaticamente ao carregar os dados
+  // Deixar o usuário iniciar a verificação manualmente
   
   // Função para verificar inconsistências
   const verificarInconsistencias = () => {
@@ -207,16 +204,26 @@ export default function VerificadorSimples() {
         </div>
       </div>
       
-      {/* Alerta informativo */}
-      <Alert className="mb-6 bg-amber-50 border-amber-200 text-amber-800">
-        <AlertCircle className="h-4 w-4 text-amber-600" />
-        <AlertTitle className="text-amber-800 font-medium">Como funciona este verificador?</AlertTitle>
-        <AlertDescription className="text-amber-700">
-          Esta ferramenta identifica conflitos quando militares estão escalados ao mesmo tempo 
-          no serviço ordinário (ALFA, BRAVO, CHARLIE) e em operações extraordinárias (PMF, Escola Segura).
-          A regra é que militares de folga do serviço ordinário façam o serviço extraordinário.
-        </AlertDescription>
-      </Alert>
+      {/* Botão para iniciar verificação */}
+      <div className="mb-6">
+        <Button 
+          onClick={verificarInconsistencias}
+          className="w-full bg-amber-600 hover:bg-amber-700 text-white p-6 text-lg font-bold rounded-lg shadow-lg"
+          disabled={carregando}
+        >
+          {carregando ? (
+            <>
+              <div className="animate-spin w-6 h-6 border-4 border-white border-t-transparent rounded-full mr-2"></div>
+              VERIFICANDO...
+            </>
+          ) : (
+            <>
+              <AlertTriangle className="h-6 w-6 mr-2" />
+              VERIFICAR CONFLITOS NAS ESCALAS
+            </>
+          )}
+        </Button>
+      </div>
       
       {/* Resultados */}
       <div className="bg-white rounded-lg border border-amber-200 shadow-lg overflow-hidden">
