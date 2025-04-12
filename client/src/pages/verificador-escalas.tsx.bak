@@ -359,10 +359,7 @@ export default function VerificadorEscalas() {
       </div>
 
       {/* Diálogo de resultados com botão de fechar explícito */}
-      <Dialog 
-        open={open} 
-        onOpenChange={setOpen}
-      >
+      <Dialog modal={false} open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-4xl bg-gradient-to-br from-slate-50 to-slate-100 border-0 shadow-2xl">
           <button
             onClick={fecharDialogo}
