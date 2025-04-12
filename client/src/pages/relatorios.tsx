@@ -485,20 +485,43 @@ export default function Relatorios() {
                 <CardDescription>Comparativo de escalas entre operações</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <DonutChart
-                  data={dadosOperacoes}
-                  category="value"
-                  index="name"
-                  colors={["#2563eb", "#9333ea"]}
-                  valueFormatter={(value) => `${value} escalas`}
-                  className="h-full"
-                  showLabel={true}
-                  showAnimation={true}
-                  variant="pie"
-                  showTooltip={true}
-                  showLegend={true}
-                  label={`Total ${totalEscalas}`}
-                />
+                <div className="h-full flex flex-col">
+                  <div className="relative flex-grow flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="w-64 h-64 mx-auto">
+                      {/* Fatia para PMF */}
+                      <path
+                        d={`M 50 50 L 50 0 A 50 50 0 0 1 100 50 Z`}
+                        style={{fill: "#2563eb"}}
+                        className="hover:opacity-80 transition-opacity"
+                      />
+                      {/* Fatia para Escola Segura */}
+                      <path
+                        d={`M 50 50 L 100 50 A 50 50 0 0 1 50 100 A 50 50 0 0 1 0 50 A 50 50 0 0 1 50 0 Z`}
+                        style={{fill: "#9333ea"}}
+                        className="hover:opacity-80 transition-opacity"
+                      />
+                      {/* Círculo branco no centro */}
+                      <circle cx="50" cy="50" r="20" fill="white" />
+                      {/* Texto no centro */}
+                      <text x="50" y="46" textAnchor="middle" className="fill-gray-700 text-sm font-medium">Total</text>
+                      <text x="50" y="58" textAnchor="middle" className="fill-gray-800 text-lg font-bold">{totalEscalas}</text>
+                    </svg>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-2 justify-items-center">
+                    <div className="flex items-center gap-1.5">
+                      <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-sm"></div>
+                      <span className="text-xs text-gray-600">
+                        PMF ({dadosOperacoes[0]?.value || 0} escalas)
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-sm"></div>
+                      <span className="text-xs text-gray-600">
+                        Escola Segura ({dadosOperacoes[1]?.value || 0} escalas)
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
             
@@ -508,15 +531,46 @@ export default function Relatorios() {
                 <CardDescription>Distribuição das operações ao longo da semana</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <BarChart
-                  data={dadosDistribuicao}
-                  index="name"
-                  categories={["Polícia Mais Forte", "Escola Segura"]}
-                  colors={["blue", "purple"]}
-                  valueFormatter={(value) => `${value} escalas`}
-                  className="h-full"
-                  stack
-                />
+                <div className="h-full">
+                  {/* Gráfico de barras simples */}
+                  <div className="h-full flex flex-col">
+                    <div className="flex-1 flex items-end space-x-4">
+                      {dadosDistribuicao.map((item, index) => (
+                        <div key={index} className="flex flex-col items-center justify-end h-full w-full">
+                          <div className="w-full flex flex-col items-center space-y-1">
+                            <div 
+                              className="w-8 rounded-t-md" 
+                              style={{
+                                height: `${Math.max(5, (item["Escola Segura"] || 0) * 15)}px`,
+                                backgroundColor: "#9333ea"
+                              }}
+                            ></div>
+                            <div 
+                              className="w-8 rounded-t-md" 
+                              style={{
+                                height: `${Math.max(5, (item["Polícia Mais Forte"] || 0) * 15)}px`,
+                                backgroundColor: "#2563eb"
+                              }}
+                            ></div>
+                          </div>
+                          <div className="text-xs mt-2">{item.name}</div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Legenda */}
+                    <div className="mt-6 flex justify-center space-x-6">
+                      <div className="flex items-center space-x-2">
+                        <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-sm"></div>
+                        <span className="text-xs">PMF</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-sm"></div>
+                        <span className="text-xs">Escola Segura</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -528,17 +582,72 @@ export default function Relatorios() {
                 <CardDescription>Tendência diária de escalas para cada operação</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <BarChart
-                  data={dadosTendencia.filter(d => d["Polícia Mais Forte"] > 0 || d["Escola Segura"] > 0)}
-                  index="date"
-                  categories={["Polícia Mais Forte", "Escola Segura"]}
-                  colors={["#2563eb", "#9333ea"]}
-                  valueFormatter={(value) => `${value} escalas`}
-                  className="h-full"
-                  yAxisWidth={40}
-                  showLegend={true}
-                  stack={false}
-                />
+                <div className="h-full w-full">
+                  {/* Tendência das escalas - timeline customizada */}
+                  <div className="h-full flex flex-col">
+                    {/* Timeline principal */}
+                    <div className="flex-1 p-4">
+                      <div className="w-full h-full flex items-center">
+                        {/* Linha horizontal do tempo */}
+                        <div className="h-0.5 bg-gray-200 w-full relative">
+                          {/* Pontos no gráfico para PMF */}
+                          {dadosTendencia
+                            .filter(d => d["Polícia Mais Forte"] > 0 || d["Escola Segura"] > 0)
+                            .map((item, index) => (
+                              <div key={`pmf-${index}`} className="absolute" style={{ left: `${index * 5}%` }}>
+                                {item["Polícia Mais Forte"] > 0 && (
+                                  <div 
+                                    className="absolute -translate-x-1/2 rounded-full cursor-pointer transition-all hover:scale-125"
+                                    style={{ 
+                                      width: `${Math.max(12, item["Polícia Mais Forte"] * 4 + 8)}px`, 
+                                      height: `${Math.max(12, item["Polícia Mais Forte"] * 4 + 8)}px`,
+                                      backgroundColor: "#2563eb",
+                                      bottom: "4px"
+                                    }}
+                                  >
+                                    <div className="tooltip opacity-0 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white shadow-lg rounded px-2 py-1 text-xs pointer-events-none transition-opacity">
+                                      {item.date}: {item["Polícia Mais Forte"]} escalas
+                                    </div>
+                                  </div>
+                                )}
+                                {item["Escola Segura"] > 0 && (
+                                  <div 
+                                    className="absolute -translate-x-1/2 rounded-full cursor-pointer transition-all hover:scale-125"
+                                    style={{ 
+                                      width: `${Math.max(12, item["Escola Segura"] * 4 + 8)}px`, 
+                                      height: `${Math.max(12, item["Escola Segura"] * 4 + 8)}px`,
+                                      backgroundColor: "#9333ea",
+                                      top: "4px"
+                                    }}
+                                  >
+                                    <div className="tooltip opacity-0 absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white shadow-lg rounded px-2 py-1 text-xs pointer-events-none transition-opacity">
+                                      {item.date}: {item["Escola Segura"]} escalas
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="absolute text-xs -translate-x-1/2 whitespace-nowrap" style={{ top: "20px" }}>
+                                  {item.date.split("/")[0]}
+                                </div>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Legenda */}
+                    <div className="mt-6 flex justify-center space-x-6">
+                      <div className="flex items-center space-x-2">
+                        <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-full"></div>
+                        <span className="text-xs">Polícia Mais Forte</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-full"></div>
+                        <span className="text-xs">Escola Segura</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -553,19 +662,40 @@ export default function Relatorios() {
                 <CardDescription>Ranking de militares com mais escalas no período</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <BarChart
-                  data={topMilitares.map((militar, i) => ({
-                    name: militar.name,
-                    "Escalas": militar.value,
-                    Posição: 10 - i
-                  }))}
-                  index="name"
-                  categories={["Escalas"]}
-                  colors={["blue"]}
-                  layout="vertical"
-                  valueFormatter={(value) => `${value} escalas`}
-                  className="h-full"
-                />
+                <div className="h-full w-full flex flex-col p-4">
+                  {/* Ranking customizado de militares */}
+                  <div className="space-y-3 flex-1">
+                    {topMilitares.map((militar, i) => {
+                      const percentWidth = (militar.value / topMilitares[0].value) * 100;
+                      
+                      return (
+                        <div key={i} className="flex items-center space-x-2">
+                          <div className="w-5 flex justify-center">
+                            <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold ${i < 3 ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
+                              {i + 1}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between mb-1">
+                              <span className="text-sm font-medium truncate max-w-[70%]" title={militar.name}>
+                                {militar.name}
+                              </span>
+                              <span className="text-sm font-semibold text-blue-600">
+                                {militar.value}
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-100 rounded-full h-2">
+                              <div 
+                                className="h-full rounded-full bg-blue-500"
+                                style={{ width: `${percentWidth}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </CardContent>
             </Card>
             
@@ -575,20 +705,57 @@ export default function Relatorios() {
                 <CardDescription>Militares agrupados por faixas de escalas</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <PieChart
-                  data={[
-                    { name: '1-3 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length },
-                    { name: '4-6 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length },
-                    { name: '7-9 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length },
-                    { name: '10-11 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length },
-                    { name: '12+ Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length }
-                  ]}
-                  category="value"
-                  index="name"
-                  colors={["blue", "cyan", "teal", "amber", "red"]}
-                  valueFormatter={(value) => `${value} militares`}
-                  className="h-full"
-                />
+                <div className="h-full w-full flex flex-col">
+                  {/* Gráfico de distribuição customizado */}
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="w-full max-w-[250px]">
+                      {/* Criar um gráfico de barras horizontal simplificado */}
+                      <div className="space-y-4">
+                        {[
+                          { name: '1-3 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length, color: "#2563eb" },
+                          { name: '4-6 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length, color: "#06b6d4" },
+                          { name: '7-9 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length, color: "#0d9488" },
+                          { name: '10-11 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length, color: "#f59e0b" },
+                          { name: '12+ Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length, color: "#ef4444" }
+                        ].map((item, i) => {
+                          // Calcular o máximo para definir as larguras relativas
+                          const max = Math.max(
+                            Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length,
+                            Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length,
+                            Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length,
+                            Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length,
+                            Object.values(dadosMilitares).filter(d => d.total >= 12).length
+                          );
+                          
+                          const percentWidth = (item.value / max) * 100;
+                          
+                          return (
+                            <div key={i} className="flex items-center">
+                              <div className="w-24 text-sm truncate" title={item.name}>
+                                {item.name}
+                              </div>
+                              <div className="flex-1 h-7 bg-gray-100 rounded-md overflow-hidden">
+                                <div 
+                                  className="h-full rounded-md flex items-center justify-end px-2 text-xs text-white font-medium transition-all"
+                                  style={{ 
+                                    width: `${Math.max(5, percentWidth)}%`, 
+                                    backgroundColor: item.color 
+                                  }}
+                                >
+                                  {item.value > 0 && item.value}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center mt-4">
+                    <div className="text-xs text-gray-500">Total de {Object.values(dadosMilitares).length} militares</div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
