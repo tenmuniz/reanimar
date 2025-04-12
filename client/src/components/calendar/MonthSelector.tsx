@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 
 interface MonthSelectorProps {
   currentDate: Date;
@@ -17,49 +17,47 @@ export default function MonthSelector({
   const year = currentDate.getFullYear();
 
   return (
-    <div className="flex items-center justify-center w-full max-w-xs mx-auto mb-6">
-      <div className="flex items-center gap-4">
-        {/* Botão anterior - Estilo limpo circular sem fundo */}
-        <button
-          onClick={onPreviousMonth}
-          className="w-12 h-12 flex items-center justify-center rounded-full 
-                    bg-white shadow-lg hover:shadow-xl transition-all duration-200
-                    border border-gray-200 text-gray-600 hover:text-gray-900"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
+    <div className="w-full flex flex-col items-center space-y-4 mb-10">
+      {/* Banner de mês/ano completamente redesenhado */}
+      <div className="w-full bg-gradient-to-r from-purple-600 to-indigo-700 py-5 px-6 rounded-lg shadow-xl 
+                    flex items-center justify-between relative overflow-hidden">
+        {/* Elementos decorativos de fundo */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12"></div>
         
-        {/* Botão central do mês - Estilo completamente novo */}
-        <div 
-          className="relative flex items-center justify-center 
-                  bg-gradient-to-r from-orange-500 to-orange-400 
-                  px-5 py-2.5 rounded-xl shadow-lg
-                  overflow-hidden"
-        >
-          {/* Conteúdo */}
-          <div className="flex items-center justify-center z-10">
-            {/* Ícone de calendário */}
-            <div className="mr-3">
-              <Calendar className="h-5 w-5 text-white" />
-            </div>
-            
-            {/* Texto */}
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-white tracking-wide">{monthName}</span>
-              <span className="text-sm text-white/80">{year}</span>
-            </div>
+        {/* Texto e ícone */}
+        <div className="flex items-center z-10">
+          <CalendarIcon className="h-7 w-7 text-white mr-3" />
+          <div>
+            <h2 className="text-2xl font-extrabold text-white tracking-wider">{monthName}</h2>
+            <p className="text-white/80 text-sm">{year}</p>
           </div>
         </div>
         
-        {/* Botão próximo - Estilo limpo circular sem fundo */}
-        <button
-          onClick={onNextMonth}
-          className="w-12 h-12 flex items-center justify-center rounded-full 
-                    bg-white shadow-lg hover:shadow-xl transition-all duration-200
-                    border border-gray-200 text-gray-600 hover:text-gray-900"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
+        {/* Controles de navegação */}
+        <div className="flex items-center space-x-3 z-10">
+          <button
+            onClick={onPreviousMonth}
+            className="w-9 h-9 flex items-center justify-center rounded-lg 
+                      bg-white/10 hover:bg-white/20 transition-colors text-white"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          
+          <button
+            onClick={onNextMonth}
+            className="w-9 h-9 flex items-center justify-center rounded-lg 
+                      bg-white/10 hover:bg-white/20 transition-colors text-white"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+      
+      {/* Indicador de status */}
+      <div className="bg-gray-100 px-3 py-1.5 rounded-full shadow-inner flex items-center text-xs font-medium text-gray-600">
+        <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+        Escala sendo construída
       </div>
     </div>
   );
