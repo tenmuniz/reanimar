@@ -115,7 +115,7 @@ export default function OfficerSelect({
     <div className="officer-select">
       <div className="flex justify-between items-center mb-1">
         <Label className="text-xs font-semibold text-slate-600">
-          Policial {position}
+          Policial
         </Label>
         {selectedOfficer && (
           <span className="text-xs text-blue-700 bg-blue-50 px-1 py-0.5 rounded">
@@ -149,7 +149,7 @@ export default function OfficerSelect({
                   : 'bg-blue-200 text-blue-700'}`}>
                 {limitReachedOfficers.includes(selectedOfficer) 
                   ? <AlertTriangle className="h-3 w-3" /> 
-                  : <span className="text-xs font-bold">{position}</span>}
+                  : <span className="text-xs font-bold">✓</span>}
               </div>
               
               {/* Nome do policial */}
@@ -204,9 +204,9 @@ export default function OfficerSelect({
             {/* Decoração lateral */}
             <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 to-indigo-600"></div>
             
-            {/* Ícone de posição */}
+            {/* Ícone decorativo */}
             <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">
-              {position}
+              ✓
             </div>
             
             <SelectValue placeholder="Selecione um policial" />
