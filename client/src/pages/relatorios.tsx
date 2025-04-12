@@ -339,19 +339,52 @@ export default function Relatorios() {
             <Calendar className="h-5 w-5 text-green-600" />
           </div>
           <h3 className="text-sm font-medium text-green-700 mb-1">GCJOs Restantes</h3>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-3xl font-bold text-green-800">
                 {restantesPMF}
               </p>
               <span className="text-sm font-normal text-green-600">PMF</span>
+              
+              {/* Barra de progresso para PMF */}
+              <div className="mt-2 w-full bg-green-200 rounded-full h-1.5">
+                <div 
+                  className="bg-green-600 h-1.5 rounded-full" 
+                  style={{width: `${(totalEscalasPMF / extrasDisponibilizadosPMF) * 100}%`}}
+                />
+              </div>
+              <p className="text-xs text-green-600 mt-1">{Math.round((totalEscalasPMF / extrasDisponibilizadosPMF) * 100)}% utilizado</p>
             </div>
             <div>
               <p className="text-3xl font-bold text-purple-800">
                 {restantesES}
               </p>
               <span className="text-sm font-normal text-purple-600">Escola Segura</span>
+              
+              {/* Barra de progresso para Escola Segura */}
+              <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5">
+                <div 
+                  className="bg-purple-600 h-1.5 rounded-full" 
+                  style={{width: `${(totalEscolasSegura / extrasDisponibilizadosES) * 100}%`}}
+                />
+              </div>
+              <p className="text-xs text-purple-600 mt-1">{Math.round((totalEscolasSegura / extrasDisponibilizadosES) * 100)}% utilizado</p>
             </div>
+          </div>
+          
+          {/* Barra de progresso geral */}
+          <div className="mt-4 pt-3 border-t border-green-100">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-600">Total restante:</span>
+              <span className="text-lg font-bold text-green-800">{restantesPMF + restantesES} de 150</span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-2.5">
+              <div 
+                className="bg-green-600 h-2.5 rounded-full" 
+                style={{width: `${(totalEscalas / totalExtrasDisponibilizados) * 100}%`}}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1 text-right">{Math.round((totalEscalas / totalExtrasDisponibilizados) * 100)}% dos extras utilizados até agora</p>
           </div>
           
           <p className="text-xs text-gray-500 mt-3">Capacidade máxima mensal</p>
