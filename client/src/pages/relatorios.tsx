@@ -489,9 +489,15 @@ export default function Relatorios() {
                   data={dadosOperacoes}
                   category="value"
                   index="name"
-                  colors={["blue", "purple"]}
+                  colors={["#2563eb", "#9333ea"]}
                   valueFormatter={(value) => `${value} escalas`}
                   className="h-full"
+                  showLabel={true}
+                  showAnimation={true}
+                  variant="pie"
+                  showTooltip={true}
+                  showLegend={true}
+                  label={`Total ${totalEscalas}`}
                 />
               </CardContent>
             </Card>
@@ -522,13 +528,16 @@ export default function Relatorios() {
                 <CardDescription>Tendência diária de escalas para cada operação</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <AreaChart
-                  data={dadosTendencia}
+                <BarChart
+                  data={dadosTendencia.filter(d => d["Polícia Mais Forte"] > 0 || d["Escola Segura"] > 0)}
                   index="date"
                   categories={["Polícia Mais Forte", "Escola Segura"]}
-                  colors={["blue", "purple"]}
+                  colors={["#2563eb", "#9333ea"]}
                   valueFormatter={(value) => `${value} escalas`}
                   className="h-full"
+                  yAxisWidth={40}
+                  showLegend={true}
+                  stack={false}
                 />
               </CardContent>
             </Card>
@@ -779,18 +788,20 @@ export default function Relatorios() {
                 <CardDescription>Evolução diária das escalas no período</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
-                <AreaChart
-                  data={dadosTendencia}
+                <BarChart
+                  data={dadosTendencia.filter(d => d["Polícia Mais Forte"] > 0 || d["Escola Segura"] > 0)}
                   index="date"
                   categories={["Polícia Mais Forte", "Escola Segura"]}
-                  colors={["blue", "purple"]}
+                  colors={["#2563eb", "#9333ea"]}
                   valueFormatter={(value) => `${value} escalas`}
                   className="h-full"
+                  yAxisWidth={40}
                   showLegend={true}
+                  stack={false}
                   showGridLines={true}
-                  startEndOnly={false}
                   showXAxis={true}
                   showYAxis={true}
+                  showAnimation={true}
                 />
               </CardContent>
             </Card>
