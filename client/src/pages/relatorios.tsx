@@ -1,0 +1,776 @@
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import {
+  AreaChart,
+  BarChart,
+  PieChart,
+  DonutChart,
+  BarList,
+} from "@/components/ui/charts";
+import { Progress } from "@/components/ui/progress";
+import {
+  Calendar,
+  Activity,
+  Users,
+  Shield,
+  FileText,
+  ChevronRight,
+  BarChart4,
+  PieChart as PieChartIcon,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Award,
+  Clock,
+  Download,
+} from "lucide-react";
+import { MonthSchedule, CombinedSchedules } from "@/lib/types";
+
+export default function Relatorios() {
+  const [periodoSelecionado, setPeriodoSelecionado] = useState("atual");
+  const [tipoOperacao, setTipoOperacao] = useState("todos");
+  
+  const { data: combinedSchedulesData, isLoading } = useQuery<{ schedules: CombinedSchedules }>({
+    queryKey: ["/api/combined-schedules"],
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: officersData } = useQuery<{ officers: string[] }>({
+    queryKey: ["/api/officers"],
+    refetchOnWindowFocus: false,
+  });
+  
+  const schedules = combinedSchedulesData?.schedules;
+  const pmfSchedule = schedules?.pmf || {};
+  const escolaSeguraSchedule = schedules?.escolaSegura || {};
+  const officers = officersData?.officers || [];
+  
+  // Função para gerar dados para gráficos com base nas escalas
+  const gerarDadosPorMilitar = () => {
+    const militares: Record<string, {pmf: number, escolaSegura: number, total: number}> = {};
+    
+    // Processar escala PMF
+    Object.values(pmfSchedule).forEach(dias => {
+      Object.values(dias).forEach(escalasDia => {
+        escalasDia.forEach(militar => {
+          if (militar) {
+            if (!militares[militar]) {
+              militares[militar] = {pmf: 0, escolaSegura: 0, total: 0};
+            }
+            militares[militar].pmf += 1;
+            militares[militar].total += 1;
+          }
+        });
+      });
+    });
+    
+    // Processar escala Escola Segura
+    Object.values(escolaSeguraSchedule).forEach(dias => {
+      Object.values(dias).forEach(escalasDia => {
+        escalasDia.forEach(militar => {
+          if (militar) {
+            if (!militares[militar]) {
+              militares[militar] = {pmf: 0, escolaSegura: 0, total: 0};
+            }
+            militares[militar].escolaSegura += 1;
+            militares[militar].total += 1;
+          }
+        });
+      });
+    });
+    
+    return militares;
+  };
+  
+  const gerarDadosPorDia = () => {
+    const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+    const dadosPorDiaSemana = diasSemana.map(dia => ({ name: dia, pmf: 0, escolaSegura: 0 }));
+    
+    const hoje = new Date();
+    const mes = hoje.getMonth();
+    const ano = hoje.getFullYear();
+    
+    // Processar escala PMF
+    Object.keys(pmfSchedule).forEach(diaStr => {
+      const dia = parseInt(diaStr);
+      const data = new Date(ano, mes, dia);
+      const diaSemana = data.getDay();
+      const escalasDia = pmfSchedule[diaStr];
+      
+      // Contar militares escalados
+      const militaresEscalados = Object.values(escalasDia).filter(militar => militar !== null).length;
+      dadosPorDiaSemana[diaSemana].pmf += militaresEscalados;
+    });
+    
+    // Processar escala Escola Segura
+    Object.keys(escolaSeguraSchedule).forEach(diaStr => {
+      const dia = parseInt(diaStr);
+      const data = new Date(ano, mes, dia);
+      const diaSemana = data.getDay();
+      const escalasDia = escolaSeguraSchedule[diaStr];
+      
+      // Contar militares escalados
+      const militaresEscalados = Object.values(escalasDia).filter(militar => militar !== null).length;
+      dadosPorDiaSemana[diaSemana].escolaSegura += militaresEscalados;
+    });
+    
+    return dadosPorDiaSemana;
+  };
+
+  // Preparar dados para visualização
+  const dadosMilitares = gerarDadosPorMilitar();
+  const dadosPorDia = gerarDadosPorDia();
+  
+  // Dados para o gráfico de barras dos militares mais escalados
+  const topMilitares = Object.entries(dadosMilitares)
+    .sort((a, b) => b[1].total - a[1].total)
+    .slice(0, 10)
+    .map(([nome, dados]) => ({
+      name: nome.split(' ').slice(-1)[0], // Pega o último nome para economizar espaço
+      value: dados.total,
+      color: dados.total > 10 ? 'var(--color-amber-500)' : 'var(--color-blue-500)'
+    }));
+  
+  // Dados para o gráfico de distribuição por operação
+  const dadosOperacoes = [
+    { name: 'Polícia Mais Forte', value: Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.pmf, 0) },
+    { name: 'Escola Segura', value: Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.escolaSegura, 0) }
+  ];
+  
+  // Dados para o gráfico de linha de tendência de escalas no mês
+  const dadosTendencia = Array(30).fill(0).map((_, i) => {
+    const diaPmf = pmfSchedule[i+1] ? Object.values(pmfSchedule[i+1]).filter(m => m !== null).length : 0;
+    const diaES = escolaSeguraSchedule[i+1] ? Object.values(escolaSeguraSchedule[i+1]).filter(m => m !== null).length : 0;
+    return {
+      date: `${i+1}`,
+      "Polícia Mais Forte": diaPmf,
+      "Escola Segura": diaES
+    };
+  });
+  
+  // Dados para o gráfico de distribuição por dia da semana
+  const dadosDistribuicao = dadosPorDia.map(dia => ({
+    name: dia.name.substring(0, 3),
+    "Polícia Mais Forte": dia.pmf,
+    "Escola Segura": dia.escolaSegura
+  }));
+  
+  // Calcular total de escalas e máximo possível
+  const totalEscalas = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.total, 0);
+  const maximoEscalas = 30 * 5; // Exemplo: 30 dias x 5 posições por dia
+  const percentualOcupacao = Math.round((totalEscalas / maximoEscalas) * 100);
+  
+  // Calcular militares próximos ao limite
+  const militaresProximosLimite = Object.entries(dadosMilitares)
+    .filter(([_, dados]) => dados.total >= 10 && dados.total < 12)
+    .length;
+  
+  // Calcular militares no limite
+  const militaresNoLimite = Object.entries(dadosMilitares)
+    .filter(([_, dados]) => dados.total >= 12)
+    .length;
+  
+  return (
+    <div className="flex flex-col w-full">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Relatórios e Analytics</h1>
+          <p className="text-gray-500">Visualize estatísticas e análises das operações extraordinárias</p>
+        </div>
+        <div className="flex space-x-3">
+          <Select value={periodoSelecionado} onValueChange={setPeriodoSelecionado}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Período" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="atual">Mês Atual</SelectItem>
+              <SelectItem value="anterior">Mês Anterior</SelectItem>
+              <SelectItem value="trimestre">Último Trimestre</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={tipoOperacao} onValueChange={setTipoOperacao}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Tipo de Operação" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todas Operações</SelectItem>
+              <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
+              <SelectItem value="es">Escola Segura</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button variant="outline" className="gap-1">
+            <Download className="h-4 w-4" />
+            Exportar
+          </Button>
+        </div>
+      </div>
+      
+      {/* Cards de métricas principais */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-600 mb-1">Total de GCJO</p>
+                <h3 className="text-2xl font-bold text-blue-800">{totalEscalas}</h3>
+                <p className="text-xs text-blue-600 mt-1">
+                  Ocupação: {percentualOcupacao}% das posições
+                </p>
+              </div>
+              <div className="bg-blue-200 p-3 rounded-full">
+                <Activity className="h-6 w-6 text-blue-700" />
+              </div>
+            </div>
+            <Progress className="mt-3 bg-blue-200" value={percentualOcupacao} />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-600 mb-1">Militares Escalados</p>
+                <h3 className="text-2xl font-bold text-purple-800">
+                  {Object.keys(dadosMilitares).length}
+                </h3>
+                <p className="text-xs text-purple-600 mt-1">
+                  De um total de {officers.length} disponíveis
+                </p>
+              </div>
+              <div className="bg-purple-200 p-3 rounded-full">
+                <Users className="h-6 w-6 text-purple-700" />
+              </div>
+            </div>
+            <Progress 
+              className="mt-3 bg-purple-200" 
+              value={(Object.keys(dadosMilitares).length / officers.length) * 100} 
+            />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-amber-600 mb-1">Próximo ao Limite</p>
+                <h3 className="text-2xl font-bold text-amber-800">{militaresProximosLimite}</h3>
+                <p className="text-xs text-amber-600 mt-1">
+                  Militares com 10-11 escalas
+                </p>
+              </div>
+              <div className="bg-amber-200 p-3 rounded-full">
+                <AlertTriangle className="h-6 w-6 text-amber-700" />
+              </div>
+            </div>
+            <Progress 
+              className="mt-3 bg-amber-200" 
+              value={(militaresProximosLimite / Object.keys(dadosMilitares).length) * 100} 
+            />
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-red-600 mb-1">No Limite</p>
+                <h3 className="text-2xl font-bold text-red-800">{militaresNoLimite}</h3>
+                <p className="text-xs text-red-600 mt-1">
+                  Militares com 12+ escalas
+                </p>
+              </div>
+              <div className="bg-red-200 p-3 rounded-full">
+                <Clock className="h-6 w-6 text-red-700" />
+              </div>
+            </div>
+            <Progress 
+              className="mt-3 bg-red-200" 
+              value={(militaresNoLimite / Object.keys(dadosMilitares).length) * 100} 
+            />
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Tabs de diferentes visualizações */}
+      <Tabs defaultValue="visaoGeral" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="visaoGeral" className="flex items-center gap-2">
+            <BarChart4 className="h-4 w-4" />
+            <span>Visão Geral</span>
+          </TabsTrigger>
+          <TabsTrigger value="porMilitar" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            <span>Por Militar</span>
+          </TabsTrigger>
+          <TabsTrigger value="porData" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>Por Data</span>
+          </TabsTrigger>
+          <TabsTrigger value="tendencias" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            <span>Tendências</span>
+          </TabsTrigger>
+        </TabsList>
+        
+        {/* Conteúdo da Visão Geral */}
+        <TabsContent value="visaoGeral" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Distribuição por Operação</CardTitle>
+                <CardDescription>Comparativo de escalas entre operações</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <DonutChart
+                  data={dadosOperacoes}
+                  category="value"
+                  index="name"
+                  colors={["blue", "purple"]}
+                  valueFormatter={(value) => `${value} escalas`}
+                  className="h-full"
+                />
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Escalas por Dia da Semana</CardTitle>
+                <CardDescription>Distribuição das operações ao longo da semana</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <BarChart
+                  data={dadosDistribuicao}
+                  index="name"
+                  categories={["Polícia Mais Forte", "Escola Segura"]}
+                  colors={["blue", "purple"]}
+                  valueFormatter={(value) => `${value} escalas`}
+                  className="h-full"
+                  stack
+                />
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Evolução das Escalas no Mês</CardTitle>
+                <CardDescription>Tendência diária de escalas para cada operação</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <AreaChart
+                  data={dadosTendencia}
+                  index="date"
+                  categories={["Polícia Mais Forte", "Escola Segura"]}
+                  colors={["blue", "purple"]}
+                  valueFormatter={(value) => `${value} escalas`}
+                  className="h-full"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        {/* Conteúdo de Por Militar */}
+        <TabsContent value="porMilitar" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="md:col-span-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Top 10 Militares Mais Escalados</CardTitle>
+                <CardDescription>Ranking de militares com mais escalas no período</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <BarChart
+                  data={topMilitares.map((militar, i) => ({
+                    name: militar.name,
+                    "Escalas": militar.value,
+                    Posição: 10 - i
+                  }))}
+                  index="name"
+                  categories={["Escalas"]}
+                  colors={["blue"]}
+                  layout="vertical"
+                  valueFormatter={(value) => `${value} escalas`}
+                  className="h-full"
+                />
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Distribuição de Carga</CardTitle>
+                <CardDescription>Militares agrupados por faixas de escalas</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <PieChart
+                  data={[
+                    { name: '1-3 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length },
+                    { name: '4-6 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length },
+                    { name: '7-9 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length },
+                    { name: '10-11 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length },
+                    { name: '12+ Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length }
+                  ]}
+                  category="value"
+                  index="name"
+                  colors={["blue", "cyan", "teal", "amber", "red"]}
+                  valueFormatter={(value) => `${value} militares`}
+                  className="h-full"
+                />
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Card>
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-medium">Distribuição por Tipo de Operação</CardTitle>
+                <CardDescription>Comparativo entre as operações para cada militar</CardDescription>
+              </div>
+              <Select defaultValue="total">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Ordernar por" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="total">Total de Escalas</SelectItem>
+                  <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
+                  <SelectItem value="es">Escola Segura</SelectItem>
+                  <SelectItem value="alfa">Orderm Alfabética</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent className="h-[350px] overflow-y-auto px-0">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-white">
+                  <tr className="border-b">
+                    <th className="text-left p-3">Militar</th>
+                    <th className="text-center p-3">PMF</th>
+                    <th className="text-center p-3">Escola Segura</th>
+                    <th className="text-center p-3">Total</th>
+                    <th className="text-center p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(dadosMilitares)
+                    .sort((a, b) => b[1].total - a[1].total)
+                    .map(([nome, dados], index) => (
+                      <tr key={nome} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
+                        <td className="p-3 font-medium">{nome}</td>
+                        <td className="p-3 text-center">{dados.pmf}</td>
+                        <td className="p-3 text-center">{dados.escolaSegura}</td>
+                        <td className="p-3 text-center font-semibold">{dados.total}</td>
+                        <td className="p-3 text-center">
+                          {dados.total >= 12 ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                              <Clock className="h-3 w-3 mr-1" /> Limite atingido
+                            </span>
+                          ) : dados.total >= 10 ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                              <AlertTriangle className="h-3 w-3 mr-1" /> Próximo ao limite
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                              <CheckCircle className="h-3 w-3 mr-1" /> Disponível
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Conteúdo de Por Data */}
+        <TabsContent value="porData" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Distribuição Mensal</CardTitle>
+                <CardDescription>Mapa de calor das escalas por dia do mês</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="grid grid-cols-7 gap-1 p-4">
+                  {Array(30).fill(0).map((_, i) => {
+                    const dia = i + 1;
+                    const pmf = pmfSchedule[dia] ? Object.values(pmfSchedule[dia]).filter(Boolean).length : 0;
+                    const es = escolaSeguraSchedule[dia] ? Object.values(escolaSeguraSchedule[dia]).filter(Boolean).length : 0;
+                    const total = pmf + es;
+                    
+                    let bgColor = "bg-gray-100";
+                    if (total > 0) {
+                      if (total >= 5) bgColor = "bg-blue-500 text-white";
+                      else if (total >= 4) bgColor = "bg-blue-400 text-white";
+                      else if (total >= 3) bgColor = "bg-blue-300";
+                      else if (total >= 2) bgColor = "bg-blue-200";
+                      else bgColor = "bg-blue-100";
+                    }
+                    
+                    return (
+                      <div 
+                        key={i} 
+                        className={`aspect-square rounded-lg flex flex-col items-center justify-center ${bgColor} text-center p-1 transition-all hover:scale-105`}
+                      >
+                        <div className="text-sm font-medium">{dia}</div>
+                        {total > 0 && (
+                          <div className="text-xs">{total}</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Distribuição por Dia da Semana</CardTitle>
+                <CardDescription>Comparativo entre dias da semana</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <BarChart
+                  data={dadosPorDia.map((dia) => ({
+                    name: dia.name,
+                    "Polícia Mais Forte": dia.pmf,
+                    "Escola Segura": dia.escolaSegura
+                  }))}
+                  index="name"
+                  categories={["Polícia Mais Forte", "Escola Segura"]}
+                  colors={["blue", "purple"]}
+                  valueFormatter={(value) => `${value} escalas`}
+                  className="h-full"
+                  stack
+                />
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-medium">Histórico Diário de Escalas</CardTitle>
+              <CardDescription>Detalhamento de todas as datas com escalas no período</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[350px] overflow-y-auto px-0">
+              <table className="w-full">
+                <thead className="sticky top-0 bg-white">
+                  <tr className="border-b">
+                    <th className="text-left p-3">Data</th>
+                    <th className="text-center p-3">Dia Semana</th>
+                    <th className="text-center p-3">PMF</th>
+                    <th className="text-center p-3">Escola Segura</th>
+                    <th className="text-center p-3">Total</th>
+                    <th className="text-center p-3">Ocupação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array(30).fill(0).map((_, i) => {
+                    const dia = i + 1;
+                    const data = new Date(2025, 3, dia);
+                    const diaSemana = data.toLocaleDateString('pt-BR', { weekday: 'short' });
+                    const pmf = pmfSchedule[dia] ? Object.values(pmfSchedule[dia]).filter(Boolean).length : 0;
+                    const es = escolaSeguraSchedule[dia] ? Object.values(escolaSeguraSchedule[dia]).filter(Boolean).length : 0;
+                    const total = pmf + es;
+                    const maxPmf = 3;
+                    const maxEs = 2;
+                    const maxTotal = maxPmf + maxEs;
+                    const ocupacao = Math.round((total / maxTotal) * 100);
+                    
+                    let statusColor = "bg-green-100 text-green-800 border-green-200";
+                    if (ocupacao < 50) {
+                      statusColor = "bg-red-100 text-red-800 border-red-200";
+                    } else if (ocupacao < 80) {
+                      statusColor = "bg-amber-100 text-amber-800 border-amber-200";
+                    }
+                    
+                    return (
+                      <tr key={dia} className={`border-b hover:bg-gray-50 ${i % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
+                        <td className="p-3 font-medium">{data.toLocaleDateString('pt-BR')}</td>
+                        <td className="p-3 text-center">{diaSemana}</td>
+                        <td className="p-3 text-center">{pmf} <span className="text-xs text-gray-500">/{maxPmf}</span></td>
+                        <td className="p-3 text-center">{es} <span className="text-xs text-gray-500">/{maxEs}</span></td>
+                        <td className="p-3 text-center font-semibold">{total}</td>
+                        <td className="p-3 text-center">
+                          <div className="flex items-center space-x-2">
+                            <Progress value={ocupacao} className="h-2 w-20" />
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+                              {ocupacao}%
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Conteúdo de Tendências */}
+        <TabsContent value="tendencias" className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Tendência de Escalas</CardTitle>
+                <CardDescription>Evolução diária das escalas no período</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <AreaChart
+                  data={dadosTendencia}
+                  index="date"
+                  categories={["Polícia Mais Forte", "Escola Segura"]}
+                  colors={["blue", "purple"]}
+                  valueFormatter={(value) => `${value} escalas`}
+                  className="h-full"
+                  showLegend={true}
+                  showGridLines={true}
+                  startEndOnly={false}
+                  showXAxis={true}
+                  showYAxis={true}
+                />
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Projeção de Sobrecarga</CardTitle>
+                <CardDescription>Estimativa de militares que atingirão o limite</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px]">
+                <div className="h-full flex flex-col justify-center items-center space-y-6">
+                  <div className="grid grid-cols-3 w-full gap-4 mb-4">
+                    <div className="flex flex-col items-center justify-center bg-green-50 rounded-lg p-4 border border-green-200">
+                      <span className="text-xs text-green-600 font-medium">Abaixo de 8</span>
+                      <span className="text-2xl font-bold text-green-700">
+                        {Object.values(dadosMilitares).filter(d => d.total < 8).length}
+                      </span>
+                      <span className="text-xs text-green-600">militares</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center bg-amber-50 rounded-lg p-4 border border-amber-200">
+                      <span className="text-xs text-amber-600 font-medium">Entre 8 e 11</span>
+                      <span className="text-2xl font-bold text-amber-700">
+                        {Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length}
+                      </span>
+                      <span className="text-xs text-amber-600">militares</span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center bg-red-50 rounded-lg p-4 border border-red-200">
+                      <span className="text-xs text-red-600 font-medium">12 ou mais</span>
+                      <span className="text-2xl font-bold text-red-700">
+                        {Object.values(dadosMilitares).filter(d => d.total >= 12).length}
+                      </span>
+                      <span className="text-xs text-red-600">militares</span>
+                    </div>
+                  </div>
+                  
+                  <PieChart
+                    data={[
+                      { name: 'Zona Segura', value: Object.values(dadosMilitares).filter(d => d.total < 8).length },
+                      { name: 'Zona de Alerta', value: Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length },
+                      { name: 'Zona Crítica', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length }
+                    ]}
+                    category="value"
+                    index="name"
+                    colors={["green", "amber", "red"]}
+                    valueFormatter={(value) => `${value} militares`}
+                    className="h-64 my-4"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Sugestões de Otimização</CardTitle>
+                <CardDescription>Recomendações para melhor distribuição de carga</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px] overflow-y-auto space-y-4">
+                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+                  <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
+                    <Award className="h-4 w-4 mr-2" />
+                    Redistribuição de Carga
+                  </h4>
+                  <p className="text-sm text-blue-600 mb-3">
+                    {militaresNoLimite > 0 
+                      ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
+                      : "Nenhum militar atingiu o limite máximo de escalas."
+                    }
+                  </p>
+                  <ul className="space-y-2">
+                    {Object.entries(dadosMilitares)
+                      .filter(([_, dados]) => dados.total >= 12)
+                      .slice(0, 3)
+                      .map(([nome, dados]) => (
+                        <li key={nome} className="text-sm flex items-center">
+                          <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
+                          <span><b>{nome}</b> já possui {dados.total} escalas (limite atingido)</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                
+                <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+                  <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
+                    <Users className="h-4 w-4 mr-2" />
+                    Militares Menos Utilizados
+                  </h4>
+                  <p className="text-sm text-green-600 mb-3">
+                    Considere utilizar os seguintes militares nas próximas escalas:
+                  </p>
+                  <ul className="space-y-2">
+                    {Object.entries(dadosMilitares)
+                      .filter(([_, dados]) => dados.total < 5)
+                      .sort((a, b) => a[1].total - b[1].total)
+                      .slice(0, 5)
+                      .map(([nome, dados]) => (
+                        <li key={nome} className="text-sm flex items-center">
+                          <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                          <span><b>{nome}</b> possui apenas {dados.total} escalas</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                
+                <div className="rounded-lg bg-purple-50 border border-purple-200 p-4">
+                  <h4 className="text-md font-semibold text-purple-700 mb-2 flex items-center">
+                    <BarChart4 className="h-4 w-4 mr-2" />
+                    Análise de Equilíbrio
+                  </h4>
+                  <p className="text-sm text-purple-600">
+                    A distribuição atual mostra uma concentração de escalas em um pequeno grupo de militares.
+                    Considere distribuir as próximas escalas de forma mais equilibrada, priorizando militares
+                    com menos de 8 escalas no período.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

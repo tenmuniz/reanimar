@@ -7,6 +7,7 @@ import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
+import Relatorios from "@/pages/relatorios";
 import NotFound from "@/pages/not-found";
 import { useState, useEffect } from "react";
 
@@ -145,12 +146,22 @@ function NavBar() {
           
           {/* Links adicionais */}
           <div className="flex items-center space-x-1">
-            <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-green-50/60 hover:shadow-md hover:border hover:border-green-100">
-              <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-green-600 group-hover:shadow-md group-hover:shadow-green-400/20">
-                <BarChart4 className="h-4 w-4 text-gray-500 group-hover:text-white" />
-              </div>
-              <span className="text-sm font-medium">Relatórios</span>
-            </a>
+            <Link href="/relatorios">
+              <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
+                location === "/relatorios" 
+                  ? "bg-gradient-to-r from-green-500/10 to-green-600/20 text-green-700 border border-green-200 shadow-lg shadow-green-200/30" 
+                  : "text-gray-700 hover:bg-green-50/60 hover:shadow-md hover:border hover:border-green-100"
+              }`}>
+                <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
+                  location === "/relatorios" 
+                    ? "bg-gradient-to-br from-green-500 to-green-700 shadow-md shadow-green-400/30" 
+                    : "bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-green-600 group-hover:shadow-md group-hover:shadow-green-400/20"
+                }`}>
+                  <BarChart4 className={`h-4 w-4 ${location === "/relatorios" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
+                </div>
+                <span className={`text-sm font-medium ${location === "/relatorios" ? "font-semibold" : ""}`}>Relatórios</span>
+              </a>
+            </Link>
             
             <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-indigo-50/60 hover:shadow-md hover:border hover:border-indigo-100">
               <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-indigo-600 group-hover:shadow-md group-hover:shadow-indigo-400/20">
@@ -243,6 +254,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/escola-segura" component={EscolaSegura} />
           <Route path="/verificador-escalas" component={VerificadorEscalas} />
+          <Route path="/relatorios" component={Relatorios} />
           <Route component={NotFound} />
         </Switch>
       </main>
