@@ -177,9 +177,28 @@ export default function Relatorios() {
   }));
   
   // Calcular total de escalas e máximo possível
-  const totalEscalas = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.total, 0);
-  const maximoEscalas = 30 * 5; // Exemplo: 30 dias x 5 posições por dia
-  const percentualOcupacao = Math.round((totalEscalas / maximoEscalas) * 100);
+  const totalEscalasPMF = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.pmf, 0);
+  const totalEscolasSegura = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.escolaSegura, 0);
+  const totalEscalas = totalEscalasPMF + totalEscolasSegura;
+  
+  // Calcular máximos possíveis
+  const diasNoMes = 30;
+  const posicoesPerDay = {
+    pmf: 3, // PMF tem 3 posições por dia
+    escolaSegura: 2 // Escola Segura tem 2 posições por dia
+  };
+  
+  const maximoEscalasPMF = diasNoMes * posicoesPerDay.pmf;
+  const maximoEscolasSegura = diasNoMes * posicoesPerDay.escolaSegura;
+  const maximoEscalasTotal = maximoEscalasPMF + maximoEscolasSegura;
+  
+  const percentualOcupacaoPMF = Math.round((totalEscalasPMF / maximoEscalasPMF) * 100);
+  const percentualOcupacaoES = Math.round((totalEscolasSegura / maximoEscolasSegura) * 100);
+  const percentualOcupacao = Math.round((totalEscalas / maximoEscalasTotal) * 100);
+  
+  const restantesPMF = maximoEscalasPMF - totalEscalasPMF;
+  const restantesES = maximoEscolasSegura - totalEscolasSegura;
+  const restantesTotal = maximoEscalasTotal - totalEscalas;
   
   // Calcular militares próximos ao limite
   const militaresProximosLimite = Object.entries(dadosMilitares)
@@ -236,38 +255,75 @@ export default function Relatorios() {
               <div>
                 <p className="text-sm font-medium text-blue-600 mb-1">Total de GCJO</p>
                 <h3 className="text-2xl font-bold text-blue-800">{totalEscalas}</h3>
-                <p className="text-xs text-blue-600 mt-1">
-                  Ocupação: {percentualOcupacao}% das posições
-                </p>
+                <div className="text-xs flex items-center gap-1 text-blue-600 mt-1">
+                  <span className="bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">
+                    PMF: {totalEscalasPMF}
+                  </span>
+                  <span className="bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200 text-purple-600">
+                    ES: {totalEscolasSegura}
+                  </span>
+                </div>
               </div>
               <div className="bg-blue-200 p-3 rounded-full">
                 <Activity className="h-6 w-6 text-blue-700" />
               </div>
             </div>
-            <Progress className="mt-3 bg-blue-200" value={percentualOcupacao} />
+            <div className="mt-3 flex flex-col space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-16">Total:</span>
+                <Progress className="bg-blue-100" value={percentualOcupacao} />
+                <span className="text-xs text-gray-500 w-12 text-right">{percentualOcupacao}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-16">PMF:</span>
+                <Progress className="bg-blue-100" value={percentualOcupacaoPMF} />
+                <span className="text-xs text-gray-500 w-12 text-right">{percentualOcupacaoPMF}%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-16">E. Segura:</span>
+                <Progress className="bg-purple-100" value={percentualOcupacaoES} />
+                <span className="text-xs text-gray-500 w-12 text-right">{percentualOcupacaoES}%</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-purple-600 mb-1">Militares Escalados</p>
-                <h3 className="text-2xl font-bold text-purple-800">
-                  {Object.keys(dadosMilitares).length}
-                </h3>
-                <p className="text-xs text-purple-600 mt-1">
-                  De um total de {officers.length} disponíveis
-                </p>
+                <p className="text-sm font-medium text-green-600 mb-1">GCJOs Restantes</p>
+                <h3 className="text-2xl font-bold text-green-800">{restantesTotal}</h3>
+                <div className="text-xs flex items-center gap-1 text-green-600 mt-1">
+                  <span className="bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200 text-blue-600">
+                    PMF: {restantesPMF}
+                  </span>
+                  <span className="bg-purple-100 px-1.5 py-0.5 rounded border border-purple-200 text-purple-600">
+                    ES: {restantesES}
+                  </span>
+                </div>
               </div>
-              <div className="bg-purple-200 p-3 rounded-full">
-                <Users className="h-6 w-6 text-purple-700" />
+              <div className="bg-green-200 p-3 rounded-full">
+                <Calendar className="h-6 w-6 text-green-700" />
               </div>
             </div>
-            <Progress 
-              className="mt-3 bg-purple-200" 
-              value={(Object.keys(dadosMilitares).length / officers.length) * 100} 
-            />
+            <div className="flex flex-col mt-3 bg-green-50 rounded-lg p-2 border border-green-200">
+              <h4 className="text-xs font-medium text-green-700 mb-1">Capacidade Máxima</h4>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="flex flex-col items-center bg-white rounded p-1 shadow-sm">
+                  <span className="text-xs text-gray-500">PMF</span>
+                  <span className="text-sm font-medium text-blue-600">{maximoEscalasPMF}</span>
+                </div>
+                <div className="flex flex-col items-center bg-white rounded p-1 shadow-sm">
+                  <span className="text-xs text-gray-500">E.S.</span>
+                  <span className="text-sm font-medium text-purple-600">{maximoEscolasSegura}</span>
+                </div>
+                <div className="flex flex-col items-center bg-white rounded p-1 shadow-sm">
+                  <span className="text-xs text-gray-500">Total</span>
+                  <span className="text-sm font-medium text-green-600">{maximoEscalasTotal}</span>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
         
@@ -285,10 +341,32 @@ export default function Relatorios() {
                 <AlertTriangle className="h-6 w-6 text-amber-700" />
               </div>
             </div>
-            <Progress 
-              className="mt-3 bg-amber-200" 
-              value={(militaresProximosLimite / Object.keys(dadosMilitares).length) * 100} 
-            />
+            
+            <div className="mt-3">
+              <div className="text-xs mb-1 font-medium text-amber-700">Distribuição de Carga</div>
+              <div className="flex items-center gap-2">
+                <Progress 
+                  className="bg-amber-100" 
+                  value={(militaresProximosLimite / Object.keys(dadosMilitares).length) * 100} 
+                />
+                <span className="text-xs text-gray-500">{Math.round((militaresProximosLimite / Object.keys(dadosMilitares).length) * 100)}%</span>
+              </div>
+              
+              <div className="grid grid-cols-3 mt-2 gap-1 text-center">
+                <div className="text-xs bg-green-50 p-1 rounded border border-green-100 text-green-700">
+                  <div>{Object.values(dadosMilitares).filter(d => d.total < 7).length}</div>
+                  <div className="text-[10px]">Baixa</div>
+                </div>
+                <div className="text-xs bg-amber-50 p-1 rounded border border-amber-100 text-amber-700">
+                  <div>{Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length}</div>
+                  <div className="text-[10px]">Média</div>
+                </div>
+                <div className="text-xs bg-red-50 p-1 rounded border border-red-100 text-red-700">
+                  <div>{militaresProximosLimite + militaresNoLimite}</div>
+                  <div className="text-[10px]">Alta</div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
         
@@ -306,10 +384,31 @@ export default function Relatorios() {
                 <Clock className="h-6 w-6 text-red-700" />
               </div>
             </div>
-            <Progress 
-              className="mt-3 bg-red-200" 
-              value={(militaresNoLimite / Object.keys(dadosMilitares).length) * 100} 
-            />
+            
+            <div className="mt-3 flex flex-col space-y-2">
+              <div className="flex flex-col">
+                <div className="text-xs mb-1 font-medium text-red-700">Status de Alertas</div>
+                <div className="flex items-center gap-2">
+                  <Progress 
+                    className="bg-red-100" 
+                    value={(militaresNoLimite / Object.keys(dadosMilitares).length) * 100} 
+                  />
+                  <span className="text-xs text-gray-500">{Math.round((militaresNoLimite / Object.keys(dadosMilitares).length) * 100)}%</span>
+                </div>
+              </div>
+              
+              {militaresNoLimite > 0 ? (
+                <div className="text-xs bg-red-100 p-2 rounded border border-red-200 text-red-700">
+                  <div className="font-medium mb-1">⚠️ Ação Requerida</div>
+                  <div>Há {militaresNoLimite} {militaresNoLimite === 1 ? 'militar' : 'militares'} que atingiram o limite máximo de GCJOs permitido.</div>
+                </div>
+              ) : (
+                <div className="text-xs bg-green-100 p-2 rounded border border-green-200 text-green-700">
+                  <div className="font-medium mb-1">✅ Situação Normal</div>
+                  <div>Não há militares que atingiram o limite máximo de GCJOs.</div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -658,8 +757,8 @@ export default function Relatorios() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Projeção de Sobrecarga</CardTitle>
-                <CardDescription>Estimativa de militares que atingirão o limite</CardDescription>
+                <CardTitle className="text-lg font-medium">Análise Combinada PMF + E. Segura</CardTitle>
+                <CardDescription>Impacto consolidado das operações extraordinárias</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
                 <div className="h-full flex flex-col justify-center items-center space-y-6">
