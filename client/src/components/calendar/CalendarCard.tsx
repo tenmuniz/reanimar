@@ -183,12 +183,11 @@ export default function CalendarCard({
     
     // VERIFICAÇÃO DE LIMITE ABSOLUTA
     // Conta total de escalas do militar no mês
-    const monthKeyPMF = `${year}-${month}`;
     let totalEscalasMilitar = 0;
     
-    // Conta escalas salvas no servidor
-    if (combinedSchedules && combinedSchedules.pmf && combinedSchedules.pmf[monthKeyPMF]) {
-      Object.values(combinedSchedules.pmf[monthKeyPMF]).forEach(diaEscala => {
+    // Conta escalas salvas no servidor - os dados já vêm formatados corretamente
+    if (combinedSchedules && combinedSchedules.pmf) {
+      Object.values(combinedSchedules.pmf).forEach(diaEscala => {
         diaEscala.forEach(m => {
           if (m === officer) {
             totalEscalasMilitar++;

@@ -61,11 +61,9 @@ export default function ResumoGuarnicao({
   };
 
   const generateResumoGuarnicoes = () => {
-    // Chave do mês atual
-    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
-    
+    // Não precisamos mais da chave, os dados já vêm no formato correto
     // Obter dados do mês atual
-    const monthSchedule = schedule[currentMonthKey] || {};
+    const monthSchedule = schedule || {};
     
     // Objeto para armazenar contagem por guarnição
     const guarnicoes: Record<string, { dias: number[], total: number }> = {

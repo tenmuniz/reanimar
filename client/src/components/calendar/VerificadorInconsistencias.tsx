@@ -100,14 +100,11 @@ export default function VerificadorInconsistencias({
   const verificarInconsistencias = () => {
     const listaInconsistencias: Inconsistencia[] = [];
     
-    // Chave do mês atual
-    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
-    
-    // Obter a escala do mês atual
-    const currentSchedule = schedule[currentMonthKey] || {};
+    // Obter a escala do mês atual - os dados já vêm no formato correto
+    const currentSchedule = schedule || {};
     
     // Verificar se temos dados combinados de PMF e Escola Segura
-    const escolaSchedule = combinedSchedules?.escolaSegura?.[currentMonthKey] || {};
+    const escolaSchedule = combinedSchedules?.escolaSegura || {};
     
     // Dicionário para rastrear dias que cada militar está escalado em cada tipo de operação
     const militaresEscalados: Record<string, { pmf: number[], escolaSegura: number[] }> = {};
