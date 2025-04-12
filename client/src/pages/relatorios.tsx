@@ -50,9 +50,16 @@ import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 export default function Relatorios() {
   const [periodoSelecionado, setPeriodoSelecionado] = useState("atual");
   const [tipoOperacao, setTipoOperacao] = useState("todos");
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   
+  // Obter data atual para o ano e mês
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  
+  // Buscar dados combinados com ano e mês específicos
   const { data: combinedSchedulesData, isLoading } = useQuery<{ schedules: CombinedSchedules }>({
-    queryKey: ["/api/combined-schedules"],
+    queryKey: [`/api/combined-schedules?year=${currentYear}&month=${currentMonth}`],
     refetchOnWindowFocus: false,
   });
 
@@ -61,9 +68,33 @@ export default function Relatorios() {
     refetchOnWindowFocus: false,
   });
   
-  const schedules = combinedSchedulesData?.schedules;
-  const pmfSchedule = schedules?.pmf || {};
-  const escolaSeguraSchedule = schedules?.escolaSegura || {};
+  // Buscar escalas da PMF para o mês atual
+  const { data: pmfScheduleData } = useQuery<{ schedule: Record<string, (string | null)[]> }>({
+    queryKey: [`/api/schedule?operation=pmf&year=${currentYear}&month=${currentMonth}`],
+    refetchOnWindowFocus: false,
+  });
+  
+  // Buscar escalas da Escola Segura para o mês atual
+  const { data: escolaSeguraScheduleData } = useQuery<{ schedule: Record<string, (string | null)[]> }>({
+    queryKey: [`/api/schedule?operation=escolaSegura&year=${currentYear}&month=${currentMonth}`],
+    refetchOnWindowFocus: false,
+  });
+  
+  // Efeito para detectar quando os dados estão carregados
+  useEffect(() => {
+    if (pmfScheduleData && escolaSeguraScheduleData && officersData) {
+      setIsInitialLoading(false);
+    }
+  }, [pmfScheduleData, escolaSeguraScheduleData, officersData]);
+  
+  // Se os dados combinados não estiverem disponíveis, usar os dados individuais
+  const schedules = combinedSchedulesData?.schedules || {
+    pmf: pmfScheduleData?.schedule || {},
+    escolaSegura: escolaSeguraScheduleData?.schedule || {}
+  };
+  
+  const pmfSchedule = schedules.pmf || {};
+  const escolaSeguraSchedule = schedules.escolaSegura || {};
   const officers = officersData?.officers || [];
   
   // Função para gerar dados para gráficos com base nas escalas
@@ -71,8 +102,8 @@ export default function Relatorios() {
     const militares: Record<string, {pmf: number, escolaSegura: number, total: number}> = {};
     
     // Processar escala PMF
-    Object.values(pmfSchedule).forEach(dias => {
-      Object.values(dias).forEach(escalasDia => {
+    Object.entries(pmfSchedule).forEach(([dia, escalasDia]) => {
+      if (Array.isArray(escalasDia)) {
         escalasDia.forEach(militar => {
           if (militar) {
             if (!militares[militar]) {
@@ -82,12 +113,12 @@ export default function Relatorios() {
             militares[militar].total += 1;
           }
         });
-      });
+      }
     });
     
     // Processar escala Escola Segura
-    Object.values(escolaSeguraSchedule).forEach(dias => {
-      Object.values(dias).forEach(escalasDia => {
+    Object.entries(escolaSeguraSchedule).forEach(([dia, escalasDia]) => {
+      if (Array.isArray(escalasDia)) {
         escalasDia.forEach(militar => {
           if (militar) {
             if (!militares[militar]) {
@@ -97,7 +128,7 @@ export default function Relatorios() {
             militares[militar].total += 1;
           }
         });
-      });
+      }
     });
     
     return militares;
@@ -112,27 +143,29 @@ export default function Relatorios() {
     const ano = hoje.getFullYear();
     
     // Processar escala PMF
-    Object.keys(pmfSchedule).forEach(diaStr => {
-      const dia = parseInt(diaStr);
-      const data = new Date(ano, mes, dia);
-      const diaSemana = data.getDay();
-      const escalasDia = pmfSchedule[diaStr];
-      
-      // Contar militares escalados
-      const militaresEscalados = Object.values(escalasDia).filter(militar => militar !== null).length;
-      dadosPorDiaSemana[diaSemana].pmf += militaresEscalados;
+    Object.entries(pmfSchedule).forEach(([diaStr, escalasDia]) => {
+      if (Array.isArray(escalasDia)) {
+        const dia = parseInt(diaStr);
+        const data = new Date(ano, mes, dia);
+        const diaSemana = data.getDay();
+        
+        // Contar militares escalados
+        const militaresEscalados = escalasDia.filter(militar => militar !== null).length;
+        dadosPorDiaSemana[diaSemana].pmf += militaresEscalados;
+      }
     });
     
     // Processar escala Escola Segura
-    Object.keys(escolaSeguraSchedule).forEach(diaStr => {
-      const dia = parseInt(diaStr);
-      const data = new Date(ano, mes, dia);
-      const diaSemana = data.getDay();
-      const escalasDia = escolaSeguraSchedule[diaStr];
-      
-      // Contar militares escalados
-      const militaresEscalados = Object.values(escalasDia).filter(militar => militar !== null).length;
-      dadosPorDiaSemana[diaSemana].escolaSegura += militaresEscalados;
+    Object.entries(escolaSeguraSchedule).forEach(([diaStr, escalasDia]) => {
+      if (Array.isArray(escalasDia)) {
+        const dia = parseInt(diaStr);
+        const data = new Date(ano, mes, dia);
+        const diaSemana = data.getDay();
+        
+        // Contar militares escalados
+        const militaresEscalados = escalasDia.filter(militar => militar !== null).length;
+        dadosPorDiaSemana[diaSemana].escolaSegura += militaresEscalados;
+      }
     });
     
     return dadosPorDiaSemana;
@@ -160,8 +193,17 @@ export default function Relatorios() {
   
   // Dados para o gráfico de linha de tendência de escalas no mês
   const dadosTendencia = Array(30).fill(0).map((_, i) => {
-    const diaPmf = pmfSchedule[i+1] ? Object.values(pmfSchedule[i+1]).filter(m => m !== null).length : 0;
-    const diaES = escolaSeguraSchedule[i+1] ? Object.values(escolaSeguraSchedule[i+1]).filter(m => m !== null).length : 0;
+    const diaKey = String(i+1);
+    
+    // Verificar se há escalas para o dia e se é array
+    const diaPmf = pmfSchedule[diaKey] && Array.isArray(pmfSchedule[diaKey]) 
+      ? pmfSchedule[diaKey].filter(m => m !== null).length 
+      : 0;
+      
+    const diaES = escolaSeguraSchedule[diaKey] && Array.isArray(escolaSeguraSchedule[diaKey])
+      ? escolaSeguraSchedule[diaKey].filter(m => m !== null).length 
+      : 0;
+      
     return {
       date: `${i+1}`,
       "Polícia Mais Forte": diaPmf,
