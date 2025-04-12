@@ -1,6 +1,6 @@
 import { formatMonthYear } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, CalendarCheck } from "lucide-react";
 
 interface MonthSelectorProps {
   currentDate: Date;
@@ -23,18 +23,23 @@ export default function MonthSelector({
         variant="ghost"
         size="icon"
         onClick={onPreviousMonth}
-        className="p-1.5 bg-blue-700/50 hover:bg-blue-700 rounded-lg text-white transition-colors duration-200"
+        className="p-1.5 bg-amber-700/70 hover:bg-amber-700 rounded-xl text-white transition-colors duration-200
+        shadow-md hover:shadow-lg active:shadow-inner active:translate-y-0.5 transform"
       >
         <ChevronLeft className="h-5 w-5" />
       </Button>
       
-      <div className="flex items-center bg-blue-800/50 px-3 py-1.5 rounded-md">
-        <Calendar className="h-5 w-5 mr-2 text-blue-200" />
+      <div className="flex items-center justify-center
+        bg-gradient-to-r from-amber-600 to-amber-500 px-6 py-2.5 rounded-2xl
+        shadow-lg transform hover:scale-105 transition-all duration-300
+        border border-amber-400/30">
+        <CalendarCheck className="h-6 w-6 mr-3 text-white drop-shadow-md" />
         <div className="flex flex-col items-center">
-          <span className="font-bold text-sm text-white tracking-wide leading-tight">
+          <span className="font-extrabold text-xl text-white tracking-wider leading-tight
+            drop-shadow-md bg-gradient-to-r from-white to-amber-100 text-transparent bg-clip-text">
             {monthName}
           </span>
-          <span className="text-xs text-blue-200">
+          <span className="text-sm font-medium text-amber-100 tracking-widest">
             {year}
           </span>
         </div>
@@ -44,7 +49,8 @@ export default function MonthSelector({
         variant="ghost"
         size="icon"
         onClick={onNextMonth}
-        className="p-1.5 bg-blue-700/50 hover:bg-blue-700 rounded-lg text-white transition-colors duration-200"
+        className="p-1.5 bg-amber-700/70 hover:bg-amber-700 rounded-xl text-white transition-colors duration-200
+        shadow-md hover:shadow-lg active:shadow-inner active:translate-y-0.5 transform"
       >
         <ChevronRight className="h-5 w-5" />
       </Button>
