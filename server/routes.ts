@@ -106,11 +106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Retornar dados
       res.json({ schedules });
     } catch (error) {
-      console.error("Erro ao buscar escalas combinadas:", error);
-      // Retorna o erro detalhado para depuração
+      // Erro ao buscar escalas combinadas
       res.status(500).json({ 
-        message: "Error fetching combined schedules", 
-        error: error instanceof Error ? error.message : String(error) 
+        message: "Error fetching combined schedules"
       });
     }
   });

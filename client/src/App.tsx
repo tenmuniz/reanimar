@@ -62,16 +62,6 @@ function NavBar() {
               <span>Visualizar</span>
             </a>
           </Link>
-          
-          <a 
-            href="/visualizacao-publica" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="px-3 sm:px-4 py-2 rounded-lg flex items-center text-sm bg-teal-700/80 text-white/90 hover:bg-teal-700 hover:text-white transition-colors shadow-md"
-          >
-            <ExternalLink className="mr-1 h-4 w-4" />
-            <span>Link Público</span>
-          </a>
         </div>
       </div>
     </nav>
