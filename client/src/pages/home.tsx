@@ -256,7 +256,7 @@ export default function Home() {
                 <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-3 py-1.5 rounded-full flex items-center 
                   border border-blue-400/30 shadow-lg shadow-blue-900/20">
                   <div className="w-2 h-2 bg-blue-300 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-xs font-bold tracking-wider text-white uppercase">Sistema Operacional</span>
+                  <span className="text-xs font-bold tracking-wider text-white uppercase">Sistema de Gestão - 20ªCIPM</span>
                 </div>
               </div>
               

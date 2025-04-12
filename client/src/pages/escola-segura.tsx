@@ -275,7 +275,7 @@ export default function EscolaSegura() {
                 <div className="bg-gradient-to-r from-purple-600 to-fuchsia-500 px-3 py-1.5 rounded-full flex items-center 
                   border border-purple-400/30 shadow-lg shadow-purple-900/20">
                   <div className="w-2 h-2 bg-purple-300 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-xs font-bold tracking-wider text-white uppercase">Operação Escola Segura</span>
+                  <span className="text-xs font-bold tracking-wider text-white uppercase">Sistema de Gestão - 20ªCIPM</span>
                 </div>
               </div>
               
