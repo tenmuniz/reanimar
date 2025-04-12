@@ -2,10 +2,9 @@ import { Switch, Route, Link, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, AlertTriangle, Calendar, Star, Award } from "lucide-react";
+import { Shield, BookOpen, Calendar, Star, Award } from "lucide-react";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
-import VerificadorSimples from "@/pages/verificador-simples";
 
 import NotFound from "@/pages/not-found";
 
@@ -90,27 +89,7 @@ function NavBar() {
               {location === "/escola-segura" && <Award className="h-3 w-3 ml-2 text-yellow-400" />}
             </a>
           </Link>
-          
-          <Link href="/verificador-simples">
-            <a className={`group flex items-center px-5 py-3 rounded-lg transition-all duration-200 ${
-              location === "/verificador-simples" 
-                ? "bg-gradient-to-b from-amber-600 to-amber-700 text-white shadow-lg border border-amber-500" 
-                : "bg-amber-700/50 text-white/80 hover:bg-amber-700/60 hover:text-white"
-            }`}>
-              <div className={`mr-2 rounded-full p-1.5 transition-colors duration-200 ${
-                location === "/verificador-simples" 
-                  ? "bg-white/20" 
-                  : "bg-white/10 group-hover:bg-white/20"
-              }`}>
-                <AlertTriangle className="h-5 w-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-bold tracking-tight">VERIFICADOR</span>
-                <span className="text-xs opacity-80">Detecção de Conflitos</span>
-              </div>
-              {location === "/verificador-simples" && <Award className="h-3 w-3 ml-2 text-yellow-400" />}
-            </a>
-          </Link>
+
         </div>
       </div>
     </nav>
@@ -136,7 +115,6 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/escola-segura" component={EscolaSegura} />
-          <Route path="/verificador-simples" component={VerificadorSimples} />
           <Route component={NotFound} />
         </Switch>
       </main>
