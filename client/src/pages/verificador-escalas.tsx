@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -109,12 +109,13 @@ export default function VerificadorEscalas() {
   const [conflitos, setConflitos] = useState<ConflitosEscala[]>([]);
   const [isVerificando, setIsVerificando] = useState(false);
   const [filtroMilitar, setFiltroMilitar] = useState("");
+  const [autoVerificacao, setAutoVerificacao] = useState(true); // Verificação automática ativa por padrão
 
   // Configurada para abril de 2025
   const [currentDate] = useState(new Date(2025, 3, 1)); // Abril 2025 (mês indexado em 0, então 3 = abril)
 
   // Obter dados da escala PMF
-  const { data: combinedSchedulesData } = useQuery<{ schedules: CombinedSchedules }>({
+  const { data: combinedSchedulesData, dataUpdatedAt } = useQuery<{ schedules: CombinedSchedules }>({
     queryKey: ["/api/combined-schedules", currentDate.getFullYear(), currentDate.getMonth()],
     queryFn: async () => {
       const response = await fetch(
@@ -124,7 +125,9 @@ export default function VerificadorEscalas() {
         throw new Error("Erro ao carregar dados das escalas combinadas");
       }
       return response.json();
-    }
+    },
+    // Atualizar a cada 5 segundos para verificar mudanças
+    refetchInterval: 5000
   });
 
   const verificarConflitos = () => {
@@ -206,6 +209,65 @@ export default function VerificadorEscalas() {
       setIsVerificando(false);
     }
   };
+
+  // Função para verificar conflitos automaticamente quando os dados mudam
+  const verificarConflitosAutomatico = useCallback(() => {
+    if (!autoVerificacao || !combinedSchedulesData?.schedules) return;
+    
+    const conflitosEncontrados: ConflitosEscala[] = [];
+    
+    try {
+      // Obtém os dados da escala PMF - Abril 2025
+      const pmfSchedule = 
+        combinedSchedulesData.schedules.pmf["2025-3"] || 
+        combinedSchedulesData.schedules.pmf["2025-4"] || 
+        combinedSchedulesData.schedules.pmf || {}; 
+      
+      // Para cada dia no mês
+      for (let dia = 1; dia <= 30; dia++) {
+        const dayKey = String(dia);
+        
+        // Verifica se há militares escalados na PMF neste dia
+        if (pmfSchedule[dayKey]) {
+          // Para cada militar escalado na PMF
+          pmfSchedule[dayKey].forEach((militar, index) => {
+            if (militar) {
+              // Verificar se este militar está escalado na escala ordinária
+              const escalaOrdinariaStatus = isMilitarEscaladoNoDia(militar, dia);
+              
+              if (escalaOrdinariaStatus) {
+                // CONFLITO ENCONTRADO
+                conflitosEncontrados.push({
+                  dia,
+                  militar,
+                  guarnicaoOrdinaria: escalaOrdinariaStatus,
+                  operacao: "PMF"
+                });
+              }
+            }
+          });
+        }
+      }
+      
+      // Ordenar conflitos por dia
+      conflitosEncontrados.sort((a, b) => a.dia - b.dia);
+      
+      // Atualizar estado com conflitos encontrados
+      setConflitos(conflitosEncontrados);
+      
+      // Se houver conflitos e o diálogo não estiver aberto, abri-lo
+      if (conflitosEncontrados.length > 0 && !open) {
+        setOpen(true);
+      }
+    } catch (error) {
+      console.error("Erro na verificação automática:", error);
+    }
+  }, [combinedSchedulesData, autoVerificacao, open]);
+
+  // Executar verificação automática quando os dados da escala são atualizados
+  useEffect(() => {
+    verificarConflitosAutomatico();
+  }, [dataUpdatedAt, verificarConflitosAutomatico]);
 
   // Filtrar conflitos pelo nome do militar
   const conflitrosFiltrados = filtroMilitar 
