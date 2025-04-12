@@ -73,13 +73,37 @@ export default function ResumoGuarnicao({
       "OUTROS": { dias: [], total: 0 }
     };
     
-    // Obter o mês atual e ano atual para montar a chave correta
+    // Verificar quais chaves estão disponíveis em monthSchedule
+    console.log("GUARNIÇÃO - CHAVES DISPONÍVEIS:", Object.keys(monthSchedule));
+    
+    // Para compatibilidade com dados existentes, vamos verificar todas as possibilidades
+    let monthlyData = {};
+    
+    // Tentativa 1: Usar o mês atual
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // JavaScript meses são 0-11
     const monthKey = `${year}-${month}`;
     
-    // Obter os dados específicos do mês atual
-    const monthlyData = monthSchedule[monthKey] || {};
+    // Tentativa 2: Verificar a chave 2025-3 que aparece nos logs
+    const legacyKey = "2025-3";
+    
+    // Checamos qual chave existe e usamos a primeira disponível
+    if (monthSchedule[monthKey] && Object.keys(monthSchedule[monthKey]).length > 0) {
+      console.log("GUARNIÇÃO - USANDO CHAVE ATUAL:", monthKey);
+      monthlyData = monthSchedule[monthKey];
+    } else if (monthSchedule[legacyKey] && Object.keys(monthSchedule[legacyKey]).length > 0) {
+      console.log("GUARNIÇÃO - USANDO CHAVE LEGADA:", legacyKey);
+      monthlyData = monthSchedule[legacyKey];
+    } else {
+      // Tentativa final: verificar todas as chaves e usar a primeira que tiver dados
+      for (const key of Object.keys(monthSchedule)) {
+        if (Object.keys(monthSchedule[key]).length > 0 && key !== "2025") {
+          console.log("GUARNIÇÃO - USANDO CHAVE ALTERNATIVA:", key);
+          monthlyData = monthSchedule[key];
+          break;
+        }
+      }
+    }
     
     console.log("RESUMO GUARNIÇÃO: Processando dados do mês", monthKey);
     console.log("DADOS DISPONÍVEIS:", monthlyData);

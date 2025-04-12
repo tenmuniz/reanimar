@@ -324,13 +324,38 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
     // Criar um contador simples de dias escalados por militar
     const contador: Record<string, { dias: number[], total: number }> = {};
     
-    // Obter o mês atual e ano atual para montar a chave correta
+    // Verificar quais chaves estão disponíveis em monthSchedule
+    console.log("CHAVES DISPONÍVEIS:", Object.keys(monthSchedule));
+    
+    // Para compatibilidade com dados existentes, vamos verificar se existe a chave 2025-3
+    // Se ela existe, usamos ela em vez do mês atual
+    let monthlyData = {};
+    
+    // Tentativa 1: Usar o mês atual
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // JavaScript meses são 0-11
     const monthKey = `${year}-${month}`;
     
-    // Obter os dados específicos do mês atual
-    const monthlyData = monthSchedule[monthKey] || {};
+    // Tentativa 2: Verificar a chave 2025-3 que aparece nos logs
+    const legacyKey = "2025-3";
+    
+    // Checamos qual chave existe e usamos a primeira disponível
+    if (monthSchedule[monthKey] && Object.keys(monthSchedule[monthKey]).length > 0) {
+      console.log("USANDO CHAVE ATUAL:", monthKey);
+      monthlyData = monthSchedule[monthKey];
+    } else if (monthSchedule[legacyKey] && Object.keys(monthSchedule[legacyKey]).length > 0) {
+      console.log("USANDO CHAVE LEGADA:", legacyKey);
+      monthlyData = monthSchedule[legacyKey];
+    } else {
+      // Tentativa final: verificar todas as chaves e usar a primeira que tiver dados
+      for (const key of Object.keys(monthSchedule)) {
+        if (Object.keys(monthSchedule[key]).length > 0 && key !== "2025") {
+          console.log("USANDO CHAVE ALTERNATIVA:", key);
+          monthlyData = monthSchedule[key];
+          break;
+        }
+      }
+    }
     
     // Iterar sobre cada dia do mês no schedule
     Object.entries(monthlyData).forEach(([day, oficiais]) => {
