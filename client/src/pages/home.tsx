@@ -261,11 +261,13 @@ export default function Home() {
             {/* Botão de salvar escala */}
             <button
               onClick={saveSchedule}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center 
-                transition-colors duration-200 shadow-md"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+                text-white px-5 py-2.5 rounded-xl flex items-center 
+                transition-all duration-200 shadow-md hover:shadow-lg
+                active:shadow-inner active:translate-y-0.5 transform"
             >
-              <Save className="h-4 w-4 mr-2" />
-              <span className="font-medium">Salvar Escala</span>
+              <Save className="h-4 w-4 mr-2 drop-shadow-sm" />
+              <span className="font-medium">Salvar</span>
             </button>
             
             {/* Botões de ações e análises */}
