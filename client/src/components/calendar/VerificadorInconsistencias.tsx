@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react";
-import { formatMonthYear } from "@/lib/utils";
-import { MonthSchedule, CombinedSchedules } from "@/lib/types";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, FileWarning, Download, Printer } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertCircle, Search, Calendar } from "lucide-react";
+import { MonthSchedule, CombinedSchedules } from "@/lib/types";
+import { formatMonthYear } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 interface VerificadorInconsistenciasProps {
   schedule: MonthSchedule;
@@ -31,425 +25,340 @@ export default function VerificadorInconsistencias({
   schedule,
   currentDate,
   combinedSchedules,
-  servicoOrdinario,
-  operationType = 'pmf',
+  servicoOrdinario = {},
+  operationType = 'pmf'
 }: VerificadorInconsistenciasProps) {
   const [open, setOpen] = useState(false);
   const [inconsistencias, setInconsistencias] = useState<Inconsistencia[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   
-  // Mapear militares para suas guarnições
-  const getGuarnicaoMilitar = (nome: string): string => {
-    // ALFA
-    if (nome.includes("PEIXOTO") || nome.includes("RODRIGO") || 
-        nome.includes("LEDO") || nome.includes("NUNES") || 
-        nome.includes("AMARAL") || nome.includes("CARLA") || 
-        nome.includes("FELIPE") || nome.includes("BARROS") || 
-        nome.includes("A. SILVA") || nome.includes("LUAN") || 
-        nome.includes("NAVARRO")) {
+  // Atualizar inconsistências quando o modal for aberto ou mudar os dados
+  useEffect(() => {
+    if (open) {
+      console.log("Verificador aberto - verificando inconsistências");
+      verificarInconsistencias();
+    }
+  }, [open, schedule, combinedSchedules, currentDate]);
+  
+  // Função para filtrar inconsistências com base no termo de busca
+  const filteredInconsistencias = () => {
+    return inconsistencias.filter((inconsistencia) => 
+      searchTerm === "" || 
+      inconsistencia.militar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      inconsistencia.guarnicaoOrdinaria.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  // Função simulada para obter a guarnição ordinária de um militar em um dia específico
+  const getGuarnicaoOrdinaria = (militar: string, dia: number): string => {
+    // Em um sistema real, isso seria uma consulta ao banco de dados ou API
+    // Para simplificar, vamos simular algumas atribuições de guarnição
+    
+    const guarnicoes = ["ALFA", "BRAVO", "CHARLIE"];
+    
+    if (militar.includes("MUNIZ") || militar.includes("MONTEIRO")) {
+      return "EXPEDIENTE";
+    }
+    
+    if (servicoOrdinario[dia]) {
+      const guarnicoesDoDia = servicoOrdinario[dia];
+      
+      for (const [guarnicao, militares] of Object.entries(guarnicoesDoDia)) {
+        if (militares.includes(militar)) {
+          return guarnicao;
+        }
+      }
+    }
+    
+    // Se o militar contém partes do nome que indicam a guarnição dele
+    if (militar.includes("PEIXOTO") || militar.includes("RODRIGO") || 
+        militar.includes("LEDO") || militar.includes("NUNES") || 
+        militar.includes("AMARAL") || militar.includes("CARLA") || 
+        militar.includes("FELIPE") || militar.includes("BARROS") || 
+        militar.includes("A. SILVA") || militar.includes("LUAN") || 
+        militar.includes("NAVARRO")) {
       return "ALFA";
-    } 
-    // BRAVO
-    else if (nome.includes("OLIMAR") || nome.includes("FÁBIO") || 
-            nome.includes("ANA CLEIDE") || nome.includes("GLEIDSON") || 
-            nome.includes("CARLOS EDUARDO") || nome.includes("NEGRÃO") || 
-            nome.includes("BRASIL") || nome.includes("MARVÃO") || 
-            nome.includes("IDELVAN")) {
+    } else if (militar.includes("OLIMAR") || militar.includes("FÁBIO") || 
+               militar.includes("ANA CLEIDE") || militar.includes("GLEIDSON") || 
+               militar.includes("CARLOS EDUARDO") || militar.includes("NEGRÃO") || 
+               militar.includes("BRASIL") || militar.includes("MARVÃO") || 
+               militar.includes("IDELVAN")) {
       return "BRAVO";
-    } 
-    // CHARLIE
-    else if (nome.includes("PINHEIRO") || nome.includes("RAFAEL") || 
-            nome.includes("MIQUEIAS") || nome.includes("M. PAIXÃO") || 
-            nome.includes("CHAGAS") || nome.includes("CARVALHO") || 
-            nome.includes("GOVEIA") || nome.includes("ALMEIDA") || 
-            nome.includes("PATRIK") || nome.includes("GUIMARÃES")) {
+    } else if (militar.includes("PINHEIRO") || militar.includes("RAFAEL") || 
+               militar.includes("MIQUEIAS") || militar.includes("M. PAIXÃO") || 
+               militar.includes("CHAGAS") || militar.includes("CARVALHO") || 
+               militar.includes("GOVEIA") || militar.includes("ALMEIDA") || 
+               militar.includes("PATRIK") || militar.includes("GUIMARÃES")) {
       return "CHARLIE";
     }
-    // EXPEDIENTE e outros
-    return "OUTROS";
+    
+    // Simulação de guarnição com base no dia
+    return guarnicoes[dia % guarnicoes.length];
   };
-  
-  // Análise das inconsistências
+
+  // Função para verificar inconsistências na escala
   const verificarInconsistencias = () => {
-    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
-    const inconsistenciasEncontradas: Inconsistencia[] = [];
+    const listaInconsistencias: Inconsistencia[] = [];
     
-    // Se não temos serviço ordinário para verificar, não há como encontrar inconsistências
-    if (!servicoOrdinario) {
-      setInconsistencias([]);
-      return;
-    }
+    // Chave do mês atual
+    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
     
-    // Se não temos agenda, não há inconsistências
-    const monthSchedule = schedule[currentMonthKey] || {};
-    if (Object.keys(monthSchedule).length === 0) {
-      setInconsistencias([]);
-      return;
-    }
+    // Obter a escala do mês atual
+    const currentSchedule = schedule[currentMonthKey] || {};
     
-    // Verificar cada dia da operação atual (PMF ou Escola Segura)
-    Object.entries(monthSchedule).forEach(([dia, oficiais]) => {
-      // Obter os militares escalados para este dia
-      const militaresEscalados = (oficiais as (string | null)[]).filter(
-        (militar): militar is string => militar !== null
-      );
+    // Verificar se temos dados combinados de PMF e Escola Segura
+    const escolaSchedule = combinedSchedules?.escolaSegura?.[currentMonthKey] || {};
+    
+    // Dicionário para rastrear dias que cada militar está escalado em cada tipo de operação
+    const militaresEscalados: Record<string, { pmf: number[], escolaSegura: number[] }> = {};
+    
+    // Processar escala PMF
+    Object.entries(currentSchedule).forEach(([day, daySchedule]) => {
+      const dayNum = parseInt(day, 10);
       
-      // Verificar a escala ordinária para este dia
-      const guarnicoesOrdinariasNoDia = servicoOrdinario[dia] || {};
-      
-      // Para cada militar escalado, verificar se está também no serviço ordinário
-      militaresEscalados.forEach(militar => {
-        const guarnicaoMilitar = getGuarnicaoMilitar(militar);
-        
-        // Verificar se a guarnição deste militar está escalada no serviço ordinário deste dia
-        Object.entries(guarnicoesOrdinariasNoDia).forEach(([guarnicao, _]) => {
-          if (guarnicaoMilitar === guarnicao) {
-            inconsistenciasEncontradas.push({
-              dia: parseInt(dia),
-              militar,
-              guarnicaoOrdinaria: guarnicao,
-              operacao: operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'
-            });
+      if (Array.isArray(daySchedule)) {
+        daySchedule.forEach(militar => {
+          if (militar) {
+            // Inicializar o registro se não existir
+            if (!militaresEscalados[militar]) {
+              militaresEscalados[militar] = { pmf: [], escolaSegura: [] };
+            }
+            
+            // Adicionar dia à operação PMF
+            militaresEscalados[militar].pmf.push(dayNum);
+            
+            // Verificar se há conflito com escala ordinária
+            const guarnicaoOrdinaria = getGuarnicaoOrdinaria(militar, dayNum);
+            
+            if (guarnicaoOrdinaria !== "EXPEDIENTE") {
+              listaInconsistencias.push({
+                dia: dayNum,
+                militar,
+                guarnicaoOrdinaria,
+                operacao: "PMF"
+              });
+            }
           }
         });
+      }
+    });
+    
+    // Processar escala Escola Segura, se disponível
+    Object.entries(escolaSchedule).forEach(([day, daySchedule]) => {
+      const dayNum = parseInt(day, 10);
+      
+      if (Array.isArray(daySchedule)) {
+        daySchedule.forEach(militar => {
+          if (militar) {
+            // Inicializar o registro se não existir
+            if (!militaresEscalados[militar]) {
+              militaresEscalados[militar] = { pmf: [], escolaSegura: [] };
+            }
+            
+            // Adicionar dia à operação Escola Segura
+            militaresEscalados[militar].escolaSegura.push(dayNum);
+            
+            // Verificar se há conflito com escala ordinária
+            const guarnicaoOrdinaria = getGuarnicaoOrdinaria(militar, dayNum);
+            
+            if (guarnicaoOrdinaria !== "EXPEDIENTE") {
+              listaInconsistencias.push({
+                dia: dayNum,
+                militar,
+                guarnicaoOrdinaria,
+                operacao: "ESCOLA SEGURA"
+              });
+            }
+          }
+        });
+      }
+    });
+    
+    // Verificar inconsistências entre PMF e Escola Segura (militar escalado no mesmo dia em ambas operações)
+    Object.entries(militaresEscalados).forEach(([militar, operacoes]) => {
+      operacoes.pmf.forEach(dia => {
+        if (operacoes.escolaSegura.includes(dia)) {
+          listaInconsistencias.push({
+            dia,
+            militar,
+            guarnicaoOrdinaria: getGuarnicaoOrdinaria(militar, dia),
+            operacao: "PMF + ESCOLA SEGURA"
+          });
+        }
       });
     });
     
-    // Se temos escala combinada, verificar também a outra operação
-    if (combinedSchedules) {
-      const outraOperacao = operationType === 'pmf' ? 'escolaSegura' : 'pmf';
-      const outraSchedule = combinedSchedules[outraOperacao] || {};
-      const outraMonthSchedule = outraSchedule[currentMonthKey] || {};
-      
-      // Verificar militares desta operação que estão também na outra operação no mesmo dia
-      Object.entries(monthSchedule).forEach(([dia, oficiais]) => {
-        const militaresEscalados = (oficiais as (string | null)[]).filter(
-          (militar): militar is string => militar !== null
-        );
-        
-        const outraDiaSchedule = outraMonthSchedule[dia] || [];
-        const outraMilitares = (outraDiaSchedule as (string | null)[]).filter(
-          (militar): militar is string => militar !== null
-        );
-        
-        // Verificar sobreposição de militares nas duas operações
-        militaresEscalados.forEach(militar => {
-          if (outraMilitares.includes(militar)) {
-            inconsistenciasEncontradas.push({
-              dia: parseInt(dia),
-              militar,
-              guarnicaoOrdinaria: 'N/A',
-              operacao: 'Ambas (PMF e Escola Segura)'
-            });
-          }
-        });
-      });
-    }
+    // Ordenar por dia e depois por operação
+    listaInconsistencias.sort((a, b) => {
+      if (a.dia !== b.dia) {
+        return a.dia - b.dia;
+      }
+      return a.operacao.localeCompare(b.operacao);
+    });
     
-    // Ordenar por dia e salvar
-    setInconsistencias(
-      inconsistenciasEncontradas.sort((a, b) => a.dia - b.dia)
-    );
+    setInconsistencias(listaInconsistencias);
   };
-  
-  // Verificar inconsistências quando o diálogo for aberto
-  useEffect(() => {
-    if (open) {
-      verificarInconsistencias();
-    }
-  }, [open, schedule, combinedSchedules, servicoOrdinario]);
-  
-  // Nome do mês para exibição
+
+  // Get the month name for display
   const mesAno = formatMonthYear(currentDate);
   
-  // Função para imprimir o relatório
-  const handlePrint = () => {
-    // Abrir uma nova janela para impressão
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('Por favor, permita pop-ups para imprimir o relatório.');
-      return;
-    }
-    
-    // Título do relatório
-    const tituloOperacao = operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'POLÍCIA MAIS FORTE';
-    
-    // Conteúdo HTML da página de impressão
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Relatório de Inconsistências - ${tituloOperacao} - ${mesAno}</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            color: #333;
-          }
-          h1 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #03396c;
-          }
-          h2 {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #d32f2f;
-          }
-          .resumo {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            background: #fef2f2;
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #ffcdd2;
-          }
-          .resumo-item {
-            text-align: center;
-            flex: 1;
-          }
-          .resumo-valor {
-            font-size: 24px;
-            font-weight: bold;
-            color: #d32f2f;
-          }
-          .resumo-label {
-            font-size: 14px;
-            color: #666;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-          }
-          th {
-            background-color: #d32f2f;
-            color: white;
-            padding: 10px;
-            text-align: left;
-          }
-          td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #ddd;
-          }
-          tr:nth-child(even) {
-            background-color: #fff5f5;
-          }
-          .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-          }
-          .warning-badge {
-            display: inline-block;
-            background-color: #FFC107;
-            color: #333;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 12px;
-            font-weight: bold;
-          }
-          .error-badge {
-            display: inline-block;
-            background-color: #F44336;
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 12px;
-            font-weight: bold;
-          }
-          @media print {
-            @page {
-              size: portrait;
-              margin: 1cm;
-            }
-            body {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <h1>${tituloOperacao}</h1>
-        <h2>RELATÓRIO DE INCONSISTÊNCIAS - ${mesAno.toUpperCase()}</h2>
-        
-        <div class="resumo">
-          <div class="resumo-item">
-            <div class="resumo-valor">${inconsistencias.length}</div>
-            <div class="resumo-label">Inconsistências Encontradas</div>
-          </div>
-        </div>
-        
-        ${inconsistencias.length > 0 ? `
-          <table>
-            <thead>
-              <tr>
-                <th style="width: 15%">Dia</th>
-                <th style="width: 30%">Militar</th>
-                <th style="width: 20%">Guarnição</th>
-                <th style="width: 35%">Problema</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${inconsistencias.map(inconsistencia => `
-                <tr>
-                  <td>${inconsistencia.dia}</td>
-                  <td>${inconsistencia.militar}</td>
-                  <td>${inconsistencia.guarnicaoOrdinaria}</td>
-                  <td>
-                    ${inconsistencia.operacao === 'Ambas (PMF e Escola Segura)' 
-                      ? `<span class="error-badge">Escalado em duas operações extras</span>`
-                      : `<span class="warning-badge">Escalado no serviço ordinário e ${inconsistencia.operacao}</span>`
-                    }
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        ` : `
-          <div style="text-align: center; padding: 40px; color: #2e7d32; font-weight: bold;">
-            Nenhuma inconsistência encontrada. Todas as escalas parecem estar corretas.
-          </div>
-        `}
-        
-        <div class="footer">
-          <p>Sistema de Escalas ${operationType === 'escolaSegura' ? 'ESCOLA SEGURA' : 'PMF'} | Verificador de Inconsistências</p>
-          <p>Relatório gerado em: ${new Date().toLocaleString()}</p>
-        </div>
-        
-        <script>
-          // Abre a janela de impressão automaticamente
-          window.onload = function() {
-            setTimeout(function() {
-              window.print();
-            }, 500);
-          };
-        </script>
-      </body>
-      </html>
-    `;
-    
-    // Escreve o conteúdo na nova janela
-    printWindow.document.open();
-    printWindow.document.write(printContent);
-    printWindow.document.close();
+  // Obter a contagem de inconsistências por tipo
+  const contagens = {
+    pmf: inconsistencias.filter(inc => inc.operacao === "PMF").length,
+    escolaSegura: inconsistencias.filter(inc => inc.operacao === "ESCOLA SEGURA").length,
+    ambas: inconsistencias.filter(inc => inc.operacao === "PMF + ESCOLA SEGURA").length,
+    total: inconsistencias.length
   };
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="relative group overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 
+        className="relative group overflow-hidden bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 
           text-white font-bold px-5 py-3 rounded-lg flex items-center transform transition-all duration-200 
-          border border-amber-400 shadow-[0_8px_0_rgb(194,65,12),0_15px_20px_rgba(0,0,0,0.3)]
-          hover:shadow-[0_4px_0_rgb(194,65,12),0_8px_15px_rgba(0,0,0,0.3)]
-          active:translate-y-4 active:shadow-[0_0px_0_rgb(194,65,12),0_0px_10px_rgba(0,0,0,0.2)]"
+          border border-amber-400 shadow-[0_8px_0_rgb(180,83,9),0_15px_20px_rgba(0,0,0,0.3)]
+          hover:shadow-[0_4px_0_rgb(180,83,9),0_8px_15px_rgba(0,0,0,0.3)]
+          active:translate-y-4 active:shadow-[0_0px_0_rgb(180,83,9),0_0px_10px_rgba(0,0,0,0.2)]"
       >
         {/* Efeito de brilho no hover */}
         <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/30 to-white/0 
           transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
         
-        <AlertTriangle className="h-5 w-5 mr-2 drop-shadow-lg" />
+        <AlertCircle className="h-5 w-5 mr-2 drop-shadow-lg" />
         <span>Verificar</span>
+        
+        {inconsistencias.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
+            {inconsistencias.length}
+          </span>
+        )}
       </button>
       
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[800px] bg-gradient-to-br from-amber-900 to-orange-900 text-white border-0 shadow-2xl">
+        <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-amber-900 to-amber-800 text-white border-0 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center text-2xl font-bold text-center text-white mb-4">
-              <FileWarning className="h-6 w-6 mr-2 text-amber-300" />
-              <span className="bg-gradient-to-r from-amber-300 to-orange-400 text-transparent bg-clip-text">
-                VERIFICADOR DE INCONSISTÊNCIAS - {mesAno.toUpperCase()}
+              <AlertCircle className="h-6 w-6 mr-2 text-amber-300" />
+              <span className="bg-gradient-to-r from-amber-300 to-amber-500 text-transparent bg-clip-text">
+                VERIFICADOR DE CONFLITOS - {mesAno.toUpperCase()}
               </span>
             </DialogTitle>
           </DialogHeader>
           
-          {/* Botão de Impressão */}
-          <div className="flex justify-center mb-4">
-            <Button
-              onClick={handlePrint}
-              className="bg-orange-600 hover:bg-orange-700 text-white flex items-center"
-            >
-              <Printer className="mr-2 h-4 w-4" />
-              Imprimir Relatório
-            </Button>
+          {/* Estatísticas de Inconsistências */}
+          <div className="grid grid-cols-4 gap-2 mb-6">
+            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
+              <span className="text-amber-200 text-xs font-medium mb-1">Total</span>
+              <span className="text-2xl font-bold text-white">{contagens.total}</span>
+            </div>
+            
+            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
+              <span className="text-amber-200 text-xs font-medium mb-1">PMF</span>
+              <span className="text-2xl font-bold text-white">{contagens.pmf}</span>
+            </div>
+            
+            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
+              <span className="text-amber-200 text-xs font-medium mb-1">E. Segura</span>
+              <span className="text-2xl font-bold text-white">{contagens.escolaSegura}</span>
+            </div>
+            
+            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
+              <span className="text-amber-200 text-xs font-medium mb-1">Duplicadas</span>
+              <span className="text-2xl font-bold text-white">{contagens.ambas}</span>
+            </div>
           </div>
           
-          {/* Explicação */}
-          <div className="bg-amber-800/50 p-4 rounded-lg mb-4 text-sm">
-            <p>Este verificador identifica possíveis inconsistências nas escalas:</p>
-            <ul className="list-disc ml-5 mt-2 space-y-1">
-              <li>Militares escalados no serviço ordinário e na operação {operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'} no mesmo dia</li>
-              <li>Militares escalados nas operações PMF e Escola Segura simultaneamente</li>
-            </ul>
-          </div>
-          
-          {/* Estatísticas */}
-          <div className="bg-amber-800/50 p-4 rounded-lg mb-4">
-            <div className="grid grid-cols-1 gap-4">
-              <div className="bg-gradient-to-r from-amber-700 to-amber-800 p-3 rounded-lg text-center">
-                <p className="text-amber-200 text-sm">Inconsistências Encontradas</p>
-                <p className="text-2xl font-bold text-white">{inconsistencias.length}</p>
-              </div>
+          {/* Campo de busca */}
+          <div className="mb-4">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-amber-300" />
+              <Input
+                placeholder="Buscar militar ou guarnição..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8 bg-amber-700/30 border-amber-600 text-white placeholder:text-amber-300"
+              />
             </div>
           </div>
           
           {/* Lista de inconsistências */}
-          <div className="space-y-3 max-h-[350px] overflow-auto pr-2">
+          <div className="bg-amber-800/40 rounded-lg p-2 mb-4 max-h-[350px] overflow-auto">
+            <div className="flex font-bold text-sm text-amber-100 px-2 py-1 mb-1 border-b border-amber-700">
+              <div className="w-[15%]">Dia</div>
+              <div className="w-[35%]">Militar</div>
+              <div className="w-[25%]">Serviço Ordinário</div>
+              <div className="w-[25%]">Operação</div>
+            </div>
+            
             {inconsistencias.length === 0 ? (
-              <div className="p-8 text-center bg-gradient-to-r from-green-700/30 to-green-800/30 rounded-lg">
-                <p className="text-green-300 font-bold text-lg">Nenhuma inconsistência encontrada</p>
-                <p className="text-green-400/80 mt-2">Todas as escalas parecem estar corretas.</p>
+              <div className="p-4 text-center text-amber-200">
+                Nenhuma inconsistência encontrada para este mês
+              </div>
+            ) : filteredInconsistencias().length === 0 ? (
+              <div className="p-4 text-center text-amber-200">
+                Nenhuma inconsistência encontrada com o termo &quot;{searchTerm}&quot;
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-amber-800/60 text-left">
-                      <th className="p-2 rounded-tl-md">Dia</th>
-                      <th className="p-2">Militar</th>
-                      <th className="p-2">Guarnição</th>
-                      <th className="p-2 rounded-tr-md">Problema</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {inconsistencias.map((item, index) => (
-                      <tr 
-                        key={`inconsistencia-${index}`} 
-                        className={`${index % 2 === 0 ? 'bg-amber-800/20' : 'bg-amber-800/30'} hover:bg-amber-700/40 transition-colors`}
-                      >
-                        <td className="p-2 border-t border-amber-700/30">{item.dia}</td>
-                        <td className="p-2 border-t border-amber-700/30 font-medium">{item.militar}</td>
-                        <td className="p-2 border-t border-amber-700/30">{item.guarnicaoOrdinaria}</td>
-                        <td className="p-2 border-t border-amber-700/30">
-                          {item.operacao === 'Ambas (PMF e Escola Segura)' ? (
-                            <Badge variant="destructive" className="bg-red-600">
-                              Escalado em duas operações extras
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-amber-600/50 text-white border-amber-500">
-                              Escalado no serviço ordinário e {item.operacao}
-                            </Badge>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              filteredInconsistencias().map((inconsistencia, index) => {
+                // Classe do background com base na paridade
+                const bgClass = index % 2 === 0 
+                  ? 'bg-amber-800/40' 
+                  : 'bg-amber-800/20';
+                
+                // Cor do tipo de inconsistência
+                const tipoClass = 
+                  inconsistencia.operacao === "PMF" ? "bg-green-700" :
+                  inconsistencia.operacao === "ESCOLA SEGURA" ? "bg-blue-700" :
+                  "bg-red-700";
+                
+                return (
+                  <div 
+                    key={`${inconsistencia.militar}-${inconsistencia.dia}-${inconsistencia.operacao}`} 
+                    className={`flex items-center text-sm px-2 py-2 rounded mb-1 ${bgClass}`}
+                  >
+                    <div className="w-[15%] flex items-center justify-center">
+                      <span className="inline-flex items-center justify-center h-6 w-6 bg-amber-700 rounded-full font-medium">
+                        {inconsistencia.dia}
+                      </span>
+                    </div>
+                    <div className="w-[35%] font-medium text-white">
+                      {inconsistencia.militar}
+                    </div>
+                    <div className="w-[25%]">
+                      <span className="inline-block bg-amber-700 px-2 py-0.5 rounded text-xs">
+                        {inconsistencia.guarnicaoOrdinaria}
+                      </span>
+                    </div>
+                    <div className="w-[25%]">
+                      <span className={`inline-block ${tipoClass} px-2 py-0.5 rounded text-xs`}>
+                        {inconsistencia.operacao}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
             )}
           </div>
           
-          {/* Legenda */}
-          <div className="bg-amber-800/40 p-3 rounded-lg text-xs mt-2">
+          {/* Legenda e informações */}
+          <div className="bg-amber-800/40 p-3 rounded-lg text-xs">
+            <div className="flex flex-wrap items-center justify-around mb-2 gap-2">
+              <div className="font-medium text-amber-200 flex items-center">
+                <span className="inline-block h-3 w-3 bg-green-700 rounded-full mr-1"></span>
+                <span>PMF no dia de serviço ordinário</span>
+              </div>
+              <div className="font-medium text-amber-200 flex items-center">
+                <span className="inline-block h-3 w-3 bg-blue-700 rounded-full mr-1"></span>
+                <span>Escola Segura no dia de serviço ordinário</span>
+              </div>
+              <div className="font-medium text-amber-200 flex items-center">
+                <span className="inline-block h-3 w-3 bg-red-700 rounded-full mr-1"></span>
+                <span>PMF e Escola Segura no mesmo dia</span>
+              </div>
+            </div>
             <div className="text-center text-amber-200 border-t border-amber-700 pt-2 mt-1">
-              <AlertTriangle className="inline-block h-4 w-4 mr-1 mb-1" />
-              Dados referentes ao mês de {mesAno} | <strong className="text-white">Verificador de Inconsistências</strong>
+              <Calendar className="inline-block h-4 w-4 mr-1 mb-1" />
+              Dados referentes ao mês de {mesAno} | <strong className="text-white">REGRA: Não escalar militares em dias de serviço ordinário</strong>
             </div>
           </div>
         </DialogContent>

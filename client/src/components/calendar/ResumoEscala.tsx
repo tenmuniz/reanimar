@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { BarChart3, Calendar, FileText, Printer, Award, Users, Search } from "lucide-react";
+import { BarChart3, Calendar, FileText, Printer, Award, Search } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -305,7 +305,7 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
   // REIMPLEMENTAÇÃO TOTAL DO RESUMO - Garantir contagem precisa
   const generateResumo = () => {
     // Chave do mês atual
-    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
     
     // Obtém os dados do schedule atual - importante ter os dados mais recentes
     const monthSchedule = schedule[currentMonthKey] || {};
@@ -313,8 +313,8 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
     // Debug: mostrar os dados recebidos
     console.log("DADOS DE SCHEDULE RECEBIDOS:", monthSchedule);
     
-    // Objeto para armazenar todas as escalas por militar - declarado como let para poder reinicializar
-    let militaresDias: Record<string, { 
+    // Objeto para armazenar todas as escalas por militar
+    const militaresDias: Record<string, { 
       dias: number[], 
       total: number,
       excedeuLimite: boolean,
@@ -324,47 +324,36 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
       }
     }> = {};
     
-    // ALGORITMO COMPLETAMENTE REESCRITO COM ABORDAGEM SUPER SIMPLES
-    // Para ter certeza absoluta da contagem
-    
-    // Limpar contadores existentes
-    Object.keys(militaresDias).forEach(key => {
-      delete militaresDias[key];
-    });
-    
-    // Pegar dados mais recentes
-    const scheduleToProcess = monthSchedule;
-    
-    console.log("PROCESSANDO DADOS DA ESCALA:", scheduleToProcess);
-    
     // Criar um contador simples de dias escalados por militar
     const contador: Record<string, { dias: number[], total: number }> = {};
     
     // Iterar sobre cada dia do mês no schedule
-    if (scheduleToProcess) {
-      Object.entries(scheduleToProcess).forEach(([day, daySchedule]) => {
+    if (monthSchedule) {
+      Object.entries(monthSchedule).forEach(([day, daySchedule]) => {
         // Converter para número
         const dayNum = parseInt(day, 10);
         
         // Verificar cada posição no dia
-        (daySchedule as (string | null)[]).forEach(militar => {
-          // Só processar se houver um militar escalado
-          if (militar) {
-            // Inicializar contador para este militar se ainda não existe
-            if (!contador[militar]) {
-              contador[militar] = {
-                dias: [],
-                total: 0
-              };
+        if (Array.isArray(daySchedule)) {
+          daySchedule.forEach(militar => {
+            // Só processar se houver um militar escalado
+            if (militar) {
+              // Inicializar contador para este militar se ainda não existe
+              if (!contador[militar]) {
+                contador[militar] = {
+                  dias: [],
+                  total: 0
+                };
+              }
+              
+              // Adicionar apenas se ainda não contabilizamos este dia
+              if (!contador[militar].dias.includes(dayNum)) {
+                contador[militar].dias.push(dayNum);
+                contador[militar].total++;
+              }
             }
-            
-            // Adicionar apenas se ainda não contabilizamos este dia
-            if (!contador[militar].dias.includes(dayNum)) {
-              contador[militar].dias.push(dayNum);
-              contador[militar].total++;
-            }
-          }
-        });
+          });
+        }
       });
     }
     
