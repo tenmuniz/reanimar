@@ -285,10 +285,13 @@ export const PieChart = ({
   data, 
   category, 
   index, 
-  colors = ["blue", "green", "purple", "amber", "red"], 
+  colors = ["#2563eb", "#10b981", "#9333ea", "#f59e0b", "#ef4444"], 
   valueFormatter = (value) => value.toString(),
   className = "",
-  showLegend = true
+  showLegend = true,
+  showAnimation = false,
+  showTooltip = false,
+  variant = "default"
 }) => {
   if (!data || data.length === 0) return <div>Sem dados disponíveis</div>;
 
@@ -372,11 +375,16 @@ export const DonutChart = ({
   data, 
   category, 
   index, 
-  colors = ["blue", "green", "purple", "amber", "red"], 
+  colors = ["#2563eb", "#10b981", "#9333ea", "#f59e0b", "#ef4444"], 
   valueFormatter = (value) => value.toString(),
   className = "",
   showLegend = true,
-  thickness = 30 // Espessura do donut (0-50)
+  thickness = 30, // Espessura do donut (0-50)
+  showLabel = true,
+  showAnimation = false,
+  showTooltip = false,
+  variant = "default",
+  label = ""
 }) => {
   if (!data || data.length === 0) return <div>Sem dados disponíveis</div>;
 
