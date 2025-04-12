@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Calendar, CheckCircle, ClipboardList, FileText } from "lucide-react";
+import { Loader2, AlertCircle, Calendar, CheckCircle, ClipboardList, FileText } from "lucide-react";
 import { CombinedSchedules, MonthSchedule } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 
@@ -149,45 +149,63 @@ export default function VerificadorEscalas() {
       return;
     }
     
-    // Obtém os dados da escala PMF
-    const monthKey = "2025-3"; // Abril 2025
-    const pmfSchedule = combinedSchedulesData.schedules.pmf[monthKey] || {};
-    
-    // Para cada dia no mês
-    for (let dia = 1; dia <= 30; dia++) {
-      const dayKey = String(dia);
+    try {
+      // Obtém os dados da escala PMF
+      const monthKey = "2025-3"; // Abril 2025
+      const pmfSchedule = combinedSchedulesData.schedules.pmf[monthKey] || {};
       
-      // Verifica se há militares escalados na PMF neste dia
-      if (pmfSchedule[dayKey]) {
-        // Para cada militar escalado na PMF
-        pmfSchedule[dayKey].forEach(militar => {
-          if (militar) {
-            // Verificar se este militar está escalado na escala ordinária
-            const escalaOrdinariaStatus = isMilitarEscaladoNoDia(militar, dia);
-            
-            if (escalaOrdinariaStatus) {
-              // CONFLITO ENCONTRADO
-              conflitosEncontrados.push({
-                dia,
-                militar,
-                guarnicaoOrdinaria: escalaOrdinariaStatus,
-                operacao: "PMF"
-              });
+      console.log("Dados da escala PMF:", pmfSchedule);
+      
+      // Para cada dia no mês
+      for (let dia = 1; dia <= 30; dia++) {
+        const dayKey = String(dia);
+        
+        // Verifica se há militares escalados na PMF neste dia
+        if (pmfSchedule[dayKey]) {
+          console.log(`Verificando dia ${dia}:`, pmfSchedule[dayKey]);
+          
+          // Para cada militar escalado na PMF
+          pmfSchedule[dayKey].forEach((militar, index) => {
+            if (militar) {
+              // Verificar se este militar está escalado na escala ordinária
+              const escalaOrdinariaStatus = isMilitarEscaladoNoDia(militar, dia);
+              
+              console.log(`Militar ${militar} no dia ${dia}: status=${escalaOrdinariaStatus}`);
+              
+              if (escalaOrdinariaStatus) {
+                // CONFLITO ENCONTRADO
+                conflitosEncontrados.push({
+                  dia,
+                  militar,
+                  guarnicaoOrdinaria: escalaOrdinariaStatus,
+                  operacao: "PMF"
+                });
+                console.log(`CONFLITO: ${militar} está no serviço ${escalaOrdinariaStatus} e na PMF no dia ${dia}`);
+              }
             }
-          }
-        });
+          });
+        }
       }
+      
+      // Ordenar conflitos por dia
+      conflitosEncontrados.sort((a, b) => a.dia - b.dia);
+      
+      // Atualizar estado com conflitos encontrados
+      setConflitos(conflitosEncontrados);
+      console.log(`Total de conflitos encontrados: ${conflitosEncontrados.length}`);
+      
+      // Abrir o diálogo com resultados
+      setOpen(true);
+    } catch (error) {
+      console.error("Erro ao verificar conflitos:", error);
+      toast({
+        title: "Erro ao verificar conflitos",
+        description: "Ocorreu um erro ao processar os dados das escalas.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsVerificando(false);
     }
-    
-    // Ordenar conflitos por dia
-    conflitosEncontrados.sort((a, b) => a.dia - b.dia);
-    
-    // Atualizar estado com conflitos encontrados
-    setConflitos(conflitosEncontrados);
-    setIsVerificando(false);
-    
-    // Abrir o diálogo com resultados
-    setOpen(true);
   };
 
   // Filtrar conflitos pelo nome do militar
@@ -207,11 +225,21 @@ export default function VerificadorEscalas() {
         
         <Button 
           onClick={verificarConflitos}
+          disabled={isVerificando}
           size="lg"
           className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-6 rounded-xl flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
         >
-          <ClipboardList className="h-5 w-5 mr-1" />
-          Verificar Conflitos de Escala
+          {isVerificando ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-1 animate-spin" />
+              Verificando...
+            </>
+          ) : (
+            <>
+              <ClipboardList className="h-5 w-5 mr-1" />
+              Verificar Conflitos de Escala
+            </>
+          )}
         </Button>
       </div>
 
