@@ -1010,18 +1010,128 @@ export default function Relatorios() {
                     </div>
                   </div>
                   
-                  <PieChart
-                    data={[
-                      { name: 'Zona Segura', value: Object.values(dadosMilitares).filter(d => d.total < 8).length },
-                      { name: 'Zona de Alerta', value: Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length },
-                      { name: 'Zona Crítica', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length }
-                    ]}
-                    category="value"
-                    index="name"
-                    colors={["green", "amber", "red"]}
-                    valueFormatter={(value) => `${value} militares`}
-                    className="h-64 my-4"
-                  />
+                  {/* Gráfico em formato de rosca personalizado */}
+                  <div className="h-64 my-4 flex items-center justify-center">
+                    <div className="relative w-48 h-48">
+                      {/* SVG customizado para gráfico de rosca */}
+                      <svg className="w-full h-full" viewBox="0 0 100 100">
+                        {/* Dados para o gráfico */}
+                        {(() => {
+                          const seguroCount = Object.values(dadosMilitares).filter(d => d.total < 8).length;
+                          const alertaCount = Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length;
+                          const criticoCount = Object.values(dadosMilitares).filter(d => d.total >= 12).length;
+                          const total = seguroCount + alertaCount + criticoCount;
+                          
+                          // Calcular percentuais e ângulos
+                          const seguroPercent = Math.round((seguroCount / total) * 100);
+                          const alertaPercent = Math.round((alertaCount / total) * 100);
+                          const criticoPercent = Math.round((criticoCount / total) * 100);
+                          
+                          const seguroAngle = (seguroPercent / 100) * 360;
+                          const alertaAngle = (alertaPercent / 100) * 360;
+                          const criticoAngle = (criticoPercent / 100) * 360;
+                          
+                          // Configurações do gráfico
+                          const centerX = 50;
+                          const centerY = 50;
+                          const radius = 40;
+                          const thickness = 15;
+                          
+                          // Criar os paths SVG para os segmentos
+                          return (
+                            <>
+                              {/* Segmento Verde */}
+                              {seguroCount > 0 && (
+                                <path 
+                                  d={`M ${centerX + radius * Math.cos(0)} ${centerY + radius * Math.sin(0)} 
+                                      A ${radius} ${radius} 0 ${seguroAngle > 180 ? 1 : 0} 1 
+                                      ${centerX + radius * Math.cos(seguroAngle * Math.PI / 180)} 
+                                      ${centerY + radius * Math.sin(seguroAngle * Math.PI / 180)} 
+                                      L ${centerX + (radius - thickness) * Math.cos(seguroAngle * Math.PI / 180)} 
+                                      ${centerY + (radius - thickness) * Math.sin(seguroAngle * Math.PI / 180)} 
+                                      A ${radius - thickness} ${radius - thickness} 0 ${seguroAngle > 180 ? 1 : 0} 0
+                                      ${centerX + (radius - thickness) * Math.cos(0)}
+                                      ${centerY + (radius - thickness) * Math.sin(0)} Z`}
+                                  fill="#22c55e"
+                                />
+                              )}
+                              
+                              {/* Segmento Amarelo */}
+                              {alertaCount > 0 && (
+                                <path 
+                                  d={`M ${centerX + radius * Math.cos(seguroAngle * Math.PI / 180)} 
+                                      ${centerY + radius * Math.sin(seguroAngle * Math.PI / 180)} 
+                                      A ${radius} ${radius} 0 ${alertaAngle > 180 ? 1 : 0} 1 
+                                      ${centerX + radius * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)} 
+                                      ${centerY + radius * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} 
+                                      L ${centerX + (radius - thickness) * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)} 
+                                      ${centerY + (radius - thickness) * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} 
+                                      A ${radius - thickness} ${radius - thickness} 0 ${alertaAngle > 180 ? 1 : 0} 0
+                                      ${centerX + (radius - thickness) * Math.cos(seguroAngle * Math.PI / 180)}
+                                      ${centerY + (radius - thickness) * Math.sin(seguroAngle * Math.PI / 180)} Z`}
+                                  fill="#f59e0b"
+                                />
+                              )}
+                              
+                              {/* Segmento Vermelho */}
+                              {criticoCount > 0 && (
+                                <path 
+                                  d={`M ${centerX + radius * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)} 
+                                      ${centerY + radius * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} 
+                                      A ${radius} ${radius} 0 ${criticoAngle > 180 ? 1 : 0} 1 
+                                      ${centerX + radius * Math.cos((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
+                                      ${centerY + radius * Math.sin((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
+                                      L ${centerX + (radius - thickness) * Math.cos((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
+                                      ${centerY + (radius - thickness) * Math.sin((seguroAngle + alertaAngle + criticoAngle) * Math.PI / 180)} 
+                                      A ${radius - thickness} ${radius - thickness} 0 ${criticoAngle > 180 ? 1 : 0} 0
+                                      ${centerX + (radius - thickness) * Math.cos((seguroAngle + alertaAngle) * Math.PI / 180)}
+                                      ${centerY + (radius - thickness) * Math.sin((seguroAngle + alertaAngle) * Math.PI / 180)} Z`}
+                                  fill="#ef4444"
+                                />
+                              )}
+                              
+                              {/* Texto central */}
+                              <text 
+                                x={centerX} 
+                                y={centerY} 
+                                textAnchor="middle" 
+                                dominantBaseline="middle"
+                                fontSize="12"
+                                fontWeight="bold"
+                              >
+                                {seguroPercent}%
+                              </text>
+                              <text 
+                                x={centerX} 
+                                y={centerY + 10} 
+                                textAnchor="middle" 
+                                dominantBaseline="middle"
+                                fontSize="6"
+                              >
+                                Zona Segura
+                              </text>
+                            </>
+                          );
+                        })()}
+                      </svg>
+                    </div>
+                    
+                    {/* Legenda do gráfico */}
+                    <div className="ml-4 space-y-2">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-sm mr-2"></div>
+                        <span className="text-xs">Zona Segura ({Object.values(dadosMilitares).filter(d => d.total < 8).length})</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-amber-500 rounded-sm mr-2"></div>
+                        <span className="text-xs">Zona de Alerta ({Object.values(dadosMilitares).filter(d => d.total >= 8 && d.total <= 11).length})</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-red-500 rounded-sm mr-2"></div>
+                        <span className="text-xs">Zona Crítica ({Object.values(dadosMilitares).filter(d => d.total >= 12).length})</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
