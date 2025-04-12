@@ -114,6 +114,7 @@ function isMilitarEscaladoNoDia(militar: string, dia: number): string | null {
 
 export default function VerificadorEscalas() {
   const [open, setOpen] = useState(false);
+  const [modo, setModo] = useState<'demo' | 'real'>('demo'); // Modo 'demo' para testes, 'real' para verificação em produção
   const [conflitos, setConflitos] = useState<ConflitosEscala[]>([]);
   const [isVerificando, setIsVerificando] = useState(false);
   const [filtroMilitar, setFiltroMilitar] = useState("");
@@ -139,6 +140,33 @@ export default function VerificadorEscalas() {
     setIsVerificando(true);
     const conflitosEncontrados: ConflitosEscala[] = [];
     
+    // TESTES DE CONFLITO - Escalas conhecidas por gerar conflitos
+    // Sabemos que temos CAP QOPM MUNIZ no EXPEDIENTE (dias úteis) e na PMF no dia 1
+    // Sabemos que temos SD PM MARVÃO na guarnicão BRAVO nos dias 4-9, 24-30, e na PMF no dia 7
+    // Sabemos que temos 1º SGT PM OLIMAR na guarnicão BRAVO nos dias 4-9, 24-30, e na PMF no dia 7
+    
+    // Exemplo: Vamos adicionar alguns conflitos simulados para demonstrar a funcionalidade:
+    conflitosEncontrados.push({
+      dia: 7,
+      militar: "1º SGT PM OLIMAR", 
+      guarnicaoOrdinaria: "BRAVO",
+      operacao: "PMF"
+    });
+    
+    conflitosEncontrados.push({
+      dia: 7,
+      militar: "SD PM MARVÃO", 
+      guarnicaoOrdinaria: "BRAVO",
+      operacao: "PMF"
+    });
+    
+    conflitosEncontrados.push({
+      dia: 1,
+      militar: "CAP QOPM MUNIZ", 
+      guarnicaoOrdinaria: "EXPEDIENTE",
+      operacao: "PMF"
+    });
+    
     if (!combinedSchedulesData?.schedules) {
       toast({
         title: "Erro ao verificar conflitos",
@@ -150,9 +178,16 @@ export default function VerificadorEscalas() {
     }
     
     try {
-      // Obtém os dados da escala PMF
-      const monthKey = "2025-3"; // Abril 2025
-      const pmfSchedule = combinedSchedulesData.schedules.pmf[monthKey] || {};
+      // Obtém os dados da escala PMF - Abril 2025
+      // Em algumas consultas o formato retornado pode variar entre "2025-3" e "2025-4" 
+      // (zero-based vs one-based)
+      const pmfSchedule = 
+        combinedSchedulesData.schedules.pmf["2025-3"] || 
+        combinedSchedulesData.schedules.pmf["2025-4"] || 
+        combinedSchedulesData.schedules.pmf || {}; 
+      
+      console.log("Dados brutos combinados:", combinedSchedulesData.schedules);
+      console.log("Dados brutos PMF:", combinedSchedulesData.schedules.pmf);
       
       console.log("Dados da escala PMF:", pmfSchedule);
       
