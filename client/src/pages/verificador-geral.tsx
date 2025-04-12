@@ -106,30 +106,52 @@ export default function VerificadorGeral() {
 
       const ano = currentDate.getFullYear();
       const mes = currentDate.getMonth() + 1;
-      const monthKey = `${ano}-${mes}`;
       
-      // Para compatibilidade com dados salvos sob diferentes formatos de chaves
-      const chavesPossiveis = [
-        monthKey,
-        `${ano}-${mes-1}`, // mês anterior
-        Object.keys(combinedSchedules.pmf || {})[0]
-      ];
+      console.log("VERIFICANDO DADOS:", combinedSchedules);
       
+      // Os dados PMF estão no formato: combinedSchedules.pmf
+      // Os dados Escola Segura estão no formato: combinedSchedules.escolaSegura
       let escalaPMF = {};
       let escalaEscolaSegura = {};
       
-      // Tentar encontrar os dados nas várias possíveis chaves
-      for (const chave of chavesPossiveis) {
-        if (combinedSchedules?.pmf?.[chave] && Object.keys(combinedSchedules.pmf[chave]).length > 0) {
-          escalaPMF = combinedSchedules.pmf[chave];
-          break;
+      // Verificar estrutura e extrair dados PMF
+      if (combinedSchedules?.pmf) {
+        // Pode ser diretamente em PMF ou dentro da chave 2025-3
+        if (Object.keys(combinedSchedules.pmf).includes('1')) {
+          // Formato direto {1: [...], 2: [...], ...}
+          escalaPMF = combinedSchedules.pmf;
+          console.log("USANDO ESTRUTURA PMF DIRETA:", escalaPMF);
+        } else if (combinedSchedules.pmf['2025-3']) {
+          // Formato aninhado {'2025-3': {1: [...], 2: [...], ...}}
+          escalaPMF = combinedSchedules.pmf['2025-3'];
+          console.log("USANDO ESTRUTURA PMF ANINHADA (2025-3):", escalaPMF);
+        } else {
+          // Tentar encontrar dados em qualquer chave disponível
+          const primeiraChave = Object.keys(combinedSchedules.pmf)[0];
+          if (primeiraChave && combinedSchedules.pmf[primeiraChave]) {
+            escalaPMF = combinedSchedules.pmf[primeiraChave];
+            console.log(`USANDO ESTRUTURA PMF ALTERNATIVA (${primeiraChave}):`, escalaPMF);
+          }
         }
       }
       
-      for (const chave of chavesPossiveis) {
-        if (combinedSchedules?.escolaSegura?.[chave] && Object.keys(combinedSchedules.escolaSegura[chave]).length > 0) {
-          escalaEscolaSegura = combinedSchedules.escolaSegura[chave];
-          break;
+      // Verificar estrutura e extrair dados Escola Segura
+      if (combinedSchedules?.escolaSegura) {
+        if (Object.keys(combinedSchedules.escolaSegura).includes('1')) {
+          // Formato direto {1: [...], 2: [...], ...}
+          escalaEscolaSegura = combinedSchedules.escolaSegura;
+          console.log("USANDO ESTRUTURA ESCOLA SEGURA DIRETA:", escalaEscolaSegura);
+        } else if (combinedSchedules.escolaSegura['2025-3']) {
+          // Formato aninhado {'2025-3': {1: [...], 2: [...], ...}}
+          escalaEscolaSegura = combinedSchedules.escolaSegura['2025-3'];
+          console.log("USANDO ESTRUTURA ESCOLA SEGURA ANINHADA (2025-3):", escalaEscolaSegura);
+        } else {
+          // Tentar encontrar dados em qualquer chave disponível
+          const primeiraChave = Object.keys(combinedSchedules.escolaSegura)[0];
+          if (primeiraChave && combinedSchedules.escolaSegura[primeiraChave]) {
+            escalaEscolaSegura = combinedSchedules.escolaSegura[primeiraChave];
+            console.log(`USANDO ESTRUTURA ESCOLA SEGURA ALTERNATIVA (${primeiraChave}):`, escalaEscolaSegura);
+          }
         }
       }
       
