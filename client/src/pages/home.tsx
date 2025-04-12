@@ -230,19 +230,69 @@ export default function Home() {
 
   return (
     <div className="min-h-screen font-sans">
-      {/* Header com título e seletor de mês */}
-      <header className="bg-white shadow-lg border-b border-blue-100 py-6 mb-6">
-        <div className="container mx-auto px-4">
+      {/* Header com título e seletor de mês - versão moderna e colorida */}
+      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 py-8 mb-6 shadow-xl relative overflow-hidden">
+        {/* Elementos decorativos de fundo */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute -top-20 -left-20 w-80 h-80 bg-blue-500 opacity-20 rounded-full filter blur-3xl"></div>
+          <div className="absolute -bottom-40 -right-20 w-96 h-96 bg-indigo-600 opacity-20 rounded-full filter blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-purple-500 opacity-10 rounded-full filter blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-wrap justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-blue-900">
-                EXTRAORDINÁRIO <span className="text-yellow-500">•</span> <span className="text-2xl font-semibold text-blue-700">Escala PMF</span>
+            {/* Título e subtítulo com design moderno */}
+            <div className="relative z-10 bg-white/10 p-6 rounded-2xl backdrop-blur-md shadow-lg border border-white/20 max-w-2xl">
+              <div className="inline-flex items-center mb-2 bg-blue-700/30 px-3 py-1 rounded-full">
+                <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse mr-2"></span>
+                <span className="text-xs text-blue-100 font-medium tracking-wide">SISTEMA OPERACIONAL</span>
+              </div>
+              
+              <h1 className="text-4xl font-black text-white mb-1">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-blue-100 to-indigo-200">
+                  EXTRAORDINÁRIO
+                </span>
+                <span className="px-2 text-yellow-400">•</span>
+                <span className="text-3xl font-bold text-blue-200">Escala PMF</span>
               </h1>
-              <p className="text-blue-600 text-sm mt-1">Gerencie as escalas PMF e controle o limite de GCJO por militar</p>
+              
+              <p className="text-blue-100 text-base mt-1 max-w-2xl leading-relaxed">
+                Gerencie as escalas da Polícia Mais Forte com eficiência e controle o limite de GCJO por militar
+              </p>
+              
+              {/* Ícones de funcionalidades */}
+              <div className="flex mt-4 space-x-2">
+                <div className="bg-blue-800/40 p-2 rounded-lg border border-blue-700/50 flex items-center">
+                  <div className="bg-blue-700/50 p-1.5 rounded-md mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-blue-100">Escala Mensal</span>
+                </div>
+                
+                <div className="bg-blue-800/40 p-2 rounded-lg border border-blue-700/50 flex items-center">
+                  <div className="bg-blue-700/50 p-1.5 rounded-md mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-blue-100">Limite de 12 serviços</span>
+                </div>
+                
+                <div className="bg-blue-800/40 p-2 rounded-lg border border-blue-700/50 flex items-center">
+                  <div className="bg-blue-700/50 p-1.5 rounded-md mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-blue-100">Verificador</span>
+                </div>
+              </div>
             </div>
             
             {/* Seletor de mês com estilo premium */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-5 py-3 rounded-lg shadow-lg mt-4 md:mt-0">
+            <div className="mt-4 md:mt-0 transform translate-y-4 md:translate-y-0">
               <MonthSelector
                 currentDate={currentDate}
                 onPreviousMonth={handlePreviousMonth}
