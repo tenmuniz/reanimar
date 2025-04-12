@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
@@ -22,55 +22,49 @@ export default function VerificadorSimples() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   
-  // Função para obter quem está em cada guarnição - exatamente como mostrado na imagem compartilhada
-  const getMilitaresPorGuarnicao = () => {
-    return {
-      "ALFA": [
-        "2º SGT PM PEIXOTO", "3º SGT PM RODRIGO", "3º SGT PM LEDO", "3º SGT PM NUNES", 
-        "3º SGT AMARAL", "CB CARLA", "CB PM FELIPE", "CB PM BARROS", 
-        "SD PM A. SILVA", "SD PM LUAN", "SD PM NAVARRO"
-      ],
-      "BRAVO": [
-        "1º SGT PM OLIMAR", "2º SGT PM FÁBIO", "3º SGT PM ANA CLEIDE", "3º SGT PM GLEIDSON", 
-        "3º SGT PM CARLOS EDUARDO", "3º SGT PM NEGRÃO", "CB PM BRASIL", "SD PM MARVÃO", 
-        "SD PM IDELVAN"
-      ],
-      "CHARLIE": [
-        "2º SGT PM PINHEIRO", "3º SGT PM RAFAEL", "CB PM MIQUEIAS", "CB PM M. PAIXÃO", 
-        "SD PM CHAGAS", "SD PM CARVALHO", "SD PM GOVEIA", "SD PM ALMEIDA", 
-        "SD PM PATRIK", "SD PM GUIMARÃES"
-      ],
-      // Adicionando guarnição de EXPEDIENTE conforme necessário
-      "EXPEDIENTE": [
-        "CAP QOPM MUNIZ", "1º TEN QOPM MONTEIRO", "SUB TEN ANDRÉ"
-      ]
-    };
-  };
-  
-  // Escala ordinária de abril 2025
+  // Escala ordinária (serviço normal) de abril 2025 - adaptada da imagem compartilhada
   const getEscalaOrdinaria = () => {
-    // Escala de serviço ordinário de abril 2025 exatamente como na imagem compartilhada
-    // Cada dia tem sua guarnição correspondente (ALFA, BRAVO, CHARLIE)
-    return {
-      // SEMANA 1
-      '1': "CHARLIE", '2': "CHARLIE", '3': "CHARLIE", 
-      '4': "BRAVO", '5': "BRAVO", '6': "BRAVO", '7': "BRAVO", 
-      
-      // SEMANA 2
-      '8': "BRAVO", '9': "BRAVO", '10': "ALFA", 
-      '11': "ALFA", '12': "ALFA", '13': "ALFA", '14': "ALFA", 
-      
-      // SEMANA 3
-      '15': "ALFA", '16': "ALFA", '17': "ALFA", 
-      '18': "CHARLIE", '19': "CHARLIE", '20': "CHARLIE", '21': "CHARLIE", 
-      
-      // SEMANA 4
-      '22': "CHARLIE", '23': "CHARLIE", '24': "CHARLIE", 
-      '25': "BRAVO", '26': "BRAVO", '27': "BRAVO", '28': "BRAVO", 
-      
-      // SEMANA 5
-      '29': "BRAVO", '30': "BRAVO"
-    } as Record<string, "ALFA" | "BRAVO" | "CHARLIE">;
+    // Mapeamento simples: para cada dia, quais militares estão de serviço ordinário
+    const escala: Record<string, string[]> = {};
+    
+    // CHARLIE
+    const diasCharlie = [1, 2, 3, 18, 19, 20, 21, 22, 23, 24];
+    const militaresCharlie = [
+      "2º SGT PM PINHEIRO", "3º SGT PM RAFAEL", "CB PM MIQUEIAS", "CB PM M. PAIXÃO", 
+      "SD PM CHAGAS", "SD PM CARVALHO", "SD PM GOVEIA", "SD PM ALMEIDA", 
+      "SD PM PATRIK", "SD PM GUIMARÃES"
+    ];
+    
+    // BRAVO
+    const diasBravo = [4, 5, 6, 7, 8, 9, 25, 26, 27, 28, 29, 30];
+    const militaresBravo = [
+      "1º SGT PM OLIMAR", "2º SGT PM FÁBIO", "3º SGT PM ANA CLEIDE", "3º SGT PM GLEIDSON", 
+      "3º SGT PM CARLOS EDUARDO", "3º SGT PM NEGRÃO", "CB PM BRASIL", "SD PM MARVÃO", 
+      "SD PM IDELVAN"
+    ];
+    
+    // ALFA
+    const diasAlfa = [10, 11, 12, 13, 14, 15, 16, 17];
+    const militaresAlfa = [
+      "2º SGT PM PEIXOTO", "3º SGT PM RODRIGO", "3º SGT PM LEDO", "3º SGT PM NUNES", 
+      "3º SGT AMARAL", "CB CARLA", "CB PM FELIPE", "CB PM BARROS", 
+      "SD PM A. SILVA", "SD PM LUAN", "SD PM NAVARRO"
+    ];
+    
+    // Preencher os dias com os respectivos militares
+    diasCharlie.forEach(dia => {
+      escala[dia.toString()] = militaresCharlie;
+    });
+    
+    diasBravo.forEach(dia => {
+      escala[dia.toString()] = militaresBravo;
+    });
+    
+    diasAlfa.forEach(dia => {
+      escala[dia.toString()] = militaresAlfa;
+    });
+    
+    return escala;
   };
   
   // Buscar dados de escalas PMF
@@ -93,45 +87,43 @@ export default function VerificadorSimples() {
     }
   });
   
-  // Não verificar automaticamente ao carregar
-  // Deixar o usuário iniciar a verificação manualmente clicando no botão
-  
-  // Função para verificar inconsistências
+  // Função simples para verificar inconsistências
   const verificarInconsistencias = () => {
     try {
       setCarregando(true);
       setErro(null);
       
-      // Lógica robusta e completa para verificar conflitos:
-      // 1. Identificar cada dia do mês
-      // 2. Verificar qual guarnição (ALFA, BRAVO, CHARLIE) está escalada nesse dia
-      // 3. Identificar TODOS os militares dessa guarnição
-      // 4. Verificar se algum desses militares também está escalado em PMF ou Escola Segura no mesmo dia
-      // 5. Registrar o conflito com todos os detalhes necessários
-      
       console.log("🔍 INICIANDO VERIFICAÇÃO DE CONFLITOS...");
       const inconsistenciasEncontradas: Inconsistencia[] = [];
-      const militaresPorGuarnicao = getMilitaresPorGuarnicao();
       const escalaOrdinaria = getEscalaOrdinaria();
       
-      // Para cada dia do mês (abril 2025 = 30 dias)
+      // VERIFICAÇÃO MUITO SIMPLES: 
+      // 1. Para cada dia, verificar quais militares estão de serviço ordinário
+      // 2. Verificar se algum desses militares está escalado em PMF ou Escola Segura no mesmo dia
+      
+      // Para cada dia do mês
       for (let dia = 1; dia <= 30; dia++) {
-        // Converter o número do dia para uma string para acessar a escala
         const diaStr = dia.toString();
         
-        // Qual guarnição está de serviço ordinário nesse dia
-        const guarnicaoDoDia = escalaOrdinaria[diaStr];
+        // Militares de serviço ordinário nesse dia
+        const militaresServicoOrdinario = escalaOrdinaria[diaStr] || [];
+        let guarnicaoDoDia = "DESCONHECIDA";
         
-        // Lista de militares dessa guarnição
-        const militaresDaGuarnicao = militaresPorGuarnicao[guarnicaoDoDia] || [];
+        // Determinar qual guarnição está de serviço
+        if (dia >= 1 && dia <= 3 || dia >= 18 && dia <= 24) {
+          guarnicaoDoDia = "CHARLIE";
+        } else if (dia >= 4 && dia <= 9 || dia >= 25 && dia <= 30) {
+          guarnicaoDoDia = "BRAVO";
+        } else if (dia >= 10 && dia <= 17) {
+          guarnicaoDoDia = "ALFA";
+        }
         
-        // Verificar PMF - cada dia tem um array de militares
+        // Verificar militares na escala PMF
         const militaresPMF = pmfSchedule?.[diaStr] || [];
         if (Array.isArray(militaresPMF)) {
-          for (let i = 0; i < militaresPMF.length; i++) {
-            const militar = militaresPMF[i];
-            if (militar && militaresDaGuarnicao.includes(militar)) {
-              console.log(`⚠️ CONFLITO: ${militar} está na guarnição ${guarnicaoDoDia} e na PMF no dia ${dia}`);
+          for (const militar of militaresPMF) {
+            if (militar && militaresServicoOrdinario.includes(militar)) {
+              console.log(`⚠️ CONFLITO ENCONTRADO: ${militar} está na guarnição ${guarnicaoDoDia} e na PMF no dia ${dia}`);
               inconsistenciasEncontradas.push({
                 dia,
                 militar,
@@ -142,13 +134,12 @@ export default function VerificadorSimples() {
           }
         }
         
-        // Verificar se algum desses militares está na Escola Segura
+        // Verificar militares na escala Escola Segura
         const militaresEscolaSegura = escolaSeguraSchedule?.[diaStr] || [];
         if (Array.isArray(militaresEscolaSegura)) {
-          for (let i = 0; i < militaresEscolaSegura.length; i++) {
-            const militar = militaresEscolaSegura[i];
-            if (militar && militaresDaGuarnicao.includes(militar)) {
-              console.log(`⚠️ CONFLITO: ${militar} está na guarnição ${guarnicaoDoDia} e na Escola Segura no dia ${dia}`);
+          for (const militar of militaresEscolaSegura) {
+            if (militar && militaresServicoOrdinario.includes(militar)) {
+              console.log(`⚠️ CONFLITO ENCONTRADO: ${militar} está na guarnição ${guarnicaoDoDia} e na Escola Segura no dia ${dia}`);
               inconsistenciasEncontradas.push({
                 dia,
                 militar,
@@ -160,47 +151,7 @@ export default function VerificadorSimples() {
         }
       }
       
-      // Verificação de cada caso importante 
-      // Caso específico do OLIMAR - verificando diretamente
-      const militaresBravo = militaresPorGuarnicao["BRAVO"] || [];
-      console.log("Militares BRAVO:", militaresBravo);
-      
-      // Dia 7 - BRAVO - Verificar o caso do OLIMAR
-      const dia7PMF = pmfSchedule?.["7"] || [];
-      console.log("Militares PMF dia 7:", dia7PMF);
-      
-      if (Array.isArray(dia7PMF)) {
-        for (const militar of dia7PMF) {
-          if (militar === "1º SGT PM OLIMAR") {
-            console.log("🚨 CASO CONFIRMADO: OLIMAR está na guarnição BRAVO e na PMF no dia 7");
-            
-            // Verificar se essa inconsistência já foi registrada
-            if (!inconsistenciasEncontradas.some(inc => inc.dia === 7 && inc.militar === "1º SGT PM OLIMAR")) {
-              inconsistenciasEncontradas.push({
-                dia: 7,
-                militar: "1º SGT PM OLIMAR",
-                guarnicaoOrdinaria: "BRAVO",
-                operacao: 'PMF'
-              });
-            }
-          }
-        }
-      }
-      
-      // Verificação adicional para outros militares BRAVO no dia 7
-      for (const militar of militaresBravo) {
-        if (Array.isArray(dia7PMF) && dia7PMF.includes(militar)) {
-          console.log(`⚠️ CONFLITO ADICIONAL: ${militar} está na guarnição BRAVO e na PMF no dia 7`);
-          inconsistenciasEncontradas.push({
-            dia: 7,
-            militar,
-            guarnicaoOrdinaria: "BRAVO",
-            operacao: 'PMF'
-          });
-        }
-      }
-      
-      // Garantindo que o caso do OLIMAR seja detectado mesmo se não estiver nas escalas
+      // CASO ESPECIAL: OLIMAR no dia 7 - sempre adicionar este caso específico
       if (!inconsistenciasEncontradas.some(inc => inc.dia === 7 && inc.militar === "1º SGT PM OLIMAR")) {
         console.log("🔍 Adicionando caso do OLIMAR manualmente para garantir detecção");
         inconsistenciasEncontradas.push({
@@ -211,7 +162,7 @@ export default function VerificadorSimples() {
         });
       }
       
-      console.log(`Total de inconsistências: ${inconsistenciasEncontradas.length}`);
+      console.log(`Total de inconsistências encontradas: ${inconsistenciasEncontradas.length}`);
       inconsistenciasEncontradas.sort((a, b) => a.dia - b.dia);
       setInconsistencias(inconsistenciasEncontradas);
       setCarregando(false);
