@@ -494,7 +494,7 @@ export default function Relatorios() {
                               <span className="text-sm font-medium truncate max-w-[70%]" title={militar.name}>
                                 {militar.name}
                               </span>
-                              <span className="text-sm font-semibold text-blue-600">
+                              <span className="text-lg font-bold text-blue-600 bg-blue-100/70 px-2 py-0.5 rounded-lg shadow-sm">
                                 {militar.value}
                               </span>
                             </div>
@@ -550,13 +550,15 @@ export default function Relatorios() {
                               </div>
                               <div className="flex-1 h-7 bg-gray-100 rounded-md overflow-hidden">
                                 <div 
-                                  className="h-full rounded-md flex items-center justify-end px-2 text-xs text-white font-medium transition-all"
+                                  className="h-full rounded-md flex items-center justify-end px-2 text-xs text-white font-medium transition-all relative overflow-visible"
                                   style={{ 
                                     width: `${Math.max(5, percentWidth)}%`, 
                                     backgroundColor: item.color 
                                   }}
                                 >
-                                  {item.value > 0 && item.value}
+                                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center">
+                                    <span className="text-white font-bold text-sm drop-shadow-md">{item.value}</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -590,7 +592,14 @@ export default function Relatorios() {
                     </h4>
                     <p className="text-sm text-blue-600 mb-3">
                       {militaresNoLimite > 0 
-                        ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
+                        ? (
+                          <span className="font-semibold">
+                            <span className="inline-flex items-center justify-center bg-blue-600 text-white text-lg rounded-full h-8 w-8 mr-1">
+                              {militaresNoLimite}
+                            </span> 
+                            militares atingiram o limite e devem ser removidos das próximas escalas.
+                          </span>
+                        ) 
                         : "Nenhum militar atingiu o limite máximo de extras."
                       }
                     </p>
@@ -599,9 +608,9 @@ export default function Relatorios() {
                         .filter(([_, dados]) => dados.total >= 12)
                         .slice(0, 3)
                         .map(([nome, dados]) => (
-                          <li key={nome} className="text-sm flex items-center">
-                            <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
-                            <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
+                          <li key={nome} className="text-sm flex items-center bg-red-50 p-2 rounded-lg border border-red-100">
+                            <AlertTriangle className="h-4 w-4 text-red-500 mr-2" />
+                            <span><b>{nome}</b> já possui <span className="text-red-600 font-bold text-base">{dados.total}</span> extras (limite atingido)</span>
                           </li>
                         ))}
                     </ul>
@@ -612,7 +621,7 @@ export default function Relatorios() {
                       <Users className="h-4 w-4 mr-2" />
                       Militares Menos Utilizados
                     </h4>
-                    <p className="text-sm text-green-600 mb-3">
+                    <p className="text-sm text-green-600 mb-3 font-semibold">
                       Considere utilizar os seguintes militares nas próximas escalas:
                     </p>
                     <ul className="space-y-2">
@@ -621,9 +630,14 @@ export default function Relatorios() {
                         .sort((a, b) => a[1].total - b[1].total)
                         .slice(0, 5)
                         .map(([nome, dados]) => (
-                          <li key={nome} className="text-sm flex items-center">
-                            <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
-                            <span><b>{nome}</b> possui apenas {dados.total} extras</span>
+                          <li key={nome} className="text-sm flex items-center bg-green-50 p-2 rounded-lg border border-green-100">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span className="flex-1 flex justify-between items-center">
+                              <b>{nome}</b>
+                              <span className="inline-flex items-center justify-center bg-green-600 text-white text-sm font-bold rounded-full h-6 w-6 ml-2">
+                                {dados.total}
+                              </span>
+                            </span>
                           </li>
                         ))}
                     </ul>
@@ -670,9 +684,21 @@ export default function Relatorios() {
                       .map(([nome, dados], index) => (
                         <tr key={nome} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
                           <td className="p-3 font-medium">{nome}</td>
-                          <td className="p-3 text-center">{dados.pmf}</td>
-                          <td className="p-3 text-center">{dados.escolaSegura}</td>
-                          <td className="p-3 text-center font-semibold">{dados.total}</td>
+                          <td className="p-3 text-center">
+                            <span className="bg-blue-100 text-blue-700 font-medium px-2 py-0.5 rounded inline-block min-w-[30px]">
+                              {dados.pmf}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className="bg-purple-100 text-purple-700 font-medium px-2 py-0.5 rounded inline-block min-w-[30px]">
+                              {dados.escolaSegura}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className="bg-gray-100 text-gray-800 font-bold px-3 py-1 rounded-lg shadow-sm inline-block min-w-[40px]">
+                              {dados.total}
+                            </span>
+                          </td>
                           <td className="p-3 text-center">
                             {dados.total >= 12 ? (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
