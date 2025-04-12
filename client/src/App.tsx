@@ -80,18 +80,6 @@ function NavBar() {
                 {new Date().toLocaleDateString('pt-BR', {weekday: 'short', day: 'numeric', month: 'long', year: 'numeric'})}
               </span>
             </div>
-            
-            {/* Menu de usuário */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-200">
-              <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full h-8 w-8 flex items-center justify-center text-white font-bold text-sm">
-                CM
-              </div>
-              <div className="hidden md:block">
-                <p className="text-sm font-medium text-gray-700">Cmdt. Silva</p>
-                <p className="text-xs text-gray-500">Administrador</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-            </div>
           </div>
         </div>
         
