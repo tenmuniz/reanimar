@@ -39,14 +39,15 @@ export default function VerificadorSimples() {
   
   // Escala ordinária de abril 2025
   const getEscalaOrdinaria = () => {
+    // Escala de serviço ordinário de abril 2025 (com propriedades numéricas como strings)
     return {
-      1: "CHARLIE", 2: "CHARLIE", 3: "CHARLIE", 4: "BRAVO", 5: "BRAVO",
-      6: "BRAVO", 7: "BRAVO", 8: "BRAVO", 9: "BRAVO", 10: "ALFA",
-      11: "ALFA", 12: "ALFA", 13: "ALFA", 14: "ALFA", 15: "ALFA",
-      16: "ALFA", 17: "ALFA", 18: "CHARLIE", 19: "CHARLIE", 20: "CHARLIE",
-      21: "CHARLIE", 22: "CHARLIE", 23: "CHARLIE", 24: "CHARLIE", 25: "BRAVO",
-      26: "BRAVO", 27: "BRAVO", 28: "BRAVO", 29: "BRAVO", 30: "BRAVO"
-    };
+      '1': "CHARLIE", '2': "CHARLIE", '3': "CHARLIE", '4': "BRAVO", '5': "BRAVO",
+      '6': "BRAVO", '7': "BRAVO", '8': "BRAVO", '9': "BRAVO", '10': "ALFA",
+      '11': "ALFA", '12': "ALFA", '13': "ALFA", '14': "ALFA", '15': "ALFA",
+      '16': "ALFA", '17': "ALFA", '18': "CHARLIE", '19': "CHARLIE", '20': "CHARLIE",
+      '21': "CHARLIE", '22': "CHARLIE", '23': "CHARLIE", '24': "CHARLIE", '25': "BRAVO",
+      '26': "BRAVO", '27': "BRAVO", '28': "BRAVO", '29': "BRAVO", '30': "BRAVO"
+    } as Record<string, "ALFA" | "BRAVO" | "CHARLIE">;
   };
   
   // Buscar dados de escalas PMF
@@ -70,8 +71,14 @@ export default function VerificadorSimples() {
   });
   
   // Verificar inconsistências quando os dados são carregados
-  // Não verificar automaticamente ao carregar os dados
-  // Deixar o usuário iniciar a verificação manualmente
+  // Definir dados de escala ordinária manualmente para garantir os conflitos
+  useEffect(() => {
+    // Verificar se os dados foram carregados
+    if (!loadingPMF && !loadingEscolaSegura && pmfSchedule && escolaSeguraSchedule) {
+      // Dados da escala ordinária definidos diretamente (sem depender da API)
+      verificarInconsistencias();
+    }
+  }, [pmfSchedule, escolaSeguraSchedule, loadingPMF, loadingEscolaSegura]);
   
   // Função para verificar inconsistências
   const verificarInconsistencias = () => {
@@ -90,15 +97,14 @@ export default function VerificadorSimples() {
       
       // Para cada dia do mês (abril 2025 = 30 dias)
       for (let dia = 1; dia <= 30; dia++) {
+        // Converter o número do dia para uma string para acessar a escala
+        const diaStr = dia.toString();
+        
         // Qual guarnição está de serviço ordinário nesse dia
-        const guarnicaoDoDia = escalaOrdinaria[dia] as "ALFA" | "BRAVO" | "CHARLIE";
+        const guarnicaoDoDia = escalaOrdinaria[diaStr];
         
         // Lista de militares dessa guarnição
         const militaresDaGuarnicao = militaresPorGuarnicao[guarnicaoDoDia] || [];
-        
-        // Verificar se algum desses militares está no PMF
-        // Converter o número do dia para uma string para acessar o schedule
-        const diaStr = dia.toString();
         
         // Verificar PMF - cada dia tem um array de militares
         const militaresPMF = pmfSchedule?.[diaStr] || [];
