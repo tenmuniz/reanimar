@@ -185,14 +185,21 @@ export default function CalendarCard({
     // Conta total de escalas do militar no mês
     let totalEscalasMilitar = 0;
     
-    // Conta escalas salvas no servidor - os dados já vêm formatados corretamente
+    // Conta escalas salvas no servidor
     if (combinedSchedules && combinedSchedules.pmf) {
-      Object.values(combinedSchedules.pmf).forEach(diaEscala => {
-        diaEscala.forEach(m => {
-          if (m === officer) {
-            totalEscalasMilitar++;
-          }
-        });
+      // Obtém o mês atual
+      const monthKey = `${year}-${month}`;
+      const pmfSchedule = combinedSchedules.pmf[monthKey] || {};
+      
+      // Percorre os dias do mês
+      Object.entries(pmfSchedule).forEach(([dia, militares]) => {
+        if (Array.isArray(militares)) {
+          militares.forEach((militar: string | null) => {
+            if (militar === officer) {
+              totalEscalasMilitar++;
+            }
+          });
+        }
       });
     }
     

@@ -38,6 +38,7 @@ export default function CalendarCardEscolaSegura({
   
   // Contar total de escalas para cada oficial no mês inteiro (PMF + Escola Segura)
   if (combinedSchedules) {
+    // Obtém o mês atual
     const monthKey = `${year}-${month}`;
     const pmfSchedule = combinedSchedules.pmf[monthKey] || {};
     const escolaSeguraSchedule = combinedSchedules.escolaSegura[monthKey] || {};
@@ -46,9 +47,9 @@ export default function CalendarCardEscolaSegura({
     const officerCounts: Record<string, number> = {};
     
     // Contar em PMF
-    Object.values(pmfSchedule).forEach((dayOfficers: any) => {
-      if (Array.isArray(dayOfficers)) {
-        dayOfficers.forEach(officer => {
+    Object.entries(pmfSchedule).forEach(([dia, militares]) => {
+      if (Array.isArray(militares)) {
+        militares.forEach((officer: string | null) => {
           if (officer) {
             officerCounts[officer] = (officerCounts[officer] || 0) + 1;
           }
@@ -57,9 +58,9 @@ export default function CalendarCardEscolaSegura({
     });
     
     // Contar em Escola Segura
-    Object.values(escolaSeguraSchedule).forEach((dayOfficers: any) => {
-      if (Array.isArray(dayOfficers)) {
-        dayOfficers.forEach(officer => {
+    Object.entries(escolaSeguraSchedule).forEach(([dia, militares]) => {
+      if (Array.isArray(militares)) {
+        militares.forEach((officer: string | null) => {
           if (officer) {
             officerCounts[officer] = (officerCounts[officer] || 0) + 1;
           }
