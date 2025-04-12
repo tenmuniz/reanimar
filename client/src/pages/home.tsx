@@ -230,7 +230,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen font-sans">
-      {/* Header com título e seletor de mês - simplificado */}
+      {/* Header com título e seletor de mês */}
       <header className="bg-white shadow-lg border-b border-blue-100 py-6 mb-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-between items-center">
@@ -241,8 +241,8 @@ export default function Home() {
               <p className="text-blue-600 text-sm mt-1">Gerencie as escalas PMF e controle o limite de GCJO por militar</p>
             </div>
             
-            {/* Seletor de mês */}
-            <div>
+            {/* Seletor de mês com estilo premium */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-5 py-3 rounded-lg shadow-lg mt-4 md:mt-0">
               <MonthSelector
                 currentDate={currentDate}
                 onPreviousMonth={handlePreviousMonth}
