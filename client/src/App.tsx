@@ -99,15 +99,15 @@ function NavBar() {
             <Link href="/">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/" 
-                  ? "bg-blue-50 text-blue-700" 
-                  : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-blue-500/10 to-blue-600/20 text-blue-700 border border-blue-200 shadow-lg shadow-blue-200/30" 
+                  : "text-gray-700 hover:bg-gray-50 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/" 
-                    ? "bg-blue-100" 
-                    : "bg-gray-100 group-hover:bg-blue-50"
+                    ? "bg-gradient-to-br from-blue-500 to-blue-700 shadow-md shadow-blue-400/30" 
+                    : "bg-gray-100 group-hover:bg-blue-500 group-hover:shadow-md"
                 }`}>
-                  <Shield className={`h-4 w-4 ${location === "/" ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"}`} />
+                  <Shield className={`h-4 w-4 ${location === "/" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
                 </div>
                 <span className={`text-sm font-medium ${location === "/" ? "font-semibold" : ""}`}>Polícia Mais Forte</span>
               </a>
@@ -116,15 +116,15 @@ function NavBar() {
             <Link href="/escola-segura">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/escola-segura" 
-                  ? "bg-purple-50 text-purple-700" 
-                  : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-purple-500/10 to-purple-600/20 text-purple-700 border border-purple-200 shadow-lg shadow-purple-200/30" 
+                  : "text-gray-700 hover:bg-gray-50 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/escola-segura" 
-                    ? "bg-purple-100" 
-                    : "bg-gray-100 group-hover:bg-purple-50"
+                    ? "bg-gradient-to-br from-purple-500 to-purple-700 shadow-md shadow-purple-400/30" 
+                    : "bg-gray-100 group-hover:bg-purple-500 group-hover:shadow-md"
                 }`}>
-                  <BookOpen className={`h-4 w-4 ${location === "/escola-segura" ? "text-purple-600" : "text-gray-500 group-hover:text-purple-600"}`} />
+                  <BookOpen className={`h-4 w-4 ${location === "/escola-segura" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
                 </div>
                 <span className={`text-sm font-medium ${location === "/escola-segura" ? "font-semibold" : ""}`}>Escola Segura</span>
               </a>
@@ -133,19 +133,19 @@ function NavBar() {
             <Link href="/verificador-escalas">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/verificador-escalas" 
-                  ? "bg-amber-50 text-amber-700" 
-                  : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-amber-500/10 to-amber-600/20 text-amber-700 border border-amber-200 shadow-lg shadow-amber-200/30" 
+                  : "text-gray-700 hover:bg-gray-50 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/verificador-escalas" 
-                    ? "bg-amber-100" 
-                    : "bg-gray-100 group-hover:bg-amber-50"
+                    ? "bg-gradient-to-br from-amber-500 to-amber-600 shadow-md shadow-amber-400/30" 
+                    : "bg-gray-100 group-hover:bg-amber-500 group-hover:shadow-md"
                 }`}>
-                  <AlertCircle className={`h-4 w-4 ${location === "/verificador-escalas" ? "text-amber-600" : "text-gray-500 group-hover:text-amber-600"}`} />
+                  <AlertCircle className={`h-4 w-4 ${location === "/verificador-escalas" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
                 </div>
                 <span className={`text-sm font-medium ${location === "/verificador-escalas" ? "font-semibold" : ""}`}>Verificador</span>
                 {location === "/verificador-escalas" && (
-                  <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs">
+                  <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs shadow-sm font-medium border border-amber-200">
                     Ativo
                   </span>
                 )}
@@ -155,16 +155,16 @@ function NavBar() {
           
           {/* Links adicionais */}
           <div className="flex items-center space-x-1">
-            <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-gray-50">
-              <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-green-50">
-                <BarChart4 className="h-4 w-4 text-gray-500 group-hover:text-green-600" />
+            <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-green-50/60 hover:shadow-md hover:border hover:border-green-100">
+              <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-green-600 group-hover:shadow-md group-hover:shadow-green-400/20">
+                <BarChart4 className="h-4 w-4 text-gray-500 group-hover:text-white" />
               </div>
               <span className="text-sm font-medium">Estatísticas</span>
             </a>
             
-            <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-gray-50">
-              <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-indigo-50">
-                <User className="h-4 w-4 text-gray-500 group-hover:text-indigo-600" />
+            <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-indigo-50/60 hover:shadow-md hover:border hover:border-indigo-100">
+              <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-indigo-600 group-hover:shadow-md group-hover:shadow-indigo-400/20">
+                <User className="h-4 w-4 text-gray-500 group-hover:text-white" />
               </div>
               <span className="text-sm font-medium">Militares</span>
             </a>
@@ -176,14 +176,21 @@ function NavBar() {
 }
 
 function Footer() {
+  const [location] = useLocation();
+  const isEscolaSegura = location === "/escola-segura";
+  
   return (
-    <footer className="bg-white border-t border-gray-200 py-6">
+    <footer className="bg-gradient-to-b from-white to-gray-50 border-t border-gray-200 py-6">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
             <div className="flex items-center">
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-1.5 rounded-lg shadow-sm mr-2">
-                <Shield className="h-5 w-5 text-white" />
+              <div className={`bg-gradient-to-br ${
+                isEscolaSegura 
+                  ? "from-purple-600 to-purple-800" 
+                  : "from-blue-600 to-indigo-700"
+              } p-1.5 rounded-lg shadow-lg mr-2`}>
+                <Shield className="h-5 w-5 text-white drop-shadow-sm" />
               </div>
               <span className="text-lg font-bold text-gray-800">EXTRAORDINÁRIO</span>
             </div>
@@ -191,9 +198,9 @@ function Footer() {
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="#" className="text-gray-600 hover:text-blue-600 text-sm">Documentação</a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 text-sm">Suporte</a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 text-sm">Política de Privacidade</a>
+            <a href="#" className={`text-gray-600 transition-colors hover:${isEscolaSegura ? "text-purple-600" : "text-blue-600"} text-sm font-medium`}>Documentação</a>
+            <a href="#" className={`text-gray-600 transition-colors hover:${isEscolaSegura ? "text-purple-600" : "text-blue-600"} text-sm font-medium`}>Suporte</a>
+            <a href="#" className={`text-gray-600 transition-colors hover:${isEscolaSegura ? "text-purple-600" : "text-blue-600"} text-sm font-medium`}>Política de Privacidade</a>
           </div>
           
           <div className="mt-4 md:mt-0 text-right">
@@ -223,13 +230,20 @@ function ScrollToTop() {
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
   
+  const [location] = useLocation();
+  const isEscolaSegura = location === "/escola-segura";
+
   return visible ? (
     <button 
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className="fixed right-5 bottom-5 z-50 p-2 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-all"
+      className={`fixed right-5 bottom-5 z-50 p-2.5 rounded-full ${
+        isEscolaSegura 
+          ? "bg-gradient-to-br from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800" 
+          : "bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+      } text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110`}
       aria-label="Voltar ao topo"
     >
-      <ArrowUp className="h-5 w-5" />
+      <ArrowUp className="h-5 w-5 drop-shadow-sm" />
     </button>
   ) : null;
 }
