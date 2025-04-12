@@ -212,27 +212,20 @@ export default function VerificadorInconsistencias({
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setOpen(true)}
-        className="relative group overflow-hidden bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 
-          text-white font-bold px-5 py-3 rounded-lg flex items-center transform transition-all duration-200 
-          border border-amber-400 shadow-[0_8px_0_rgb(180,83,9),0_15px_20px_rgba(0,0,0,0.3)]
-          hover:shadow-[0_4px_0_rgb(180,83,9),0_8px_15px_rgba(0,0,0,0.3)]
-          active:translate-y-4 active:shadow-[0_0px_0_rgb(180,83,9),0_0px_10px_rgba(0,0,0,0.2)]"
+        variant="outline"
+        className="relative bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 flex items-center px-3 py-2 rounded-md shadow-sm"
       >
-        {/* Efeito de brilho no hover */}
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/30 to-white/0 
-          transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-        
-        <AlertCircle className="h-5 w-5 mr-2 drop-shadow-lg" />
-        <span>Verificar</span>
+        <AlertCircle className="h-4 w-4 mr-2 text-amber-500" />
+        <span className="font-medium">Verificar</span>
         
         {inconsistencias.length > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center font-bold">
             {inconsistencias.length}
           </span>
         )}
-      </button>
+      </Button>
       
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-amber-900 to-amber-800 text-white border-0 shadow-2xl">
