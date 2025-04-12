@@ -520,17 +520,26 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 
+        className={`bg-gradient-to-r 
+          ${operationType === 'escolaSegura' 
+            ? 'from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800' 
+            : 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+          }
           text-white px-4 py-2.5 rounded-xl flex items-center 
           transition-all duration-200 shadow-md hover:shadow-lg
-          active:shadow-inner active:translate-y-0.5 transform"
+          active:shadow-inner active:translate-y-0.5 transform`}
       >
         <BarChart3 className="h-4 w-4 mr-2 drop-shadow-sm" />
         <span className="font-medium">Resumo</span>
       </Button>
       
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-blue-900 to-blue-800 text-white border-0 shadow-2xl">
+        <DialogContent className={`sm:max-w-[700px] 
+          ${operationType === 'escolaSegura'
+            ? 'bg-gradient-to-br from-purple-900 to-purple-800'
+            : 'bg-gradient-to-br from-blue-900 to-blue-800'
+          } 
+          text-white border-0 shadow-2xl`}>
           <DialogHeader>
             <DialogTitle className="flex items-center text-2xl font-bold text-center text-white mb-4">
               <FileText className="h-6 w-6 mr-2 text-yellow-300" />
