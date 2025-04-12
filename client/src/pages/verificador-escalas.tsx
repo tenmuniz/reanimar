@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, AlertCircle, Calendar, CheckCircle, ClipboardList, FileText } from "lucide-react";
+import { Loader2, AlertCircle, Calendar, CheckCircle, ClipboardList, FileText, GraduationCap } from "lucide-react";
 import { CombinedSchedules, MonthSchedule } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 
@@ -108,6 +108,7 @@ export default function VerificadorEscalas() {
   const [conflitos, setConflitos] = useState<ConflitosEscala[]>([]);
   const [isVerificando, setIsVerificando] = useState(false);
   const [filtroMilitar, setFiltroMilitar] = useState("");
+  const [filtroOperacao, setFiltroOperacao] = useState<'todas' | 'pmf' | 'escolaSegura'>('todas');
   const [autoVerificacao, setAutoVerificacao] = useState(true); // Verificação automática ativa por padrão
 
   // Configurada para abril de 2025
@@ -230,6 +231,14 @@ export default function VerificadorEscalas() {
         combinedSchedulesData.schedules.pmf["2025-4"] || 
         combinedSchedulesData.schedules.pmf || {}; 
       
+      // Obtém os dados da escala Escola Segura - Abril 2025
+      const escolaSeguraSchedule = 
+        combinedSchedulesData.schedules.escolaSegura["2025-3"] || 
+        combinedSchedulesData.schedules.escolaSegura["2025-4"] || 
+        combinedSchedulesData.schedules.escolaSegura || {};
+      
+      console.log("Dados da escala Escola Segura:", escolaSeguraSchedule);
+      
       // Para cada dia no mês
       for (let dia = 1; dia <= 30; dia++) {
         const dayKey = String(dia);
@@ -249,6 +258,27 @@ export default function VerificadorEscalas() {
                   militar,
                   guarnicaoOrdinaria: escalaOrdinariaStatus,
                   operacao: "PMF"
+                });
+              }
+            }
+          });
+        }
+        
+        // Verifica se há militares escalados na Escola Segura neste dia
+        if (escolaSeguraSchedule[dayKey]) {
+          // Para cada militar escalado na Escola Segura
+          escolaSeguraSchedule[dayKey].forEach((militar, index) => {
+            if (militar) {
+              // Verificar se este militar está escalado na escala ordinária
+              const escalaOrdinariaStatus = isMilitarEscaladoNoDia(militar, dia);
+              
+              if (escalaOrdinariaStatus) {
+                // CONFLITO ENCONTRADO
+                conflitosEncontrados.push({
+                  dia,
+                  militar,
+                  guarnicaoOrdinaria: escalaOrdinariaStatus,
+                  operacao: "ESCOLA SEGURA"
                 });
               }
             }
@@ -350,6 +380,22 @@ export default function VerificadorEscalas() {
           </CardContent>
         </Card>
         
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-purple-700 flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5" /> Operação Escola Segura
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700 text-sm">
+              Escala de Operação Escola Segura, com dados registrados no sistema.
+              Permite até 2 militares por dia.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+        
+      <div className="mx-auto max-w-2xl mb-8">
         <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-amber-700 flex items-center gap-2 text-lg">
@@ -359,7 +405,7 @@ export default function VerificadorEscalas() {
           <CardContent>
             <p className="text-gray-700 text-sm">
               O sistema verifica dia a dia os conflitos, identificando militares escalados 
-              na operação PMF que também estão na escala ordinária no mesmo dia.
+              em operações (PMF ou Escola Segura) que também estão de serviço na escala ordinária no mesmo dia.
             </p>
           </CardContent>
         </Card>
@@ -400,7 +446,7 @@ export default function VerificadorEscalas() {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Atenção! Conflitos encontrados</AlertTitle>
             <AlertDescription>
-              Foram encontrados {conflitos.length} conflitos entre a escala ordinária e a operação PMF.
+              Foram encontrados {conflitos.length} conflitos entre a escala ordinária e as operações PMF/Escola Segura.
               Militares não podem estar escalados em dois serviços no mesmo dia.
             </AlertDescription>
           </Alert>
@@ -449,7 +495,12 @@ export default function VerificadorEscalas() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant="default" className="bg-blue-600">
+                        <Badge variant={conflito.operacao === "PMF" ? 
+                          "default" : 
+                          "outline"} 
+                          className={conflito.operacao === "PMF" ? 
+                          "bg-blue-600" : 
+                          "bg-purple-600"}>
                           {conflito.operacao}
                         </Badge>
                       </TableCell>
