@@ -442,12 +442,12 @@ export default function VerificadorEscalas() {
             </button>
           </div>
           
-          <Alert variant="destructive" className="bg-red-50 border-red-200 mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Atenção! Conflitos encontrados</AlertTitle>
-            <AlertDescription>
-              Foram encontrados {conflitos.length} conflitos entre a escala ordinária e as operações PMF/Escola Segura.
-              Militares não podem estar escalados em dois serviços no mesmo dia.
+          <Alert variant="destructive" className="bg-gradient-to-r from-red-50 to-red-100 border-red-200 mb-4 shadow-md">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <AlertTitle className="text-red-800 font-bold text-lg">Atenção! Conflitos encontrados</AlertTitle>
+            <AlertDescription className="text-red-700">
+              Foram encontrados <span className="font-bold">{conflitos.length}</span> conflitos entre a escala ordinária e as operações PMF/Escola Segura.
+              <span className="block mt-1">Militares não podem estar escalados em dois serviços no mesmo dia.</span>
             </AlertDescription>
           </Alert>
           
@@ -467,7 +467,7 @@ export default function VerificadorEscalas() {
           </div>
           
           <div className="rounded-lg border overflow-hidden">
-            <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50">
               <Table>
                 <TableHeader className="bg-slate-100 sticky top-0 z-10">
                   <TableRow>
@@ -481,27 +481,37 @@ export default function VerificadorEscalas() {
                   {conflitrosFiltrados.map((conflito, index) => (
                     <TableRow key={index} className="hover:bg-slate-50">
                       <TableCell className="text-center font-medium">
-                        {conflito.dia}/04
+                        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 text-blue-700 font-bold shadow-sm">
+                          {conflito.dia}/04
+                        </span>
                       </TableCell>
-                      <TableCell>{conflito.militar}</TableCell>
                       <TableCell>
-                        <Badge variant={
-                          conflito.guarnicaoOrdinaria === "ALFA" ? "secondary" :
-                          conflito.guarnicaoOrdinaria === "BRAVO" ? "destructive" :
-                          conflito.guarnicaoOrdinaria === "CHARLIE" ? "default" :
-                          "outline"
-                        }>
-                          {conflito.guarnicaoOrdinaria}
-                        </Badge>
+                        <div className="font-medium text-slate-700">
+                          {conflito.militar.split(' ').slice(0, 2).join(' ')}
+                          <span className="font-normal text-slate-500 ml-1">
+                            {conflito.militar.split(' ').slice(2).join(' ')}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-start">
+                          <Badge variant="outline" 
+                            className={
+                              conflito.guarnicaoOrdinaria === "ALFA" ? "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200" :
+                              conflito.guarnicaoOrdinaria === "BRAVO" ? "bg-red-100 text-red-800 border-red-300 hover:bg-red-200" :
+                              conflito.guarnicaoOrdinaria === "CHARLIE" ? "bg-indigo-100 text-indigo-800 border-indigo-300 hover:bg-indigo-200" :
+                              "bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200"
+                            }>
+                            {conflito.guarnicaoOrdinaria}
+                          </Badge>
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant={conflito.operacao === "PMF" ? 
-                          "default" : 
-                          "outline"} 
+                        <Badge variant="outline" 
                           className={conflito.operacao === "PMF" ? 
-                          "bg-blue-600" : 
-                          "bg-purple-600"}>
-                          {conflito.operacao}
+                          "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200 shadow-sm" : 
+                          "bg-purple-100 text-purple-800 border-purple-300 hover:bg-purple-200 shadow-sm"}>
+                          {conflito.operacao === "PMF" ? "PMF" : "E.SEGURA"}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -515,15 +525,23 @@ export default function VerificadorEscalas() {
             <p>Use a barra de rolagem para visualizar todos os {conflitos.length} conflitos</p>
           </div>
           
-          <div className="mt-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
-            <h3 className="text-amber-800 font-medium mb-1 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
+          <div className="mt-4 bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200 shadow-md">
+            <h3 className="text-amber-800 font-bold mb-2 flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2 text-amber-600" />
               Recomendação
             </h3>
-            <p className="text-amber-700 text-sm">
-              Recomenda-se remover estes militares da escala da operação PMF nos dias em que 
-              já estão escalados em seu serviço ordinário, para evitar conflitos de escalas.
+            <p className="text-amber-700">
+              Recomenda-se remover estes militares das escalas de operações especiais nos dias em que 
+              já estão escalados em seu serviço ordinário, conforme indicado acima.
             </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
+                PMF
+              </Badge>
+              <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">
+                E.SEGURA
+              </Badge>
+            </div>
           </div>
         </div>
       )}
@@ -565,8 +583,17 @@ export default function VerificadorEscalas() {
             </div>
             <h3 className="text-xl font-medium text-gray-800 mb-2">Nenhum conflito encontrado</h3>
             <p className="text-gray-600 max-w-lg mx-auto">
-              Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e a operação PMF.
+              Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e as operações PMF/Escola Segura.
               Todos os militares estão escalados corretamente sem sobreposição de serviços.
+              
+              <div className="mt-4 flex justify-center gap-3">
+                <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 px-3 py-1">
+                  PMF
+                </Badge>
+                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 px-3 py-1">
+                  E.SEGURA
+                </Badge>
+              </div>
             </p>
           </div>
         </div>
