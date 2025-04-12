@@ -78,12 +78,6 @@ function NavBar() {
               </div>
             </div>
             
-            {/* Notificações */}
-            <button className="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
-              <Bell className="h-5 w-5 text-gray-500" />
-              <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-            
             {/* Data atual */}
             <div className="hidden lg:flex items-center bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
               <Calendar className="h-4 w-4 text-gray-500 mr-2" />
