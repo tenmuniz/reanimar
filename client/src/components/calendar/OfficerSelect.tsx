@@ -241,24 +241,36 @@ export default function OfficerSelect({
             {/* Grupo EXPEDIENTE */}
             {groupedOfficers.EXPEDIENTE.length > 0 && (
               <SelectGroup>
-                <SelectLabel className="font-bold text-blue-600">EXPEDIENTE</SelectLabel>
+                <SelectLabel className="font-bold text-blue-600 px-2 py-1 bg-blue-50 rounded-md flex items-center shadow-sm mb-1">
+                  <div className="flex-1">EXPEDIENTE</div>
+                  <div className="bg-blue-100 text-blue-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.EXPEDIENTE.length}</div>
+                </SelectLabel>
                 {groupedOfficers.EXPEDIENTE.map((officer) => {
                   const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
+                  
                   return (
                     <SelectItem
                       key={officer}
                       value={officer}
-                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit 
-                        ? "bg-yellow-50 text-yellow-800 line-through border-l-4 border-yellow-500 pl-2 opacity-75" 
-                        : ""}
+                      disabled={isDisabled}
+                      className={`mb-1 rounded-md transition-all duration-200 ${
+                        hasReachedLimit 
+                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
+                          : isDisabled
+                            ? "bg-slate-100 opacity-60"
+                            : "hover:bg-blue-50 border-l-2 border-blue-300 pl-3"
+                      }`}
                     >
-                      {officer}
-                      {hasReachedLimit && (
-                        <span className="ml-1 bg-yellow-100 text-yellow-800 text-xs font-medium inline-block px-1.5 py-0.5 rounded">
-                          Limite 12
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between w-full">
+                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
+                        {hasReachedLimit && (
+                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
+                            <AlertTriangle className="h-3 w-3 mr-0.5" />
+                            12+
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   );
                 })}
@@ -268,24 +280,36 @@ export default function OfficerSelect({
             {/* Grupo ALFA */}
             {groupedOfficers.ALFA.length > 0 && (
               <SelectGroup>
-                <SelectLabel className="font-bold text-yellow-600">ALFA</SelectLabel>
+                <SelectLabel className="font-bold text-yellow-600 px-2 py-1 bg-yellow-50 rounded-md flex items-center shadow-sm mb-1">
+                  <div className="flex-1">ALFA</div>
+                  <div className="bg-yellow-100 text-yellow-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.ALFA.length}</div>
+                </SelectLabel>
                 {groupedOfficers.ALFA.map((officer) => {
                   const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
+                  
                   return (
                     <SelectItem
                       key={officer}
                       value={officer}
-                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit 
-                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
-                        : ""}
+                      disabled={isDisabled}
+                      className={`mb-1 rounded-md transition-all duration-200 ${
+                        hasReachedLimit 
+                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
+                          : isDisabled
+                            ? "bg-slate-100 opacity-60"
+                            : "hover:bg-yellow-50 border-l-2 border-yellow-300 pl-3"
+                      }`}
                     >
-                      {officer}
-                      {hasReachedLimit && (
-                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
-                          ⛔ BLOQUEADO (12)
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between w-full">
+                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
+                        {hasReachedLimit && (
+                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
+                            <AlertTriangle className="h-3 w-3 mr-0.5" />
+                            12+
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   );
                 })}
@@ -295,24 +319,36 @@ export default function OfficerSelect({
             {/* Grupo BRAVO */}
             {groupedOfficers.BRAVO.length > 0 && (
               <SelectGroup>
-                <SelectLabel className="font-bold text-green-600">BRAVO</SelectLabel>
+                <SelectLabel className="font-bold text-green-600 px-2 py-1 bg-green-50 rounded-md flex items-center shadow-sm mb-1">
+                  <div className="flex-1">BRAVO</div>
+                  <div className="bg-green-100 text-green-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.BRAVO.length}</div>
+                </SelectLabel>
                 {groupedOfficers.BRAVO.map((officer) => {
                   const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
+                  
                   return (
                     <SelectItem
                       key={officer}
                       value={officer}
-                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit 
-                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
-                        : ""}
+                      disabled={isDisabled}
+                      className={`mb-1 rounded-md transition-all duration-200 ${
+                        hasReachedLimit 
+                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
+                          : isDisabled
+                            ? "bg-slate-100 opacity-60"
+                            : "hover:bg-green-50 border-l-2 border-green-300 pl-3"
+                      }`}
                     >
-                      {officer}
-                      {hasReachedLimit && (
-                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
-                          ⛔ BLOQUEADO (12)
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between w-full">
+                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
+                        {hasReachedLimit && (
+                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
+                            <AlertTriangle className="h-3 w-3 mr-0.5" />
+                            12+
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   );
                 })}
@@ -322,24 +358,36 @@ export default function OfficerSelect({
             {/* Grupo CHARLIE */}
             {groupedOfficers.CHARLIE.length > 0 && (
               <SelectGroup>
-                <SelectLabel className="font-bold text-cyan-600">CHARLIE</SelectLabel>
+                <SelectLabel className="font-bold text-cyan-600 px-2 py-1 bg-cyan-50 rounded-md flex items-center shadow-sm mb-1">
+                  <div className="flex-1">CHARLIE</div>
+                  <div className="bg-cyan-100 text-cyan-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.CHARLIE.length}</div>
+                </SelectLabel>
                 {groupedOfficers.CHARLIE.map((officer) => {
                   const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
+                  
                   return (
                     <SelectItem
                       key={officer}
                       value={officer}
-                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit 
-                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
-                        : ""}
+                      disabled={isDisabled}
+                      className={`mb-1 rounded-md transition-all duration-200 ${
+                        hasReachedLimit 
+                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
+                          : isDisabled
+                            ? "bg-slate-100 opacity-60"
+                            : "hover:bg-cyan-50 border-l-2 border-cyan-300 pl-3"
+                      }`}
                     >
-                      {officer}
-                      {hasReachedLimit && (
-                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
-                          ⛔ BLOQUEADO (12)
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between w-full">
+                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
+                        {hasReachedLimit && (
+                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
+                            <AlertTriangle className="h-3 w-3 mr-0.5" />
+                            12+
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   );
                 })}
@@ -349,24 +397,36 @@ export default function OfficerSelect({
             {/* Outros militares que não se encaixam em nenhum grupo */}
             {groupedOfficers.OUTROS.length > 0 && (
               <SelectGroup>
-                <SelectLabel className="font-bold text-gray-600">OUTROS</SelectLabel>
+                <SelectLabel className="font-bold text-slate-600 px-2 py-1 bg-slate-100 rounded-md flex items-center shadow-sm mb-1">
+                  <div className="flex-1">OUTROS</div>
+                  <div className="bg-slate-200 text-slate-700 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.OUTROS.length}</div>
+                </SelectLabel>
                 {groupedOfficers.OUTROS.map((officer) => {
                   const hasReachedLimit = limitReachedOfficers.includes(officer);
+                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
+                  
                   return (
                     <SelectItem
                       key={officer}
                       value={officer}
-                      disabled={disabledOfficers.includes(officer) || hasReachedLimit}
-                      className={hasReachedLimit 
-                        ? "bg-red-100 text-red-800 line-through border-l-4 border-red-600 pl-2 opacity-60" 
-                        : ""}
+                      disabled={isDisabled}
+                      className={`mb-1 rounded-md transition-all duration-200 ${
+                        hasReachedLimit 
+                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
+                          : isDisabled
+                            ? "bg-slate-100 opacity-60"
+                            : "hover:bg-slate-50 border-l-2 border-slate-300 pl-3"
+                      }`}
                     >
-                      {officer}
-                      {hasReachedLimit && (
-                        <span className="ml-1 bg-red-200 text-red-700 text-xs font-bold inline-block px-1 py-0.5 rounded">
-                          ⛔ BLOQUEADO (12)
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between w-full">
+                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
+                        {hasReachedLimit && (
+                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
+                            <AlertTriangle className="h-3 w-3 mr-0.5" />
+                            12+
+                          </span>
+                        )}
+                      </div>
                     </SelectItem>
                   );
                 })}
