@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity } from "lucide-react";
+import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
@@ -40,7 +41,7 @@ function NavBar() {
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div className="flex items-center space-x-3">
             <div className="p-0.5 rounded-xl shadow-md relative flex items-center justify-center">
-              <img src="/assets/brasao-cipm.jpg" alt="Brasão da 20ª CIPM" className="h-10 w-auto rounded-xl" />
+              <img src={brasaoCipm} alt="Brasão da 20ª CIPM" className="h-10 w-auto rounded-xl" />
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -186,7 +187,7 @@ function Footer() {
           <div className="mb-4 md:mb-0">
             <div className="flex items-center">
               <div className="p-0.5 rounded-lg shadow-lg mr-2">
-                <img src="/assets/brasao-cipm.jpg" alt="Brasão da 20ª CIPM" className="h-8 w-auto rounded-lg" />
+                <img src={brasaoCipm} alt="Brasão da 20ª CIPM" className="h-8 w-auto rounded-lg" />
               </div>
               <span className="text-lg font-bold text-gray-800">EXTRAORDINÁRIO</span>
             </div>
