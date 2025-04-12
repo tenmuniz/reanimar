@@ -304,11 +304,9 @@ export default function ResumoEscala({ schedule, currentDate, combinedSchedules,
   
   // REIMPLEMENTAÇÃO TOTAL DO RESUMO - Garantir contagem precisa
   const generateResumo = () => {
-    // Chave do mês atual
-    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}`;
-    
+    // Não precisamos mais desta chave composta, os dados já vêm no formato correto
     // Obtém os dados do schedule atual - importante ter os dados mais recentes
-    const monthSchedule = schedule[currentMonthKey] || {};
+    const monthSchedule = schedule || {};
     
     // Debug: mostrar os dados recebidos
     console.log("DADOS DE SCHEDULE RECEBIDOS:", monthSchedule);

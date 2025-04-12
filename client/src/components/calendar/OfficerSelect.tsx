@@ -113,15 +113,10 @@ export default function OfficerSelect({
 
   return (
     <div className="officer-select">
-      <div className="flex justify-between items-center mb-1">
+      <div className="mb-1">
         <Label className="text-xs font-semibold text-slate-600">
           Policial
         </Label>
-        {selectedOfficer && (
-          <span className="text-xs text-blue-700 bg-blue-50 px-1 py-0.5 rounded">
-            {selectedOfficer.includes("CAP") || selectedOfficer.includes("TEN") ? "Oficial" : "Praça"}
-          </span>
-        )}
       </div>
       
       {/* Exibição do policial selecionado com opção para mudar/remover */}
@@ -142,15 +137,7 @@ export default function OfficerSelect({
             </div>
             
             <div className="relative flex items-center">
-              {/* Ícone de status */}
-              <div className={`mr-2 rounded-full w-5 h-5 flex items-center justify-center 
-                ${limitReachedOfficers.includes(selectedOfficer) 
-                  ? 'bg-red-200 text-red-700' 
-                  : 'bg-blue-200 text-blue-700'}`}>
-                {limitReachedOfficers.includes(selectedOfficer) 
-                  ? <AlertTriangle className="h-3 w-3" /> 
-                  : <span className="text-xs font-bold">✓</span>}
-              </div>
+              {/* Remover qualquer indicador de número */}
               
               {/* Nome do policial */}
               <span className={`font-medium ${limitReachedOfficers.includes(selectedOfficer) ? 'line-through opacity-70' : ''}`}>
@@ -188,7 +175,7 @@ export default function OfficerSelect({
           onValueChange={handleChange}
         >
           <SelectTrigger 
-            className="w-full rounded-lg border-0 text-sm min-h-[46px] bg-gradient-to-r from-blue-50 to-indigo-50 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-8"
+            className="w-full rounded-lg border-0 text-sm min-h-[46px] bg-gradient-to-r from-blue-50 to-indigo-50 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-4"
             style={{
               backgroundSize: '200% 100%',
               backgroundPosition: '0 0',
@@ -204,10 +191,7 @@ export default function OfficerSelect({
             {/* Decoração lateral */}
             <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 to-indigo-600"></div>
             
-            {/* Ícone decorativo */}
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">
-              ✓
-            </div>
+            {/* Sem ícone decorativo */}
             
             <SelectValue placeholder="Selecione um policial" />
           </SelectTrigger>
