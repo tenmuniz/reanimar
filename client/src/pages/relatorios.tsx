@@ -223,24 +223,67 @@ export default function Relatorios() {
   const totalEscolasSegura = Object.values(dadosMilitares).reduce((sum, atual) => sum + atual.escolaSegura, 0);
   const totalEscalas = totalEscalasPMF + totalEscolasSegura;
   
-  // Calcular máximos possíveis
-  const diasNoMes = 30;
-  const posicoesPerDay = {
-    pmf: 3, // PMF tem 3 posições por dia
-    escolaSegura: 2 // Escola Segura tem 2 posições por dia
-  };
+  // Calcular máximos possíveis e disponibilizados
+  // Data atual para comparação
+  const today = new Date();
+  const diaAtual = today.getDate();
+  const mesAtual = today.getMonth();
+  const anoAtual = today.getFullYear();
   
-  const maximoEscalasPMF = diasNoMes * posicoesPerDay.pmf;
-  const maximoEscolasSegura = diasNoMes * posicoesPerDay.escolaSegura;
-  const maximoEscalasTotal = maximoEscalasPMF + maximoEscolasSegura;
+  // Capacidade total fixa
+  const capacidadeTotalPMF = 90; // Fixo como solicitado na imagem de referência
+  const capacidadeTotalES = 60;  // Fixo como solicitado na imagem de referência
+  const capacidadeTotalGeral = capacidadeTotalPMF + capacidadeTotalES;
   
-  const percentualOcupacaoPMF = Math.round((totalEscalasPMF / maximoEscalasPMF) * 100);
-  const percentualOcupacaoES = Math.round((totalEscolasSegura / maximoEscolasSegura) * 100);
-  const percentualOcupacao = Math.round((totalEscalas / maximoEscalasTotal) * 100);
+  // Calcular dias no mês e dias úteis
+  const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
   
-  const restantesPMF = maximoEscalasPMF - totalEscalasPMF;
-  const restantesES = maximoEscolasSegura - totalEscolasSegura;
-  const restantesTotal = maximoEscalasTotal - totalEscalas;
+  // Determinar dias úteis (excluindo fins de semana) no mês
+  const diasUteisNoMes = [...Array(diasNoMes).keys()]
+    .map(i => i + 1)
+    .filter(dia => {
+      const data = new Date(currentYear, currentMonth, dia);
+      const diaDaSemana = data.getDay();
+      return diaDaSemana !== 0 && diaDaSemana !== 6; // Excluir domingo (0) e sábado (6)
+    });
+  
+  // Calcular dias e dias úteis já transcorridos (para mês atual)
+  let diasDecorridos = 0;
+  let diasUteisDecorridos = 0;
+  
+  if (currentYear === anoAtual && currentMonth === mesAtual) {
+    // Se estamos no mês atual, conta apenas até o dia atual
+    diasDecorridos = diaAtual;
+    diasUteisDecorridos = diasUteisNoMes.filter(dia => dia <= diaAtual).length;
+  } else if (currentYear < anoAtual || (currentYear === anoAtual && currentMonth < mesAtual)) {
+    // Se estamos em um mês passado, todos os dias já transcorreram
+    diasDecorridos = diasNoMes;
+    diasUteisDecorridos = diasUteisNoMes.length;
+  }
+  // Se estamos em um mês futuro, ambos ficam como 0
+  
+  // Extras totais disponibilizados até a data atual (capacidade já disponibilizada)
+  const extrasDisponibilizadosPMF = 3 * diasDecorridos; // PMF 3 vagas todos os dias
+  const extrasDisponibilizadosES = 2 * diasUteisDecorridos; // ES 2 vagas em dias úteis
+  const totalExtrasDisponibilizados = extrasDisponibilizadosPMF + extrasDisponibilizadosES;
+  
+  // Percentual de preenchimento baseado no que já foi disponibilizado
+  const percentualOcupacaoPMF = Math.round((totalEscalasPMF / capacidadeTotalPMF) * 100);
+  const percentualOcupacaoES = Math.round((totalEscolasSegura / capacidadeTotalES) * 100);
+  const percentualOcupacao = Math.round((totalEscalas / capacidadeTotalGeral) * 100);
+  
+  // Percentuais de utilização (baseados no que já foi disponibilizado)
+  const percentualUtilizacaoPMF = extrasDisponibilizadosPMF > 0 ? 
+    Math.round((totalEscalasPMF / extrasDisponibilizadosPMF) * 100) : 0;
+  const percentualUtilizacaoES = extrasDisponibilizadosES > 0 ? 
+    Math.round((totalEscolasSegura / extrasDisponibilizadosES) * 100) : 0;
+  const percentualUtilizacaoTotal = totalExtrasDisponibilizados > 0 ? 
+    Math.round((totalEscalas / totalExtrasDisponibilizados) * 100) : 0;
+  
+  // Vagas restantes (do total mensal)
+  const restantesPMF = capacidadeTotalPMF - totalEscalasPMF;
+  const restantesES = capacidadeTotalES - totalEscolasSegura;
+  const restantesTotal = restantesPMF + restantesES;
   
   // Calcular militares próximos ao limite
   const militaresProximosLimite = Object.entries(dadosMilitares)
@@ -296,24 +339,47 @@ export default function Relatorios() {
           <div className="absolute top-4 right-4 bg-blue-100 rounded-full p-2">
             <Activity className="h-5 w-5 text-blue-600" />
           </div>
-          <h3 className="text-sm font-medium text-blue-700 mb-1">Total de GCJO</h3>
-          <p className="text-3xl font-bold text-blue-800">{totalEscalas}</p>
+          <h3 className="text-sm font-medium text-blue-700 mb-1">GCJOs Utilizados</h3>
+          <div className="flex justify-between items-baseline">
+            <p className="text-3xl font-bold text-blue-800">{totalEscalas}</p>
+            <div className="text-sm">
+              <span className="text-gray-500">de </span>
+              <span className="font-medium text-blue-600">{totalExtrasDisponibilizados}</span>
+              <span className="text-gray-500"> disponíveis</span>
+            </div>
+          </div>
+          
           <div className="flex space-x-4 mt-3">
             <div className="flex items-center space-x-1">
-              <span className="bg-blue-200 text-blue-700 text-xs font-medium px-2 py-0.5 rounded">PMF: {totalEscalasPMF}</span>
+              <span className="bg-blue-200 text-blue-700 text-xs font-medium px-2 py-0.5 rounded">
+                PMF: {totalEscalasPMF}/{extrasDisponibilizadosPMF}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
-              <span className="bg-purple-200 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">ES: {totalEscolasSegura}</span>
+              <span className="bg-purple-200 text-purple-700 text-xs font-medium px-2 py-0.5 rounded">
+                ES: {totalEscolasSegura}/{extrasDisponibilizadosES}
+              </span>
             </div>
           </div>
           
           {/* Barra de progresso mostrando a distribuição */}
-          <div className="w-full h-1.5 bg-gray-100 rounded-full mt-3 overflow-hidden">
-            <div className="h-full bg-blue-500" style={{width: `${(totalEscalasPMF / totalEscalas) * 100 || 0}%`}}></div>
+          <div className="mt-3">
+            <div className="flex justify-between items-center text-xs mb-1">
+              <span className="font-medium text-gray-700">Utilização atual</span>
+              <span className="font-medium text-blue-700">{percentualUtilizacaoTotal}%</span>
+            </div>
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-blue-600" 
+                style={{width: `${percentualUtilizacaoTotal}%`}}
+              ></div>
+            </div>
           </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>{Math.round((totalEscalasPMF / totalEscalas) * 100) || 0}%</span>
-            <span>{Math.round((totalEscolasSegura / totalEscalas) * 100) || 0}%</span>
+          
+          <div className="mt-2 pt-2 border-t border-blue-100">
+            <div className="flex justify-between items-center text-xs text-gray-500">
+              <span>Em relação ao mês: {percentualOcupacao}% da capacidade total</span>
+            </div>
           </div>
         </div>
         
@@ -326,13 +392,13 @@ export default function Relatorios() {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-3xl font-bold text-green-800">
-                {maximoEscalasPMF - totalEscalasPMF}
+                {restantesPMF}
               </p>
               <span className="text-sm font-normal text-green-600">PMF</span>
             </div>
             <div>
               <p className="text-3xl font-bold text-purple-800">
-                {maximoEscolasSegura - totalEscolasSegura}
+                {restantesES}
               </p>
               <span className="text-sm font-normal text-purple-600">Escola Segura</span>
             </div>
