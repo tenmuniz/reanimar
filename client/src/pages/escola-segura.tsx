@@ -341,46 +341,7 @@ export default function EscolaSegura() {
                 />
               </div>
               
-              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-200">
-                <VerificadorInconsistencias 
-                  schedule={schedule}
-                  currentDate={currentDate}
-                  combinedSchedules={combinedSchedules}
-                  servicoOrdinario={{
-                    "1": { "CHARLIE": ["Escala 1º de Abril"] },
-                    "2": { "CHARLIE": ["Escala 2 de Abril"] },
-                    "3": { "BRAVO": ["Escala 3 de Abril"] },
-                    "4": { "BRAVO": ["Escala 4 de Abril"] },
-                    "5": { "BRAVO": ["Escala 5 de Abril"] },
-                    "6": { "BRAVO": ["Escala 6 de Abril"] },
-                    "7": { "BRAVO": ["Escala 7 de Abril"] },
-                    "8": { "BRAVO": ["Escala 8 de Abril"] },
-                    "9": { "BRAVO": ["Escala 9 de Abril"] },
-                    "10": { "ALFA": ["Escala 10 de Abril"] },
-                    "11": { "ALFA": ["Escala 11 de Abril"] },
-                    "12": { "ALFA": ["Escala 12 de Abril"] },
-                    "13": { "ALFA": ["Escala 13 de Abril"] },
-                    "14": { "ALFA": ["Escala 14 de Abril"] },
-                    "15": { "ALFA": ["Escala 15 de Abril"] },
-                    "16": { "ALFA": ["Escala 16 de Abril"] },
-                    "17": { "CHARLIE": ["Escala 17 de Abril"] },
-                    "18": { "CHARLIE": ["Escala 18 de Abril"] },
-                    "19": { "CHARLIE": ["Escala 19 de Abril"] },
-                    "20": { "CHARLIE": ["Escala 20 de Abril"] },
-                    "21": { "CHARLIE": ["Escala 21 de Abril"] },
-                    "22": { "CHARLIE": ["Escala 22 de Abril"] },
-                    "23": { "CHARLIE": ["Escala 23 de Abril"] },
-                    "24": { "CHARLIE": ["Escala 24 de Abril"], "BRAVO": ["Escala 24 de Abril"] },
-                    "25": { "BRAVO": ["Escala 25 de Abril"] },
-                    "26": { "BRAVO": ["Escala 26 de Abril"] },
-                    "27": { "BRAVO": ["Escala 27 de Abril"] },
-                    "28": { "BRAVO": ["Escala 28 de Abril"] },
-                    "29": { "BRAVO": ["Escala 29 de Abril"] },
-                    "30": { "BRAVO": ["Escala 30 de Abril"] }
-                  }}
-                  operationType="escolaSegura"
-                />
-              </div>
+              {/* Componente de verificação removido */}
             </div>
           </div>
         </div>
