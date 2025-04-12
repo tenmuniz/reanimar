@@ -702,8 +702,8 @@ export default function Relatorios() {
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Distribuição de Carga</CardTitle>
-                <CardDescription>Militares agrupados por faixas de escalas</CardDescription>
+                <CardTitle className="text-lg font-medium">Distribuição de Extras</CardTitle>
+                <CardDescription>Militares agrupados por faixas de extras</CardDescription>
               </CardHeader>
               <CardContent className="h-[350px]">
                 <div className="h-full w-full flex flex-col">
@@ -713,11 +713,11 @@ export default function Relatorios() {
                       {/* Criar um gráfico de barras horizontal simplificado */}
                       <div className="space-y-4">
                         {[
-                          { name: '1-3 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length, color: "#2563eb" },
-                          { name: '4-6 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length, color: "#06b6d4" },
-                          { name: '7-9 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length, color: "#0d9488" },
-                          { name: '10-11 Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length, color: "#f59e0b" },
-                          { name: '12+ Escalas', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length, color: "#ef4444" }
+                          { name: '1-3 Extras', value: Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length, color: "#2563eb" },
+                          { name: '4-6 Extras', value: Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length, color: "#06b6d4" },
+                          { name: '7-9 Extras', value: Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length, color: "#0d9488" },
+                          { name: '10-11 Extras', value: Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length, color: "#f59e0b" },
+                          { name: '12+ Extras', value: Object.values(dadosMilitares).filter(d => d.total >= 12).length, color: "#ef4444" }
                         ].map((item, i) => {
                           // Calcular o máximo para definir as larguras relativas
                           const max = Math.max(
@@ -774,7 +774,7 @@ export default function Relatorios() {
                     <SelectValue placeholder="Ordernar por" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="total">Total de Escalas</SelectItem>
+                    <SelectItem value="total">Total de Extras</SelectItem>
                     <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
                     <SelectItem value="es">Escola Segura</SelectItem>
                     <SelectItem value="alfa">Orderm Alfabética</SelectItem>
