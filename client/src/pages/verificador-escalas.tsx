@@ -276,6 +276,23 @@ export default function VerificadorEscalas() {
     verificarConflitosAutomatico();
   }, [dataUpdatedAt, verificarConflitosAutomatico]);
   
+  // Verificar conflitos automaticamente ao carregar a página
+  useEffect(() => {
+    const verificarInicial = async () => {
+      setIsVerificando(true);
+      try {
+        await refetch();
+        // Abrir os resultados automaticamente
+        setOpen(true);
+        verificarConflitosAutomatico();
+      } finally {
+        setIsVerificando(false);
+      }
+    };
+    
+    verificarInicial();
+  }, [refetch]);
+  
   // Função para fechar o diálogo 
   const fecharDialogo = () => {
     setOpen(false);
@@ -293,27 +310,15 @@ export default function VerificadorEscalas() {
           Verificador de Conflitos de Escalas
         </h1>
         <p className="text-gray-600 mb-6 max-w-2xl">
-          Esta ferramenta verifica se há militares escalados na Operação PMF que também estão de serviço na escala ordinária da 20ª CIPM no mesmo dia.
+          Esta ferramenta verifica automaticamente se há militares escalados na Operação PMF que também estão de serviço na escala ordinária da 20ª CIPM no mesmo dia.
         </p>
         
-        <Button 
-          onClick={verificarConflitos}
-          disabled={isVerificando}
-          size="lg"
-          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-6 rounded-xl flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-        >
-          {isVerificando ? (
-            <>
-              <Loader2 className="h-5 w-5 mr-1 animate-spin" />
-              Verificando...
-            </>
-          ) : (
-            <>
-              <ClipboardList className="h-5 w-5 mr-1" />
-              Verificar Conflitos de Escala
-            </>
-          )}
-        </Button>
+        {isVerificando && (
+          <div className="flex items-center justify-center space-x-2 bg-blue-50 px-6 py-3 rounded-lg border border-blue-200">
+            <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+            <span className="text-blue-700 font-medium">Verificando conflitos...</span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
