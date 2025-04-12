@@ -581,63 +581,53 @@ export default function Relatorios() {
                 <CardTitle className="text-lg font-medium">Sugestões de Otimização</CardTitle>
                 <CardDescription>Recomendações para melhor distribuição de carga</CardDescription>
               </CardHeader>
-              <CardContent className="h-[350px] overflow-y-auto space-y-4">
-                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-                  <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
-                    <Award className="h-4 w-4 mr-2" />
-                    Redistribuição de Carga
-                  </h4>
-                  <p className="text-sm text-blue-600 mb-3">
-                    {militaresNoLimite > 0 
-                      ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
-                      : "Nenhum militar atingiu o limite máximo de extras."
-                    }
-                  </p>
-                  <ul className="space-y-2">
-                    {Object.entries(dadosMilitares)
-                      .filter(([_, dados]) => dados.total >= 12)
-                      .slice(0, 3)
-                      .map(([nome, dados]) => (
-                        <li key={nome} className="text-sm flex items-center">
-                          <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
-                          <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-                  <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
-                    Militares Menos Utilizados
-                  </h4>
-                  <p className="text-sm text-green-600 mb-3">
-                    Considere utilizar os seguintes militares nas próximas escalas:
-                  </p>
-                  <ul className="space-y-2">
-                    {Object.entries(dadosMilitares)
-                      .filter(([_, dados]) => dados.total < 5)
-                      .sort((a, b) => a[1].total - b[1].total)
-                      .slice(0, 5)
-                      .map(([nome, dados]) => (
-                        <li key={nome} className="text-sm flex items-center">
-                          <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
-                          <span><b>{nome}</b> possui apenas {dados.total} extras</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg bg-purple-50 border border-purple-200 p-4">
-                  <h4 className="text-md font-semibold text-purple-700 mb-2 flex items-center">
-                    <BarChart4 className="h-4 w-4 mr-2" />
-                    Análise de Equilíbrio
-                  </h4>
-                  <p className="text-sm text-purple-600">
-                    A distribuição atual mostra uma concentração de extras em um pequeno grupo de militares.
-                    Considere distribuir as próximas escalas de forma mais equilibrada, priorizando militares
-                    com menos de 8 extras no período.
-                  </p>
+              <CardContent className="p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+                    <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
+                      <Award className="h-4 w-4 mr-2" />
+                      Redistribuição de Carga
+                    </h4>
+                    <p className="text-sm text-blue-600 mb-3">
+                      {militaresNoLimite > 0 
+                        ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
+                        : "Nenhum militar atingiu o limite máximo de extras."
+                      }
+                    </p>
+                    <ul className="space-y-2">
+                      {Object.entries(dadosMilitares)
+                        .filter(([_, dados]) => dados.total >= 12)
+                        .slice(0, 3)
+                        .map(([nome, dados]) => (
+                          <li key={nome} className="text-sm flex items-center">
+                            <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
+                            <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+                    <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
+                      <Users className="h-4 w-4 mr-2" />
+                      Militares Menos Utilizados
+                    </h4>
+                    <p className="text-sm text-green-600 mb-3">
+                      Considere utilizar os seguintes militares nas próximas escalas:
+                    </p>
+                    <ul className="space-y-2">
+                      {Object.entries(dadosMilitares)
+                        .filter(([_, dados]) => dados.total < 5)
+                        .sort((a, b) => a[1].total - b[1].total)
+                        .slice(0, 5)
+                        .map(([nome, dados]) => (
+                          <li key={nome} className="text-sm flex items-center">
+                            <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                            <span><b>{nome}</b> possui apenas {dados.total} extras</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
                 </div>
               </CardContent>
             </Card>
