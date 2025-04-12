@@ -199,7 +199,7 @@ export default function ResumoGuarnicao({
       
       {/* Modal principal de guarnições */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className={`sm:max-w-[700px] 
+        <DialogContent className={`sm:max-w-[90%] max-h-[90vh] overflow-y-auto 
           ${operationType === 'escolaSegura'
             ? 'bg-gradient-to-br from-purple-900 to-purple-800'
             : 'bg-gradient-to-br from-indigo-900 to-indigo-800'
@@ -307,35 +307,84 @@ export default function ResumoGuarnicao({
                       try {
                         const pdf = new jsPDF();
                         
+                        // Cores por guarnição
+                        const guarnicaoCores: Record<string, number[]> = {
+                          "EXPEDIENTE": [0, 128, 170], // Azul ciano
+                          "ALFA": [20, 150, 20],       // Verde
+                          "BRAVO": [180, 150, 0],      // Amarelo
+                          "CHARLIE": [170, 20, 20],    // Vermelho
+                          "OUTROS": [100, 100, 100]    // Cinza
+                        };
+                        
+                        // Cor da guarnição atual
+                        const corGuarnicao = guarnicaoCores[guarnicao] || [0, 0, 0];
+                        
+                        // Adicionar um cabeçalho colorido
+                        pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                        pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                        
                         // Título do Documento
-                        pdf.setFontSize(16);
+                        pdf.setTextColor(255, 255, 255);
+                        pdf.setFontSize(18);
                         pdf.setFont('helvetica', 'bold');
-                        pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicao}`, 105, 15, { align: 'center' });
+                        pdf.text(`ESCALA DE SERVIÇO EXTRAORDINÁRIO`, 105, 15, { align: 'center' });
+                        pdf.setFontSize(14);
+                        pdf.text(`GUARNIÇÃO ${guarnicao}`, 105, 25, { align: 'center' });
+                        
+                        // Reset cor do texto
+                        pdf.setTextColor(0, 0, 0);
                         
                         // Informações do mês
-                        pdf.setFontSize(11);
-                        pdf.setFont('helvetica', 'normal');
-                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
-                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
-                        
-                        // Cabeçalho
                         pdf.setFontSize(12);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 50, { align: 'center' });
+                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 58, { align: 'center' });
+                        
+                        // Adicionar estatísticas
+                        pdf.setFillColor(240, 240, 240);
+                        pdf.rect(20, 65, pdf.internal.pageSize.width - 40, 25, 'F');
+                        
+                        pdf.setFontSize(10);
                         pdf.setFont('helvetica', 'bold');
+                        pdf.text(`• Total de militares escalados: ${dados.total}`, 25, 75);
+                        pdf.text(`• Dias com escalas: ${dados.dias.length} dias`, 25, 83);
+                        
+                        // Organizar dados por militares (para mostrar todos os dias de cada militar)
+                        const militaresPorDia = dados.militaresPorDia || {};
+                        const militaresInfo: Record<string, { nome: string, dias: number[] }> = {};
+                        
+                        // Para cada dia, processar os militares
+                        Object.entries(militaresPorDia).forEach(([dia, militares]) => {
+                          const diaNum = parseInt(dia, 10);
+                          
+                          militares.forEach(militar => {
+                            if (!militaresInfo[militar]) {
+                              militaresInfo[militar] = { nome: militar, dias: [] };
+                            }
+                            militaresInfo[militar].dias.push(diaNum);
+                          });
+                        });
+                        
+                        // Converter para array e ordenar por nome
+                        const militaresArray = Object.values(militaresInfo).sort((a, b) => 
+                          a.nome.localeCompare(b.nome)
+                        );
                         
                         // Dados para a tabela
                         const tableRows: any[] = [];
-                        const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
                         
-                        // Para cada dia, pegar os militares dessa guarnição
-                        diasOrdenados.forEach(dia => {
-                          if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
-                            dados.militaresPorDia[dia].forEach(militar => {
-                              tableRows.push([
-                                dia,
-                                militar
-                              ]);
-                            });
-                          }
+                        militaresArray.forEach(info => {
+                          // Ordenar os dias
+                          const diasOrdenados = [...info.dias].sort((a, b) => a - b);
+                          
+                          // Formatar os dias como string
+                          const diasStr = diasOrdenados.join(', ');
+                          
+                          tableRows.push([
+                            info.nome,
+                            diasStr,
+                            diasOrdenados.length
+                          ]);
                         });
                         
                         // Importando a função autoTable e usando na instância do PDF
@@ -343,25 +392,91 @@ export default function ResumoGuarnicao({
                           const autoTable = module.default;
                           
                           autoTable(pdf, {
-                            head: [['Dia', 'Militar']],
+                            head: [['Militar', 'Dias de Serviço', 'Total']],
                             body: tableRows,
-                            startY: 35,
-                            margin: { top: 35 },
+                            startY: 95,
+                            margin: { top: 40 },
                             styles: { fontSize: 10 },
-                            headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
-                            alternateRowStyles: { fillColor: [240, 240, 240] }
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 'auto' },  // Nome do militar
+                              1: { cellWidth: 'auto' },  // Dias
+                              2: { cellWidth: 20 }      // Total
+                            }
                           });
                           
-                          // Rodapé
+                          // Adicionar uma tabela secundária detalhando por dia
+                          pdf.addPage();
+                          
+                          // Cabeçalho na nova página
+                          pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                          pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                          
+                          pdf.setTextColor(255, 255, 255);
+                          pdf.setFontSize(16);
+                          pdf.setFont('helvetica', 'bold');
+                          pdf.text(`DETALHAMENTO POR DIA - GUARNIÇÃO ${guarnicao}`, 105, 20, { align: 'center' });
+                          
+                          pdf.setTextColor(0, 0, 0);
+                          
+                          // Dados para a segunda tabela (por dia)
+                          const tableRowsPorDia: any[] = [];
+                          const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
+                          
+                          // Para cada dia, pegar os militares dessa guarnição
+                          diasOrdenados.forEach(dia => {
+                            if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
+                              // Juntar todos os militares do dia
+                              const militaresDoDia = dados.militaresPorDia[dia].join(', ');
+                              
+                              tableRowsPorDia.push([
+                                dia,
+                                militaresDoDia,
+                                dados.militaresPorDia[dia].length
+                              ]);
+                            }
+                          });
+                          
+                          autoTable(pdf, {
+                            head: [['Dia', 'Militares', 'Total']],
+                            body: tableRowsPorDia,
+                            startY: 50,
+                            margin: { top: 40 },
+                            styles: { fontSize: 10 },
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 20 },     // Dia
+                              1: { cellWidth: 'auto' }, // Militares
+                              2: { cellWidth: 20 }      // Total
+                            }
+                          });
+                          
+                          // Rodapé em todas as páginas
                           const pageCount = pdf.getNumberOfPages();
                           for (let i = 1; i <= pageCount; i++) {
                             pdf.setPage(i);
+                            
+                            // Adicionar linha no rodapé
+                            pdf.setDrawColor(200, 200, 200);
+                            pdf.line(20, pdf.internal.pageSize.height - 20, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 20);
+                            
                             pdf.setFontSize(8);
+                            pdf.setTextColor(100, 100, 100);
                             pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
                           }
                           
                           // Salvar o PDF
-                          pdf.save(`GCJO_${guarnicao}_${mesAno.replace(' ', '_')}.pdf`);
+                          pdf.save(`Escala_${guarnicao}_${mesAno.replace(' ', '_')}.pdf`);
                         });
                       } catch (error) {
                         console.error("Erro ao gerar PDF:", error);
@@ -442,7 +557,7 @@ export default function ResumoGuarnicao({
       
       {/* Modal de detalhes da guarnição selecionada */}
       <Dialog open={detalheGuarnicaoAberto} onOpenChange={setDetalheGuarnicaoAberto}>
-        <DialogContent className={`sm:max-w-[700px] 
+        <DialogContent className={`sm:max-w-[90%] w-[900px] max-h-[90vh] overflow-y-auto
           ${operationType === 'escolaSegura'
             ? 'bg-gradient-to-br from-purple-900 to-purple-800'
             : 'bg-gradient-to-br from-indigo-900 to-indigo-800'
@@ -535,32 +650,84 @@ export default function ResumoGuarnicao({
                       try {
                         const pdf = new jsPDF();
                         
+                        // Cores por guarnição
+                        const guarnicaoCores: Record<string, number[]> = {
+                          "EXPEDIENTE": [0, 128, 170], // Azul ciano  
+                          "ALFA": [20, 150, 20],       // Verde
+                          "BRAVO": [180, 150, 0],      // Amarelo
+                          "CHARLIE": [170, 20, 20],    // Vermelho
+                          "OUTROS": [100, 100, 100]    // Cinza
+                        };
+                        
+                        // Cor da guarnição selecionada
+                        const corGuarnicao = guarnicaoCores[guarnicaoSelecionada] || [0, 0, 0];
+                        
+                        // Adicionar um cabeçalho colorido
+                        pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                        pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                        
                         // Título do Documento
-                        pdf.setFontSize(16);
+                        pdf.setTextColor(255, 255, 255);
+                        pdf.setFontSize(18);
                         pdf.setFont('helvetica', 'bold');
-                        pdf.text(`ESCALA DE GCJO - GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 15, { align: 'center' });
+                        pdf.text(`ESCALA DE SERVIÇO EXTRAORDINÁRIO`, 105, 15, { align: 'center' });
+                        pdf.setFontSize(14);
+                        pdf.text(`GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 25, { align: 'center' });
+                        
+                        // Reset cor do texto
+                        pdf.setTextColor(0, 0, 0);
                         
                         // Informações do mês
-                        pdf.setFontSize(11);
+                        pdf.setFontSize(12);
                         pdf.setFont('helvetica', 'normal');
-                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 25, { align: 'center' });
-                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 30, { align: 'center' });
+                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 50, { align: 'center' });
+                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 58, { align: 'center' });
+                        
+                        // Adicionar estatísticas
+                        pdf.setFillColor(240, 240, 240);
+                        pdf.rect(20, 65, pdf.internal.pageSize.width - 40, 25, 'F');
+                        
+                        pdf.setFontSize(10);
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.text(`• Total de militares escalados: ${guarnicoesData[guarnicaoSelecionada].total}`, 25, 75);
+                        pdf.text(`• Dias com escalas: ${guarnicoesData[guarnicaoSelecionada].dias.length} dias`, 25, 83);
+                        
+                        // Organizar dados por militares (para mostrar todos os dias de cada militar)
+                        const militaresPorDia = guarnicoesData[guarnicaoSelecionada].militaresPorDia || {};
+                        const militaresInfo: Record<string, { nome: string, dias: number[] }> = {};
+                        
+                        // Para cada dia, processar os militares
+                        Object.entries(militaresPorDia).forEach(([dia, militares]) => {
+                          const diaNum = parseInt(dia, 10);
+                          
+                          militares.forEach(militar => {
+                            if (!militaresInfo[militar]) {
+                              militaresInfo[militar] = { nome: militar, dias: [] };
+                            }
+                            militaresInfo[militar].dias.push(diaNum);
+                          });
+                        });
+                        
+                        // Converter para array e ordenar por nome
+                        const militaresArray = Object.values(militaresInfo).sort((a, b) => 
+                          a.nome.localeCompare(b.nome)
+                        );
                         
                         // Dados para a tabela
                         const tableRows: any[] = [];
-                        const dados = guarnicoesData[guarnicaoSelecionada];
-                        const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
                         
-                        // Para cada dia, pegar os militares dessa guarnição
-                        diasOrdenados.forEach(dia => {
-                          if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
-                            dados.militaresPorDia[dia].forEach(militar => {
-                              tableRows.push([
-                                dia,
-                                militar
-                              ]);
-                            });
-                          }
+                        militaresArray.forEach(info => {
+                          // Ordenar os dias
+                          const diasOrdenados = [...info.dias].sort((a, b) => a - b);
+                          
+                          // Formatar os dias como string
+                          const diasStr = diasOrdenados.join(', ');
+                          
+                          tableRows.push([
+                            info.nome,
+                            diasStr,
+                            diasOrdenados.length
+                          ]);
                         });
                         
                         // Importando a função autoTable e usando na instância do PDF
@@ -568,25 +735,91 @@ export default function ResumoGuarnicao({
                           const autoTable = module.default;
                           
                           autoTable(pdf, {
-                            head: [['Dia', 'Militar']],
+                            head: [['Militar', 'Dias de Serviço', 'Total']],
                             body: tableRows,
-                            startY: 35,
-                            margin: { top: 35 },
+                            startY: 95,
+                            margin: { top: 40 },
                             styles: { fontSize: 10 },
-                            headStyles: { fillColor: [0, 50, 150], textColor: [255, 255, 255] },
-                            alternateRowStyles: { fillColor: [240, 240, 240] }
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 'auto' },  // Nome do militar
+                              1: { cellWidth: 'auto' },  // Dias
+                              2: { cellWidth: 20 }      // Total
+                            }
                           });
                           
-                          // Rodapé
+                          // Adicionar uma tabela secundária detalhando por dia
+                          pdf.addPage();
+                          
+                          // Cabeçalho na nova página
+                          pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                          pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                          
+                          pdf.setTextColor(255, 255, 255);
+                          pdf.setFontSize(16);
+                          pdf.setFont('helvetica', 'bold');
+                          pdf.text(`DETALHAMENTO POR DIA - GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 20, { align: 'center' });
+                          
+                          pdf.setTextColor(0, 0, 0);
+                          
+                          // Dados para a segunda tabela (por dia)
+                          const tableRowsPorDia: any[] = [];
+                          const diasOrdenados = [...guarnicoesData[guarnicaoSelecionada].dias].sort((a, b) => a - b);
+                          
+                          // Para cada dia, pegar os militares dessa guarnição
+                          diasOrdenados.forEach(dia => {
+                            if (guarnicoesData[guarnicaoSelecionada].militaresPorDia && guarnicoesData[guarnicaoSelecionada].militaresPorDia[dia]) {
+                              // Juntar todos os militares do dia
+                              const militaresDoDia = guarnicoesData[guarnicaoSelecionada].militaresPorDia[dia].join(', ');
+                              
+                              tableRowsPorDia.push([
+                                dia,
+                                militaresDoDia,
+                                guarnicoesData[guarnicaoSelecionada].militaresPorDia[dia].length
+                              ]);
+                            }
+                          });
+                          
+                          autoTable(pdf, {
+                            head: [['Dia', 'Militares', 'Total']],
+                            body: tableRowsPorDia,
+                            startY: 50,
+                            margin: { top: 40 },
+                            styles: { fontSize: 10 },
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 20 },     // Dia
+                              1: { cellWidth: 'auto' }, // Militares
+                              2: { cellWidth: 20 }      // Total
+                            }
+                          });
+                          
+                          // Rodapé em todas as páginas
                           const pageCount = pdf.getNumberOfPages();
                           for (let i = 1; i <= pageCount; i++) {
                             pdf.setPage(i);
+                            
+                            // Adicionar linha no rodapé
+                            pdf.setDrawColor(200, 200, 200);
+                            pdf.line(20, pdf.internal.pageSize.height - 20, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 20);
+                            
                             pdf.setFontSize(8);
+                            pdf.setTextColor(100, 100, 100);
                             pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
                           }
                           
                           // Salvar o PDF
-                          pdf.save(`GCJO_${guarnicaoSelecionada}_${mesAno.replace(' ', '_')}.pdf`);
+                          pdf.save(`Escala_${guarnicaoSelecionada}_${mesAno.replace(' ', '_')}.pdf`);
                         });
                       } catch (error) {
                         console.error("Erro ao gerar PDF:", error);
