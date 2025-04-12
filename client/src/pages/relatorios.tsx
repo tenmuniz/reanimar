@@ -456,134 +456,15 @@ export default function Relatorios() {
       </div>
       
       {/* Tabs de diferentes visualizações */}
-      <Tabs defaultValue="otimizacao" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="otimizacao" className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            <span>Sugestões de Otimização</span>
-          </TabsTrigger>
+      <Tabs defaultValue="distribuicao" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-1">
           <TabsTrigger value="distribuicao" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             <span>Distribuição de Extras</span>
           </TabsTrigger>
         </TabsList>
         
-        {/* Conteúdo de Sugestões de Otimização */}
-        <TabsContent value="otimizacao" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Sugestões de Otimização</CardTitle>
-                <CardDescription>Recomendações para melhor distribuição de carga</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px] overflow-y-auto space-y-4">
-                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-                  <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
-                    <Award className="h-4 w-4 mr-2" />
-                    Redistribuição de Carga
-                  </h4>
-                  <p className="text-sm text-blue-600 mb-3">
-                    {militaresNoLimite > 0 
-                      ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
-                      : "Nenhum militar atingiu o limite máximo de extras."
-                    }
-                  </p>
-                  <ul className="space-y-2">
-                    {Object.entries(dadosMilitares)
-                      .filter(([_, dados]) => dados.total >= 12)
-                      .slice(0, 3)
-                      .map(([nome, dados]) => (
-                        <li key={nome} className="text-sm flex items-center">
-                          <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
-                          <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-                  <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
-                    Militares Menos Utilizados
-                  </h4>
-                  <p className="text-sm text-green-600 mb-3">
-                    Considere utilizar os seguintes militares nas próximas escalas:
-                  </p>
-                  <ul className="space-y-2">
-                    {Object.entries(dadosMilitares)
-                      .filter(([_, dados]) => dados.total < 5)
-                      .sort((a, b) => a[1].total - b[1].total)
-                      .slice(0, 5)
-                      .map(([nome, dados]) => (
-                        <li key={nome} className="text-sm flex items-center">
-                          <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
-                          <span><b>{nome}</b> possui apenas {dados.total} extras</span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-                
-                <div className="rounded-lg bg-purple-50 border border-purple-200 p-4">
-                  <h4 className="text-md font-semibold text-purple-700 mb-2 flex items-center">
-                    <BarChart4 className="h-4 w-4 mr-2" />
-                    Análise de Equilíbrio
-                  </h4>
-                  <p className="text-sm text-purple-600">
-                    A distribuição atual mostra uma concentração de extras em um pequeno grupo de militares.
-                    Considere distribuir as próximas escalas de forma mais equilibrada, priorizando militares
-                    com menos de 8 extras no período.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">Distribuição por Operação</CardTitle>
-                <CardDescription>Comparativo de extras entre operações</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[350px]">
-                <div className="h-full flex flex-col">
-                  <div className="relative flex-grow flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" className="w-64 h-64 mx-auto">
-                      {/* Fatia para PMF */}
-                      <path
-                        d={`M 50 50 L 50 0 A 50 50 0 0 1 100 50 Z`}
-                        style={{fill: "#2563eb"}}
-                        className="hover:opacity-80 transition-opacity"
-                      />
-                      {/* Fatia para Escola Segura */}
-                      <path
-                        d={`M 50 50 L 100 50 A 50 50 0 0 1 50 100 A 50 50 0 0 1 0 50 A 50 50 0 0 1 50 0 Z`}
-                        style={{fill: "#9333ea"}}
-                        className="hover:opacity-80 transition-opacity"
-                      />
-                      {/* Círculo branco no centro */}
-                      <circle cx="50" cy="50" r="20" fill="white" />
-                      {/* Texto no centro */}
-                      <text x="50" y="46" textAnchor="middle" className="fill-gray-700 text-sm font-medium">Total</text>
-                      <text x="50" y="58" textAnchor="middle" className="fill-gray-800 text-lg font-bold">{totalEscalas}</text>
-                    </svg>
-                  </div>
-                  <div className="mt-4 grid grid-cols-2 gap-2 justify-items-center">
-                    <div className="flex items-center gap-1.5">
-                      <div style={{backgroundColor: "#2563eb"}} className="w-3 h-3 rounded-sm"></div>
-                      <span className="text-xs text-gray-600">
-                        PMF ({dadosOperacoes[0]?.value || 0} extras)
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div style={{backgroundColor: "#9333ea"}} className="w-3 h-3 rounded-sm"></div>
-                      <span className="text-xs text-gray-600">
-                        Escola Segura ({dadosOperacoes[1]?.value || 0} extras)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+
         
         {/* Conteúdo de Distribuição de Extras */}
         <TabsContent value="distribuicao" className="space-y-4">
@@ -693,7 +574,76 @@ export default function Relatorios() {
             </Card>
           </div>
           
-          {/* Tabela separada na segunda linha */}
+          {/* Sugestões de Otimização */}
+          <div>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-medium">Sugestões de Otimização</CardTitle>
+                <CardDescription>Recomendações para melhor distribuição de carga</CardDescription>
+              </CardHeader>
+              <CardContent className="h-[350px] overflow-y-auto space-y-4">
+                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+                  <h4 className="text-md font-semibold text-blue-700 mb-2 flex items-center">
+                    <Award className="h-4 w-4 mr-2" />
+                    Redistribuição de Carga
+                  </h4>
+                  <p className="text-sm text-blue-600 mb-3">
+                    {militaresNoLimite > 0 
+                      ? `${militaresNoLimite} militares atingiram o limite e devem ser removidos das próximas escalas.`
+                      : "Nenhum militar atingiu o limite máximo de extras."
+                    }
+                  </p>
+                  <ul className="space-y-2">
+                    {Object.entries(dadosMilitares)
+                      .filter(([_, dados]) => dados.total >= 12)
+                      .slice(0, 3)
+                      .map(([nome, dados]) => (
+                        <li key={nome} className="text-sm flex items-center">
+                          <AlertTriangle className="h-3 w-3 text-red-500 mr-2" />
+                          <span><b>{nome}</b> já possui {dados.total} extras (limite atingido)</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                
+                <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+                  <h4 className="text-md font-semibold text-green-700 mb-2 flex items-center">
+                    <Users className="h-4 w-4 mr-2" />
+                    Militares Menos Utilizados
+                  </h4>
+                  <p className="text-sm text-green-600 mb-3">
+                    Considere utilizar os seguintes militares nas próximas escalas:
+                  </p>
+                  <ul className="space-y-2">
+                    {Object.entries(dadosMilitares)
+                      .filter(([_, dados]) => dados.total < 5)
+                      .sort((a, b) => a[1].total - b[1].total)
+                      .slice(0, 5)
+                      .map(([nome, dados]) => (
+                        <li key={nome} className="text-sm flex items-center">
+                          <CheckCircle className="h-3 w-3 text-green-500 mr-2" />
+                          <span><b>{nome}</b> possui apenas {dados.total} extras</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                
+                <div className="rounded-lg bg-purple-50 border border-purple-200 p-4">
+                  <h4 className="text-md font-semibold text-purple-700 mb-2 flex items-center">
+                    <BarChart4 className="h-4 w-4 mr-2" />
+                    Análise de Equilíbrio
+                  </h4>
+                  <p className="text-sm text-purple-600">
+                    A distribuição atual mostra uma concentração de extras em um pequeno grupo de militares.
+                    Considere distribuir as próximas escalas de forma mais equilibrada, priorizando militares
+                    com menos de 8 extras no período.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Tabela de distribuição por tipo de operação */}
           <div>
             <Card>
               <CardHeader className="pb-2 flex flex-row items-center justify-between">
