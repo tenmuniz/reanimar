@@ -118,9 +118,21 @@ export default function VerificadorEscalas() {
   const [isVerificando, setIsVerificando] = useState(false);
   const [filtroMilitar, setFiltroMilitar] = useState("");
 
+  // Configurada para abril de 2025
+  const [currentDate] = useState(new Date(2025, 3, 1)); // Abril 2025 (mês indexado em 0, então 3 = abril)
+
   // Obter dados da escala PMF
   const { data: combinedSchedulesData } = useQuery<{ schedules: CombinedSchedules }>({
-    queryKey: ["/api/combined-schedules"],
+    queryKey: ["/api/combined-schedules", currentDate.getFullYear(), currentDate.getMonth()],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/combined-schedules?year=${currentDate.getFullYear()}&month=${currentDate.getMonth()}`
+      );
+      if (!response.ok) {
+        throw new Error("Erro ao carregar dados das escalas combinadas");
+      }
+      return response.json();
+    }
   });
 
   const verificarConflitos = () => {
