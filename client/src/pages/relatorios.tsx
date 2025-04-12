@@ -332,20 +332,20 @@ export default function Relatorios() {
         </div>
       </div>
       
-      {/* Apenas o cartão de GCJOs Utilizados, exatamente como na imagem */}
+      {/* Cartão de GCJOs Utilizados: exatamente como na imagem de referência */}
       <div className="mb-6">
-        <div className="bg-blue-50 rounded-lg border border-blue-100 p-5 relative overflow-hidden">
+        <div className="bg-blue-50 rounded-xl border border-blue-100 p-4 relative overflow-hidden">
           <div className="absolute top-3 right-3">
             <Activity className="h-5 w-5 text-blue-600" />
           </div>
-          <h3 className="text-base font-semibold text-blue-700 mb-4">GCJOs Utilizados</h3>
+          <h3 className="text-lg font-semibold text-blue-800 mb-3">GCJOs Utilizados</h3>
           
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="text-center p-3 bg-blue-100 rounded-lg">
-              <p className="text-sm font-medium text-blue-700 mb-1">PMF</p>
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            <div className="bg-blue-100/60 rounded-lg p-3">
+              <p className="text-sm font-medium text-blue-700 text-center mb-1">PMF</p>
               <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-bold text-blue-800 mr-1">{totalEscalasPMF}</span>
-                <span className="text-sm text-blue-600">de {extrasDisponibilizadosPMF}</span>
+                <span className="text-4xl font-bold text-blue-800">{totalEscalasPMF}</span>
+                <span className="text-sm text-blue-600 ml-1">de {extrasDisponibilizadosPMF}</span>
               </div>
               <div className="mt-2 w-full bg-blue-200 rounded-full h-1.5">
                 <div 
@@ -353,14 +353,14 @@ export default function Relatorios() {
                   style={{width: `${percentualUtilizacaoPMF}%`}}
                 />
               </div>
-              <p className="text-xs text-blue-600 mt-1">{percentualUtilizacaoPMF}% utilizado</p>
+              <p className="text-xs text-blue-600 mt-1 text-center">{percentualUtilizacaoPMF}% utilizado</p>
             </div>
             
-            <div className="text-center p-3 bg-purple-100 rounded-lg">
-              <p className="text-sm font-medium text-purple-700 mb-1">Escola Segura</p>
+            <div className="bg-purple-100/60 rounded-lg p-3">
+              <p className="text-sm font-medium text-purple-700 text-center mb-1">Escola Segura</p>
               <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-bold text-purple-800 mr-1">{totalEscolasSegura}</span>
-                <span className="text-sm text-purple-600">de {extrasDisponibilizadosES}</span>
+                <span className="text-4xl font-bold text-purple-800">{totalEscolasSegura}</span>
+                <span className="text-sm text-purple-600 ml-1">de {extrasDisponibilizadosES}</span>
               </div>
               <div className="mt-2 w-full bg-purple-200 rounded-full h-1.5">
                 <div 
@@ -368,25 +368,25 @@ export default function Relatorios() {
                   style={{width: `${percentualUtilizacaoES}%`}}
                 />
               </div>
-              <p className="text-xs text-purple-600 mt-1">{percentualUtilizacaoES}% utilizado</p>
+              <p className="text-xs text-purple-600 mt-1 text-center">{percentualUtilizacaoES}% utilizado</p>
             </div>
           </div>
           
           <div className="border-t border-blue-100 pt-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-700 font-medium">Total utilizado:</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-gray-700">Total utilizado:</span>
               <div className="flex items-baseline">
-                <span className="text-3xl font-bold text-blue-800 mr-1.5">{totalEscalas}</span>
-                <span className="text-sm text-gray-600">de {totalExtrasDisponibilizados}</span>
+                <span className="text-3xl font-bold text-blue-800">{totalEscalas}</span>
+                <span className="text-sm text-gray-500 ml-1">de {totalExtrasDisponibilizados}</span>
               </div>
             </div>
-            <div className="mt-2 w-full bg-gray-100 rounded-full h-2">
+            <div className="w-full bg-blue-100 rounded-full h-2">
               <div 
-                className="bg-blue-700 h-2 rounded-full" 
+                className="bg-blue-600 h-2 rounded-full" 
                 style={{width: `${percentualUtilizacaoTotal}%`}}
               />
             </div>
-            <p className="text-xs text-gray-600 mt-1 text-right">{percentualUtilizacaoTotal}% dos extras disponibilizados até agora</p>
+            <p className="text-xs text-gray-500 mt-1 text-right">{percentualUtilizacaoTotal}% dos extras disponibilizados até agora</p>
           </div>
         </div>
       </div>
