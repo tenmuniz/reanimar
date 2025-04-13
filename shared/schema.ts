@@ -5,7 +5,10 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
+  cpf: text("cpf").notNull().unique(),
+  name: text("name").notNull(),
   password: text("password").notNull(),
+  role: text("role").default("user").notNull(),
 });
 
 export const officers = pgTable("officers", {
@@ -25,7 +28,10 @@ export const schedules = pgTable("schedules", {
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  cpf: true,
+  name: true,
   password: true,
+  role: true,
 });
 
 export const insertOfficerSchema = createInsertSchema(officers).pick({

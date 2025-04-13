@@ -7,6 +7,7 @@ import { users, officers, schedules, type User, type InsertUser, type Officer, t
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByCpf(cpf: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
   getAllOfficers(): Promise<Officer[]>;
