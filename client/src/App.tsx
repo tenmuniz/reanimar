@@ -2,17 +2,12 @@ import { Switch, Route, useLocation, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, Database, Cloud, CheckCircle, Search } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, Database, Cloud, CheckCircle } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
-import BuscaMilitar from "@/pages/busca-militar";
-import BuscaSimples from "@/pages/busca-simples";
-import BuscaAvancada from "@/pages/busca-avancada";
-import BuscaCorrigida from "@/pages/busca-corrigida";
-import DebugAPI from "@/pages/debug-api";
 import NotFound from "@/pages/not-found";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
@@ -159,26 +154,6 @@ function NavBar() {
                 <span className={`text-sm font-medium ${location === "/relatorios" ? "font-semibold" : ""}`}>Relatórios</span>
               </a>
             </Link>
-            
-            <Link href="/busca-avancada">
-              <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-                location === "/busca-avancada" 
-                  ? "bg-gradient-to-r from-indigo-500/10 to-violet-600/20 text-indigo-700 border border-indigo-200 shadow-lg shadow-indigo-200/30" 
-                  : "text-gray-700 hover:bg-indigo-50/60 hover:shadow-md hover:border hover:border-indigo-100"
-              }`}>
-                <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
-                  location === "/busca-avancada" 
-                    ? "bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-400/30" 
-                    : "bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-violet-600 group-hover:shadow-md group-hover:shadow-indigo-400/20"
-                }`}>
-                  <Search className={`h-4 w-4 ${location === "/busca-avancada" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
-                </div>
-                <span className={`text-sm font-medium ${location === "/busca-avancada" ? "font-semibold" : ""}`}>Busca de Militar</span>
-                <span className="ml-1.5 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs shadow-sm font-medium border border-indigo-200">
-                  Avançada
-                </span>
-              </a>
-            </Link>
           </div>
         </nav>
       </div>
@@ -305,11 +280,6 @@ function Router() {
           <Route path="/escola-segura" component={EscolaSegura} />
           <Route path="/verificador-escalas" component={VerificadorEscalas} />
           <Route path="/relatorios" component={Relatorios} />
-          <Route path="/busca-militar" component={BuscaMilitar} />
-          <Route path="/busca-simples" component={BuscaSimples} />
-          <Route path="/busca-avancada" component={BuscaAvancada} />
-          <Route path="/busca-corrigida" component={BuscaCorrigida} />
-          <Route path="/debug-api" component={DebugAPI} />
           <Route component={NotFound} />
         </Switch>
       </main>
