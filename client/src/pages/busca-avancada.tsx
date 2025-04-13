@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, Calendar, UserCheck, X, Loader2, ClipboardCheck } from "lucide-react";
-import { buscarMilitar, formatarResultadoBusca, MilitarOperacaoResultado } from "@/lib/search-military";
+import { buscarMilitar, formatarResultadoBusca, MilitarOperacaoResultado } from "@/lib/search-military-fixed";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
