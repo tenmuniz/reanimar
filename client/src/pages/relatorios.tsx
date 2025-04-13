@@ -59,6 +59,7 @@ import {
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
+// @ts-ignore
 import 'jspdf-autotable';
 
 export default function Relatorios() {
@@ -464,7 +465,8 @@ export default function Relatorios() {
         ['TOTAL', `${totalEscalas}`, `${restantesTotal}`, `${capacidadeTotalGeral}`, `${percentualOcupacao}%`]
       ];
       
-      (doc as any).autoTable({
+      // @ts-ignore
+      doc.autoTable({
         startY: 50,
         head: [resumoData[0]],
         body: resumoData.slice(1),
@@ -486,7 +488,8 @@ export default function Relatorios() {
       // Militares por faixa
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('DISTRIBUIÇÃO POR FAIXA DE EXTRAS', margin, (doc as any).lastAutoTable.finalY + 20);
+      // @ts-ignore
+      doc.text('DISTRIBUIÇÃO POR FAIXA DE EXTRAS', margin, doc.lastAutoTable.finalY + 20);
       
       const faixasData = [
         ['Faixa', 'Quantidade de Militares'],
@@ -497,8 +500,10 @@ export default function Relatorios() {
         ['12+ Extras (Limite)', `${Object.values(dadosMilitares).filter(d => d.total >= 12).length}`]
       ];
       
-      (doc as any).autoTable({
-        startY: (doc as any).lastAutoTable.finalY + 25,
+      // @ts-ignore
+      doc.autoTable({
+        // @ts-ignore
+        startY: doc.lastAutoTable.finalY + 25,
         head: [faixasData[0]],
         body: faixasData.slice(1),
         theme: 'grid',
