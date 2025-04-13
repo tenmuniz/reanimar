@@ -11,6 +11,7 @@ import Relatorios from "@/pages/relatorios";
 import BuscaMilitar from "@/pages/busca-militar";
 import BuscaSimples from "@/pages/busca-simples";
 import BuscaAvancada from "@/pages/busca-avancada";
+import DebugAPI from "@/pages/debug-api";
 import NotFound from "@/pages/not-found";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
@@ -306,6 +307,7 @@ function Router() {
           <Route path="/busca-militar" component={BuscaMilitar} />
           <Route path="/busca-simples" component={BuscaSimples} />
           <Route path="/busca-avancada" component={BuscaAvancada} />
+          <Route path="/debug-api" component={DebugAPI} />
           <Route component={NotFound} />
         </Switch>
       </main>
