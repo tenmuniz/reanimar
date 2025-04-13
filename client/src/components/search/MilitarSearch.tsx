@@ -29,6 +29,13 @@ export default function MilitarSearch() {
   // Buscar escalas combinadas
   const { data: combinedSchedulesData } = useQuery<{ schedules: CombinedSchedules }>({
     queryKey: ['/api/combined-schedules', currentYear, currentMonth],
+    queryFn: async () => {
+      const res = await fetch(`/api/combined-schedules?year=${currentYear}&month=${currentMonth}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch schedules');
+      }
+      return res.json();
+    },
     enabled: true,
   });
 

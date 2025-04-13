@@ -33,6 +33,17 @@ function searchInSchedule(
   year: number
 ): SearchResult {
   const matchingDays: number[] = [];
+  const lowerSearchTerm = searchTerm.toLowerCase().trim();
+  
+  // Verificar se o schedule está definido
+  if (!schedule) {
+    return {
+      operacao: operationType,
+      dias: [],
+      mes: month,
+      ano: year
+    };
+  }
   
   // Percorrer cada dia do cronograma
   Object.keys(schedule).forEach(dayString => {
@@ -43,7 +54,7 @@ function searchInSchedule(
     let foundMatch = false;
     for (let i = 0; i < officers.length && !foundMatch; i++) {
       const officer = officers[i];
-      if (officer && officer.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (officer && officer.toLowerCase().includes(lowerSearchTerm)) {
         matchingDays.push(day);
         foundMatch = true;
       }
