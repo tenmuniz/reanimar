@@ -59,17 +59,12 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">
-      {/* Brasão como marca d'água */}
-      <div className="absolute bottom-4 left-4 opacity-10">
-        <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="h-32 w-auto" />
-      </div>
-      
+    <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">      
       {/* Formulário */}
       <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:p-12 relative z-10">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl px-8 py-6 max-w-md mx-auto w-full">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full">
           <div className="mb-6 flex flex-col items-center">
-            <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-16 h-16 mb-4" />
+            <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-20 h-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-800 uppercase text-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">
                 SISTEMA DE ESCALAS EXTRAS
@@ -167,12 +162,12 @@ export default function AuthPage() {
 
       {/* Lado direito - Hero */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-center justify-center relative">
-        {/* Brasão como marca d'água no lado direito - ajustado para ficar mais acima */}
+        {/* Brasão como marca d'água no lado direito - ajustado conforme especificações */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src={brasaoCipm} 
             alt="Brasão 20ª CIPM" 
-            className="absolute top-[10%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] opacity-10 w-80 z-0 select-none" 
+            className="absolute top-[8%] left-1/2 transform -translate-x-1/2 -translate-y-[10%] opacity-5 blur-sm w-[280px] z-0 select-none" 
           />
         </div>
         
