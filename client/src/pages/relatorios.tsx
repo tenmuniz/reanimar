@@ -28,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AreaChart,
@@ -665,91 +666,15 @@ export default function Relatorios() {
           <Button 
             variant="outline" 
             className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white border-none py-2 px-4 shadow-md hover:shadow-lg transition-all"
-            onClick={handleOpenExportModal}
+            onClick={() => handleExportPDF('completo')}
           >
             <FileText className="h-4 w-4" />
             <span>Exportar PDF</span>
           </Button>
         </div>
-      </div>
-      
-      {/* Modal de exportação em PDF */}
-      <Dialog open={exportModalOpen} onOpenChange={handleCloseExportModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold">Exportar Relatório em PDF</DialogTitle>
-            <DialogDescription className="text-center">
-              Selecione o tipo de relatório que deseja exportar
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid grid-cols-2 gap-4 p-4">
-            <Button
-              variant="outline"
-              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
-                exportType === 'completo' 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-              }`}
-              onClick={() => setExportType('completo')}
-            >
-              <FileText className={`h-10 w-10 mb-2 ${exportType === 'completo' ? 'text-blue-500' : 'text-gray-400'}`} />
-              <span className={`text-sm font-medium ${exportType === 'completo' ? 'text-blue-700' : 'text-gray-600'}`}>Relatório Completo</span>
-            </Button>
-            
-            <Button
-              variant="outline"
-              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
-                exportType === 'pmf' 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-              }`}
-              onClick={() => setExportType('pmf')}
-            >
-              <Shield className={`h-10 w-10 mb-2 ${exportType === 'pmf' ? 'text-blue-500' : 'text-gray-400'}`} />
-              <span className={`text-sm font-medium ${exportType === 'pmf' ? 'text-blue-700' : 'text-gray-600'}`}>Somente PMF</span>
-            </Button>
-            
-            <Button
-              variant="outline"
-              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
-                exportType === 'escolaSegura' 
-                  ? 'border-purple-500 bg-purple-50' 
-                  : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
-              }`}
-              onClick={() => setExportType('escolaSegura')}
-            >
-              <School className={`h-10 w-10 mb-2 ${exportType === 'escolaSegura' ? 'text-purple-500' : 'text-gray-400'}`} />
-              <span className={`text-sm font-medium ${exportType === 'escolaSegura' ? 'text-purple-700' : 'text-gray-600'}`}>Somente Escola Segura</span>
-            </Button>
-            
-            <Button
-              variant="outline"
-              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
-                exportType === 'guarnicao' 
-                  ? 'border-green-500 bg-green-50' 
-                  : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
-              }`}
-              onClick={() => setExportType('guarnicao')}
-            >
-              <Users className={`h-10 w-10 mb-2 ${exportType === 'guarnicao' ? 'text-green-500' : 'text-gray-400'}`} />
-              <span className={`text-sm font-medium ${exportType === 'guarnicao' ? 'text-green-700' : 'text-gray-600'}`}>Por Guarnição</span>
-            </Button>
-          </div>
-          
-          <DialogFooter className="sm:justify-center">
-            <Button
-              type="button"
-              className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white px-6 py-2"
-              onClick={() => handleExportPDF(exportType)}
-            >
-              Gerar Relatório
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       
       {/* Cartão GCJOs Restantes que mostra o total de 150 */}
+      </div>
       <div className="mb-6">
         <div className="bg-green-50 rounded-lg border border-green-100 p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 bg-green-100 rounded-full p-2">
