@@ -33,18 +33,35 @@ export default function BuscaMilitar() {
     setResultados([]);
     
     try {
+      console.log(`Buscando dados para PMF em ${anoAtual}/${mesAtual}`);
       // Buscar dados da PMF
       const resPmf = await fetch(`/api/schedule?operation=pmf&year=${anoAtual}&month=${mesAtual}`);
-      if (!resPmf.ok) throw new Error('Erro ao buscar dados PMF');
+      
+      if (!resPmf.ok) {
+        console.error('Falha na API PMF:', await resPmf.text());
+        throw new Error('Erro ao buscar dados PMF');
+      }
+      
       const dataPmf = await resPmf.json();
+      console.log('Dados PMF obtidos:', JSON.stringify(dataPmf).substring(0, 100) + '...');
       
       // Buscar dados da Escola Segura
+      console.log(`Buscando dados para Escola Segura em ${anoAtual}/${mesAtual}`);
       const resEscola = await fetch(`/api/schedule?operation=escolaSegura&year=${anoAtual}&month=${mesAtual}`);
-      if (!resEscola.ok) throw new Error('Erro ao buscar dados Escola Segura');
+      
+      if (!resEscola.ok) {
+        console.error('Falha na API Escola Segura:', await resEscola.text());
+        throw new Error('Erro ao buscar dados Escola Segura');
+      }
+      
       const dataEscola = await resEscola.json();
+      console.log('Dados Escola Segura obtidos:', JSON.stringify(dataEscola).substring(0, 100) + '...');
       
       const resultadosFinais: Resultado[] = [];
       const termoBuscaNormalizado = termoBusca.toLowerCase().trim();
+      
+      // Estrutura de dados verificada nos testes de API
+      // {"schedule":{"2025":{"4":{"1":["2º SGT PM PEIXOTO",...
       
       // Verificar PMF
       const diasPmf: number[] = [];
@@ -55,19 +72,23 @@ export default function BuscaMilitar() {
           const diaNum = parseInt(dia, 10);
           const listaMilitares = militares as (string | null)[];
           
-          if (listaMilitares.some(militar => 
-            militar && militar.toLowerCase().includes(termoBuscaNormalizado)
-          )) {
-            diasPmf.push(diaNum);
+          // Verificar cada militar na lista para este dia
+          for (let i = 0; i < listaMilitares.length; i++) {
+            const militar = listaMilitares[i];
+            if (militar && militar.toLowerCase().includes(termoBuscaNormalizado)) {
+              diasPmf.push(diaNum);
+              break; // Encontrou correspondência, não precisa verificar outros militares neste dia
+            }
           }
         });
-      }
-      
-      if (diasPmf.length > 0) {
-        resultadosFinais.push({
-          operacao: 'pmf',
-          dias: diasPmf.sort((a, b) => a - b)
-        });
+        
+        // Adiciona à lista de resultados se encontrou dias com correspondência
+        if (diasPmf.length > 0) {
+          resultadosFinais.push({
+            operacao: 'pmf',
+            dias: diasPmf.sort((a, b) => a - b)
+          });
+        }
       }
       
       // Verificar Escola Segura
@@ -79,21 +100,26 @@ export default function BuscaMilitar() {
           const diaNum = parseInt(dia, 10);
           const listaMilitares = militares as (string | null)[];
           
-          if (listaMilitares.some(militar => 
-            militar && militar.toLowerCase().includes(termoBuscaNormalizado)
-          )) {
-            diasEscola.push(diaNum);
+          // Verificar cada militar na lista para este dia
+          for (let i = 0; i < listaMilitares.length; i++) {
+            const militar = listaMilitares[i];
+            if (militar && militar.toLowerCase().includes(termoBuscaNormalizado)) {
+              diasEscola.push(diaNum);
+              break; // Encontrou correspondência, não precisa verificar outros militares neste dia
+            }
           }
         });
+        
+        // Adiciona à lista de resultados se encontrou dias com correspondência
+        if (diasEscola.length > 0) {
+          resultadosFinais.push({
+            operacao: 'escolaSegura',
+            dias: diasEscola.sort((a, b) => a - b)
+          });
+        }
       }
       
-      if (diasEscola.length > 0) {
-        resultadosFinais.push({
-          operacao: 'escolaSegura',
-          dias: diasEscola.sort((a, b) => a - b)
-        });
-      }
-      
+      console.log('Resultados encontrados:', resultadosFinais);
       setResultados(resultadosFinais);
     } catch (error) {
       console.error('Erro na busca:', error);
