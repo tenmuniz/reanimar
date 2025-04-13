@@ -269,45 +269,49 @@ export default function EscolaSegura() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-wrap justify-between items-center">
             {/* Título e subtítulo com design premium */}
-            <div className="relative z-10 bg-gradient-to-br from-white/15 to-white/5 p-6 rounded-2xl backdrop-blur-md shadow-[0_20px_50px_rgba(76,29,149,0.4)] border border-white/20 max-w-2xl transform hover:scale-[1.02] transition-all duration-300">
+            <div className="relative z-10 bg-gradient-to-br from-white/20 to-white/5 p-8 rounded-3xl backdrop-blur-md shadow-[0_20px_50px_rgba(76,29,149,0.5)] border border-white/30 max-w-2xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden">
+              {/* Efeito de luz no canto superior */}
+              <div className="absolute -top-20 -left-20 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl"></div>
+              
               {/* Emblema superior */}
-              <div className="flex items-center mb-2">
-                <div className="bg-gradient-to-r from-purple-600 to-fuchsia-500 px-3 py-1.5 rounded-full flex items-center 
-                  border border-purple-400/30 shadow-lg shadow-purple-900/20">
-                  <div className="w-2 h-2 bg-purple-300 rounded-full mr-2 animate-pulse"></div>
+              <div className="flex items-center mb-3 relative">
+                <div className="bg-gradient-to-r from-purple-600 to-fuchsia-500 px-4 py-2 rounded-2xl flex items-center 
+                  border border-purple-400/40 shadow-lg shadow-purple-900/30">
+                  <div className="w-2.5 h-2.5 bg-purple-300 rounded-full mr-2 animate-pulse"></div>
                   <span className="text-xs font-bold tracking-wider text-white uppercase">Sistema de Gestão - 20ªCIPM</span>
                 </div>
               </div>
               
               {/* Divisor decorativo */}
-              <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent mb-4"></div>
+              <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400/50 to-transparent mb-5"></div>
               
               {/* Conteúdo principal */}
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start relative">
                 {/* Título principal com efeito de brilho */}
                 <div className="relative">
-                  <h1 className="text-5xl font-black text-white leading-tight mb-1 tracking-tight">
+                  <h1 className="text-5xl font-black text-white leading-tight mb-2 tracking-tight">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-white to-purple-200
-                      drop-shadow-[0_2px_2px_rgba(130,0,255,0.3)]">
+                      drop-shadow-[0_3px_3px_rgba(130,0,255,0.4)]">
                       ESCOLA SEGURA
                     </span>
                   </h1>
                   
-                  {/* Reflexo sutil */}
-                  <div className="absolute -bottom-1 left-0 w-full h-4 bg-gradient-to-b from-purple-300/20 to-transparent blur-sm"></div>
+                  {/* Reflexo sutil aprimorado */}
+                  <div className="absolute -bottom-2 left-0 w-full h-6 bg-gradient-to-b from-purple-300/30 to-transparent blur-md"></div>
                 </div>
                 
                 {/* Subtítulo com separador elegante */}
-                <div className="flex items-center mt-1">
-                  <div className="h-8 w-1.5 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded-full mr-3 shadow-lg shadow-yellow-600/20"></div>
+                <div className="flex items-center mt-2">
+                  <div className="h-9 w-2 bg-gradient-to-b from-yellow-400 to-amber-600 rounded-full mr-3 shadow-lg shadow-yellow-600/30"></div>
                   <span className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-100 via-white to-purple-100">
                     Extraordinário
                   </span>
                 </div>
               </div>
               
-              {/* Decoração de canto */}
-              <div className="absolute -bottom-1 -right-1 w-16 h-16 bg-gradient-to-br from-purple-500/20 to-fuchsia-600/20 rounded-full blur-xl"></div>
+              {/* Decorações de canto */}
+              <div className="absolute -bottom-5 -right-5 w-32 h-32 bg-gradient-to-br from-purple-500/30 to-fuchsia-600/30 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-2 right-2 w-16 h-16 bg-gradient-to-br from-purple-400/10 to-transparent rounded-full blur-lg"></div>
             </div>
             
             {/* Seletor de mês com estilo premium */}
