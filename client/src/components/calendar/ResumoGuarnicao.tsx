@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Calendar, FileText, ChevronRight, X, User } from "lucide-react";
+import { Users, Calendar, FileText, ChevronRight, X, User, Printer, Download } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear, getWeekdayName } from "@/lib/utils";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // Estendendo a interface para incluir os militares por dia na guarnição
 interface GuarnicaoData {
@@ -68,6 +70,97 @@ export default function ResumoGuarnicao({
       return "CHARLIE";
     }
     return "OUTROS";
+  };
+
+  // Função para exportar PDF da guarnição
+  const exportarPDFGuarnicao = (guarnicao: string) => {
+    if (!guarnicoesData[guarnicao] || !guarnicoesData[guarnicao].militaresPorDia) {
+      return;
+    }
+
+    // Criar nova instância de PDF
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    // Título do documento
+    const tipoOperacao = operationType === 'escolaSegura' ? 'Escola Segura' : 'Polícia Mais Forte';
+    const titulo = `EXTRAS ${tipoOperacao.toUpperCase()} - GUARNIÇÃO ${guarnicao}`;
+    
+    // Adicionar título
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(titulo, 105, 15, { align: 'center' });
+    
+    pdf.setFontSize(12);
+    pdf.text(`Mês de referência: ${mesAno}`, 105, 22, { align: 'center' });
+    
+    // Informações gerais
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Total de extras: ${guarnicoesData[guarnicao].total}`, 20, 30);
+    pdf.text(`Dias com extras: ${guarnicoesData[guarnicao].dias.length}`, 20, 36);
+    
+    // Cabeçalho para lista de dias
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Distribuição por dia', 20, 46);
+    
+    // Criar tabela com os dados dos dias
+    const tableData = Object.entries(guarnicoesData[guarnicao].militaresPorDia!)
+      .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+      .map(([dia, militares]) => {
+        return [
+          dia,
+          getWeekdayName(parseInt(dia), currentDate.getMonth() + 1, currentDate.getFullYear()),
+          militares.join(', ')
+        ];
+      });
+    
+    // Definir cabeçalhos e estilos da tabela
+    autoTable(pdf, {
+      startY: 50,
+      head: [['Dia', 'Dia da Semana', 'Militares']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [30, 41, 59],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240]
+      },
+      columnStyles: {
+        0: { cellWidth: 15 },
+        1: { cellWidth: 35 },
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+      }
+    });
+    
+    // Adicionar rodapé
+    const totalPages = pdf.getNumberOfPages();
+    
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      
+      // Rodapé com número de página
+      pdf.text(
+        `Página ${i} de ${totalPages} - Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 
+        105, 
+        pdf.internal.pageSize.height - 10, 
+        { align: 'center' }
+      );
+    }
+    
+    // Salvar o PDF
+    pdf.save(`Extras_${tipoOperacao.replace(/\s+/g, '_')}_Guarnicao_${guarnicao}_${mesAno.replace(/\s+/g, '_')}.pdf`);
   };
 
   const generateResumoGuarnicoes = () => {
@@ -346,6 +439,21 @@ export default function ResumoGuarnicao({
                               <Users className="h-3 w-3 mr-1" />
                               Detalhes
                             </Button>
+                            
+                            <Button
+                              variant="outline"
+                              className={`${
+                                guarnicao === "EXPEDIENTE" ? "bg-cyan-600/70" :
+                                guarnicao === "ALFA" ? "bg-green-600/70" :
+                                guarnicao === "BRAVO" ? "bg-yellow-600/70" :
+                                guarnicao === "CHARLIE" ? "bg-red-600/70" :
+                                "bg-gray-600/70"
+                              } hover:bg-opacity-100 text-white border-white/20 flex items-center p-1.5 h-auto text-xs`}
+                              onClick={() => exportarPDFGuarnicao(guarnicao)}
+                            >
+                              <Printer className="h-3 w-3 mr-1" />
+                              Imprimir PDF
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -560,6 +668,21 @@ export default function ResumoGuarnicao({
                 >
                   <X className="h-4 w-4 mr-2" />
                   Fechar
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  className={`${
+                    guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700 hover:bg-cyan-800" :
+                    guarnicaoSelecionada === "ALFA" ? "bg-green-700 hover:bg-green-800" :
+                    guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700 hover:bg-yellow-800" :
+                    guarnicaoSelecionada === "CHARLIE" ? "bg-red-700 hover:bg-red-800" :
+                    "bg-gray-700 hover:bg-gray-800"
+                  } text-white border-white/20`}
+                  onClick={() => guarnicaoSelecionada && exportarPDFGuarnicao(guarnicaoSelecionada)}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Baixar PDF da Guarnição
                 </Button>
               </div>
             </>
