@@ -286,10 +286,7 @@ export default function EscolaSegura() {
             {/* Conteúdo principal modernizado */}
             <div className="relative z-10 p-5 rounded-3xl max-w-2xl">
               <div className="flex items-start gap-6">
-                {/* Decoração de destaque no lugar do brasão - formato simplificado */}
-                <div className="hidden md:flex items-center justify-center w-14 h-14 bg-purple-600 rounded-xl shadow-md mr-3">
-                  <span className="text-2xl font-bold text-white">20ª</span>
-                </div>
+
                 
                 {/* Conteúdo textual modernizado */}
                 <div className="flex flex-col items-start max-w-md">
