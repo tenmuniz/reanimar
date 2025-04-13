@@ -11,7 +11,7 @@ import ResumoGuarnicao from "@/components/calendar/ResumoGuarnicao";
 import VerificadorInconsistencias from "@/components/calendar/VerificadorInconsistencias";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
-import brasaoCipm from "../assets/brasao-cipm.jpg";
+
 
 // API endpoint for officers
 const OFFICERS_ENDPOINT = "/api/officers";
@@ -259,14 +259,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGQ9Ik0yNSAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0yMCAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zNSAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik00MCAzMGgyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAyNXYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAyMHYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCAzNXYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KICAgIDxwYXRoIGQ9Ik0zMCA0MHYyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjAuNSIgLz4KPC9zdmc+')]
             opacity-20"></div>
           
-          {/* Brasão da CIPM como marca d'água */}
-          <div className="absolute left-2/3 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 opacity-5">
-            <img 
-              src={brasaoCipm} 
-              alt="Brasão da 20ª CIPM" 
-              className="w-full h-full object-contain"
-            />
-          </div>
+
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -274,16 +267,13 @@ export default function Home() {
             {/* Conteúdo principal modernizado */}
             <div className="relative z-10 p-5 rounded-3xl max-w-2xl">
               <div className="flex items-start gap-6">
-                {/* Brasão da CIPM visível */}
-                <div className="hidden md:block relative">
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-[0_8px_25px_rgba(0,40,120,0.5)] border-2 border-white/20 transform rotate-2">
-                    <img 
-                      src={brasaoCipm} 
-                      alt="Brasão da 20ª CIPM" 
-                      className="w-full h-full object-cover"
-                    />
+                {/* Decoração de destaque no lugar do brasão */}
+                <div className="hidden md:flex relative mb-2">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-lg opacity-60 transform rotate-2"></div>
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg absolute -bottom-2 -right-2 opacity-40 transform -rotate-3"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-white">20ª</span>
                   </div>
-                  <div className="absolute -inset-0.5 bg-white/10 blur-md rounded-2xl -z-10"></div>
                 </div>
                 
                 {/* Conteúdo textual modernizado */}
