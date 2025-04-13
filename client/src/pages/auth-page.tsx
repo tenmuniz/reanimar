@@ -149,11 +149,13 @@ export default function AuthPage() {
               </Button>
               
               {/* Aviso de segurança */}
-              <div className="mt-4 text-center bg-red-50 p-2 rounded-md border border-red-200">
-                <p className="text-sm text-red-600 font-medium">
-                  <AlertCircle className="h-4 w-4 inline mr-1" />
-                  Atenção: Tentativas de acesso não autorizado são registradas via IP.
-                </p>
+              <div className="mt-4 text-center bg-gradient-to-r from-red-50 to-red-100 p-3 rounded-md border-l-4 border-red-500 shadow-md">
+                <div className="flex items-center justify-center">
+                  <AlertCircle className="h-5 w-5 text-red-600 mr-2 animate-pulse" />
+                  <p className="text-sm font-bold text-red-700">
+                    ATENÇÃO: Tentativas de acesso não autorizado são <span className="underline">registradas via IP</span>.
+                  </p>
+                </div>
               </div>
             </form>
           </Form>
