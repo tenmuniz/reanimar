@@ -7,15 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { OfficersResponse, CombinedSchedules, MonthSchedule } from "@/lib/types";
+import { OfficersResponse, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
-
-interface SearchResult {
-  operacao: 'pmf' | 'escolaSegura';
-  dias: number[];
-  mes: number;
-  ano: number;
-}
+import { searchMilitar, SearchResult } from "@/lib/search-helper";
 
 export default function MilitarSearch() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,70 +36,14 @@ export default function MilitarSearch() {
     if (!searchTerm || !combinedSchedulesData?.schedules) return;
     
     setIsSearching(true);
-    const results: SearchResult[] = [];
     
-    // Função para verificar PMF
-    const buscarNaPMF = () => {
-      const pmfSchedule = combinedSchedulesData.schedules.pmf;
-      const matchingDays: number[] = [];
-      
-      // Iterar sobre os dias
-      for (const [day, officers] of Object.entries(pmfSchedule)) {
-        // Verificar cada militar neste dia
-        for (const officer of officers) {
-          if (officer && officer.includes(searchTerm)) {
-            matchingDays.push(parseInt(day));
-            break; // Se encontrou militar, não precisa verificar os outros deste dia
-          }
-        }
-      }
-      
-      // Se encontrou dias, adicionar aos resultados
-      if (matchingDays.length > 0) {
-        results.push({
-          operacao: 'pmf',
-          dias: matchingDays,
-          mes: currentMonth,
-          ano: currentYear
-        });
-      }
-    };
-    
-    // Função para verificar Escola Segura
-    const buscarNaEscolaSegura = () => {
-      const escolaSeguraSchedule = combinedSchedulesData.schedules.escolaSegura;
-      const matchingDays: number[] = [];
-      
-      // Iterar sobre os dias
-      for (const [day, officers] of Object.entries(escolaSeguraSchedule)) {
-        // Verificar cada militar neste dia
-        for (const officer of officers) {
-          if (officer && officer.includes(searchTerm)) {
-            matchingDays.push(parseInt(day));
-            break; // Se encontrou militar, não precisa verificar os outros deste dia
-          }
-        }
-      }
-      
-      // Se encontrou dias, adicionar aos resultados
-      if (matchingDays.length > 0) {
-        results.push({
-          operacao: 'escolaSegura',
-          dias: matchingDays,
-          mes: currentMonth,
-          ano: currentYear
-        });
-      }
-    };
-    
-    // Executar busca em ambas as operações
-    buscarNaPMF();
-    buscarNaEscolaSegura();
-    
-    // Ordenar dias em cada resultado
-    for (const result of results) {
-      result.dias.sort((a, b) => a - b);
-    }
+    // Usar o helper para realizar a busca
+    const results = searchMilitar(
+      combinedSchedulesData.schedules,
+      searchTerm,
+      currentMonth,
+      currentYear
+    );
     
     setSearchResults(results);
     setIsSearching(false);
