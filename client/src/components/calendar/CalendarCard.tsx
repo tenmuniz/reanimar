@@ -381,7 +381,7 @@ export default function CalendarCard({
           ) : (
             <div className="inline-flex items-center bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
               <Users className="h-4 w-4 mr-2 text-slate-500" />
-              Sem escalados
+              Sem extras
             </div>
           )}
         </div>

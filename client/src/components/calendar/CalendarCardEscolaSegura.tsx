@@ -246,7 +246,7 @@ export default function CalendarCardEscolaSegura({
   let weekdayBadgeClass = "";
   
   if (assignedCount === 2) {
-    // Todos os 2 policiais estão escalados - verde vivo
+    // Todos os 2 policiais estão em extras - verde vivo
     headerBgColor = "bg-green-500";
     dayTextColor = "text-white";
     weekdayBadgeClass = "bg-green-700 text-white";
@@ -256,7 +256,7 @@ export default function CalendarCardEscolaSegura({
     dayTextColor = "text-white";
     weekdayBadgeClass = "bg-red-700 text-white";
   } else {
-    // Nenhum policial escalado - cinza padrão
+    // Nenhum policial em extras - cinza padrão
     headerBgColor = "bg-gray-50";
     dayTextColor = "text-gray-800";
     weekdayBadgeClass = weekdayClass;
