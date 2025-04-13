@@ -173,9 +173,7 @@ export default function AuthPage() {
         </div>
         
         <div className="text-center relative z-10">
-          <div className="flex justify-center mb-6">
-            <img src={brasaoPmpa} alt="Brasão PMPA" className="h-32 w-auto drop-shadow-lg" />
-          </div>
+          {/* Brasão removido conforme solicitado */}
           <h2 className="text-3xl font-bold text-white mb-4 uppercase">Sistema de Gestão de Extras</h2>
           <p className="text-blue-100 mb-6 max-w-md mx-auto">
             Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias,
