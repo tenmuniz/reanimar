@@ -10,14 +10,22 @@ export interface SearchResult {
 export function searchMilitar(schedules: CombinedSchedules, searchTerm: string, month: number, year: number): SearchResult[] {
   const results: SearchResult[] = [];
   
-  // Buscar na PMF
-  const pmfResults = searchInSchedule(schedules.pmf, searchTerm, 'pmf', month, year);
+  // Buscar na PMF (estrutura: schedules.pmf[year][month][day])
+  const pmfSchedule = schedules.pmf && schedules.pmf[year] && schedules.pmf[year][month] 
+    ? schedules.pmf[year][month] 
+    : {};
+    
+  const pmfResults = searchInSchedule(pmfSchedule, searchTerm, 'pmf', month, year);
   if (pmfResults.dias.length > 0) {
     results.push(pmfResults);
   }
   
-  // Buscar na Escola Segura
-  const escolaSeguraResults = searchInSchedule(schedules.escolaSegura, searchTerm, 'escolaSegura', month, year);
+  // Buscar na Escola Segura (estrutura semelhante)
+  const escolaSeguraSchedule = schedules.escolaSegura && schedules.escolaSegura[year] && schedules.escolaSegura[year][month] 
+    ? schedules.escolaSegura[year][month] 
+    : {};
+    
+  const escolaSeguraResults = searchInSchedule(escolaSeguraSchedule, searchTerm, 'escolaSegura', month, year);
   if (escolaSeguraResults.dias.length > 0) {
     results.push(escolaSeguraResults);
   }
