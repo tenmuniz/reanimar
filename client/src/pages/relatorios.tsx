@@ -58,6 +58,8 @@ export default function Relatorios() {
   const [tipoOperacao, setTipoOperacao] = useState("todos");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [filtroTabelaMilitares, setFiltroTabelaMilitares] = useState("total"); // Filtro para tabela de militares
+  const [exportModalOpen, setExportModalOpen] = useState(false); // Estado para controlar o modal de exportação
+  const [exportType, setExportType] = useState("completo"); // Tipo de exportação de PDF
   
   // Obter data atual para o ano e mês
   const currentDate = new Date();
