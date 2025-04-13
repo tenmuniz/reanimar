@@ -94,7 +94,7 @@ export default function CalendarCard({
     }
     
     // LOG da contagem total de cada militar
-    console.log("CONTAGEM TOTAL DE ESCALAS:", 
+    console.log("CONTAGEM TOTAL DE EXTRAS:", 
       Object.entries(contadorEscalas)
         .filter(([_, count]) => count > 0)
         .sort((a, b) => b[1] - a[1])
@@ -110,7 +110,7 @@ export default function CalendarCard({
     if (militaresNoLimite.length > 0) {
       console.log(`⚠️ LIMITE 12 ATINGIDO por: ${militaresNoLimite.join(', ')}`);
       console.log(`⚠️ Contagem atual: `, 
-        militaresNoLimite.map(m => `${m}: ${contadorEscalas[m]} escalas`)
+        militaresNoLimite.map(m => `${m}: ${contadorEscalas[m]} extras`)
       );
     }
     
@@ -225,7 +225,7 @@ export default function CalendarCard({
       });
       
       // Log de erro detalhado
-      console.error(`🚫 BLOQUEADO: ${officer} tem ${totalEscalasMilitar} escalas e atingiu o limite estrito!`);
+      console.error(`🚫 BLOQUEADO: ${officer} tem ${totalEscalasMilitar} extras e atingiu o limite estrito!`);
       console.error(`🚫 REGRA DE NEGÓCIO VIOLADA: Tentativa de adicionar um ${totalEscalasMilitar + 1}º serviço`);
       
       // Retorna imediatamente sem processar

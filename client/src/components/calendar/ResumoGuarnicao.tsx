@@ -348,7 +348,7 @@ export default function ResumoGuarnicao({
                         pdf.setFontSize(10);
                         pdf.setFont('helvetica', 'bold');
                         pdf.text(`• Total de militares escalados: ${dados.total}`, 25, 75);
-                        pdf.text(`• Dias com escalas: ${dados.dias.length} dias`, 25, 83);
+                        pdf.text(`• Dias com extras: ${dados.dias.length} dias`, 25, 83);
                         
                         // Organizar dados por militares (para mostrar todos os dias de cada militar)
                         const militaresPorDia = dados.militaresPorDia || {};
@@ -809,7 +809,7 @@ export default function ResumoGuarnicao({
                         pdf.setFontSize(10);
                         pdf.setFont('helvetica', 'bold');
                         pdf.text(`• Total de militares escalados: ${guarnicoesData[guarnicaoSelecionada].total}`, 25, 75);
-                        pdf.text(`• Dias com escalas: ${guarnicoesData[guarnicaoSelecionada].dias.length} dias`, 25, 83);
+                        pdf.text(`• Dias com extras: ${guarnicoesData[guarnicaoSelecionada].dias.length} dias`, 25, 83);
                         
                         // Organizar dados por militares (para mostrar todos os dias de cada militar)
                         const militaresPorDia = guarnicoesData[guarnicaoSelecionada].militaresPorDia || {};
