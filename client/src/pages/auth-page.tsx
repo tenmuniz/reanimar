@@ -167,9 +167,13 @@ export default function AuthPage() {
 
       {/* Lado direito - Hero */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-center justify-center relative">
-        {/* Brasão como marca d'água no lado direito */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-10">
-          <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-80 h-80" />
+        {/* Brasão como marca d'água no lado direito - ajustado para ficar mais acima */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img 
+            src={brasaoCipm} 
+            alt="Brasão 20ª CIPM" 
+            className="absolute top-[10%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] opacity-10 w-80 z-0 select-none" 
+          />
         </div>
         
         <div className="text-center relative z-10">
