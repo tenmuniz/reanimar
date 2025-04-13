@@ -1,7 +1,108 @@
-import React from 'react';
-import MilitarSearch from "@/components/search/MilitarSearch";
+import React, { useState } from 'react';
+import { Search, Calendar, Shield, GraduationCap } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatMonthYear } from "@/lib/utils";
+
+// Interfaces para resultados da busca
+interface Resultado {
+  operacao: 'pmf' | 'escolaSegura';
+  dias: number[];
+}
 
 export default function BuscaMilitar() {
+  const [termoBusca, setTermoBusca] = useState('');
+  const [resultados, setResultados] = useState<Resultado[]>([]);
+  const [buscando, setBuscando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  // Mês e ano atuais fixos
+  const mesAtual = 4;
+  const anoAtual = 2025;
+
+  // Função para buscar diretamente
+  const buscarMilitar = async () => {
+    if (!termoBusca.trim()) return;
+    
+    setBuscando(true);
+    setErro(null);
+    setResultados([]);
+    
+    try {
+      // Buscar dados da PMF
+      const resPmf = await fetch(`/api/schedule?operation=pmf&year=${anoAtual}&month=${mesAtual}`);
+      if (!resPmf.ok) throw new Error('Erro ao buscar dados PMF');
+      const dataPmf = await resPmf.json();
+      
+      // Buscar dados da Escola Segura
+      const resEscola = await fetch(`/api/schedule?operation=escolaSegura&year=${anoAtual}&month=${mesAtual}`);
+      if (!resEscola.ok) throw new Error('Erro ao buscar dados Escola Segura');
+      const dataEscola = await resEscola.json();
+      
+      const resultadosFinais: Resultado[] = [];
+      const termoBuscaNormalizado = termoBusca.toLowerCase().trim();
+      
+      // Verificar PMF
+      const diasPmf: number[] = [];
+      if (dataPmf?.schedule?.[anoAtual]?.[mesAtual]) {
+        const schedulePmf = dataPmf.schedule[anoAtual][mesAtual];
+        
+        Object.entries(schedulePmf).forEach(([dia, militares]) => {
+          const diaNum = parseInt(dia, 10);
+          const listaMilitares = militares as (string | null)[];
+          
+          if (listaMilitares.some(militar => 
+            militar && militar.toLowerCase().includes(termoBuscaNormalizado)
+          )) {
+            diasPmf.push(diaNum);
+          }
+        });
+      }
+      
+      if (diasPmf.length > 0) {
+        resultadosFinais.push({
+          operacao: 'pmf',
+          dias: diasPmf.sort((a, b) => a - b)
+        });
+      }
+      
+      // Verificar Escola Segura
+      const diasEscola: number[] = [];
+      if (dataEscola?.schedule?.[anoAtual]?.[mesAtual]) {
+        const scheduleEscola = dataEscola.schedule[anoAtual][mesAtual];
+        
+        Object.entries(scheduleEscola).forEach(([dia, militares]) => {
+          const diaNum = parseInt(dia, 10);
+          const listaMilitares = militares as (string | null)[];
+          
+          if (listaMilitares.some(militar => 
+            militar && militar.toLowerCase().includes(termoBuscaNormalizado)
+          )) {
+            diasEscola.push(diaNum);
+          }
+        });
+      }
+      
+      if (diasEscola.length > 0) {
+        resultadosFinais.push({
+          operacao: 'escolaSegura',
+          dias: diasEscola.sort((a, b) => a - b)
+        });
+      }
+      
+      setResultados(resultadosFinais);
+    } catch (error) {
+      console.error('Erro na busca:', error);
+      setErro('Ocorreu um erro ao buscar as escalas. Tente novamente.');
+    } finally {
+      setBuscando(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <header className="mb-6">
@@ -16,7 +117,122 @@ export default function BuscaMilitar() {
       
       <div className="grid md:grid-cols-12 gap-6">
         <div className="md:col-span-12">
-          <MilitarSearch />
+          <Card className="shadow-lg border border-slate-200 dark:border-slate-700">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-2xl font-semibold">
+                Pesquisar Militar
+              </CardTitle>
+              <CardDescription>
+                Digite o nome (ou parte dele) do militar que deseja buscar
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <div className="flex gap-2 mb-4">
+                <div className="relative flex-grow">
+                  <Search className="absolute left-2.5 top-2.5 h-5 w-5 text-slate-400" />
+                  <Input
+                    type="text"
+                    placeholder="Ex: MUNIZ, AMARAL, SGT, CAP..."
+                    value={termoBusca}
+                    onChange={(e) => setTermoBusca(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && buscarMilitar()}
+                    className="pl-10 border-slate-300 dark:border-slate-600"
+                  />
+                </div>
+                <Button 
+                  onClick={buscarMilitar}
+                  disabled={buscando || !termoBusca}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                >
+                  {buscando ? 'Buscando...' : 'Buscar'}
+                </Button>
+              </div>
+
+              {erro && (
+                <Alert className="mb-4 bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700">
+                  <AlertTitle className="text-red-600 dark:text-red-400">
+                    Erro na busca
+                  </AlertTitle>
+                  <AlertDescription className="text-red-600/80 dark:text-red-400/80">
+                    {erro}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {resultados.length > 0 ? (
+                <div className="mt-4">
+                  <Tabs defaultValue="todos" className="w-full">
+                    <TabsList className="w-full mb-4">
+                      <TabsTrigger value="todos" className="flex-1">
+                        Todas as Operações
+                      </TabsTrigger>
+                      <TabsTrigger value="pmf" className="flex-1">
+                        PMF
+                      </TabsTrigger>
+                      <TabsTrigger value="escolaSegura" className="flex-1">
+                        Escola Segura
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="todos">
+                      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+                        {resultados.map((resultado, index) => (
+                          <CartaoResultado 
+                            key={index} 
+                            resultado={resultado} 
+                            mes={mesAtual} 
+                            ano={anoAtual} 
+                          />
+                        ))}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="pmf">
+                      <div className="grid gap-4 md:grid-cols-1">
+                        {resultados
+                          .filter(resultado => resultado.operacao === 'pmf')
+                          .map((resultado, index) => (
+                            <CartaoResultado 
+                              key={index} 
+                              resultado={resultado} 
+                              mes={mesAtual} 
+                              ano={anoAtual} 
+                            />
+                        ))}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="escolaSegura">
+                      <div className="grid gap-4 md:grid-cols-1">
+                        {resultados
+                          .filter(resultado => resultado.operacao === 'escolaSegura')
+                          .map((resultado, index) => (
+                            <CartaoResultado 
+                              key={index} 
+                              resultado={resultado} 
+                              mes={mesAtual} 
+                              ano={anoAtual} 
+                            />
+                        ))}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              ) : termoBusca && !buscando ? (
+                <Alert className="mb-4 bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-700">
+                  <AlertTitle className="text-orange-600 dark:text-orange-400 flex items-center">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Nenhum resultado encontrado
+                  </AlertTitle>
+                  <AlertDescription className="text-orange-600/80 dark:text-orange-400/80">
+                    Não foi encontrada nenhuma escala para "{termoBusca}".
+                    Verifique se digitou o nome corretamente ou tente outro termo.
+                  </AlertDescription>
+                </Alert>
+              ) : null}
+            </CardContent>
+          </Card>
         </div>
         
         <div className="md:col-span-12">
@@ -44,5 +260,76 @@ export default function BuscaMilitar() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente para exibir o cartão de resultado
+function CartaoResultado({ 
+  resultado, 
+  mes, 
+  ano 
+}: { 
+  resultado: Resultado;
+  mes: number;
+  ano: number;
+}) {
+  const isEscolaSegura = resultado.operacao === 'escolaSegura';
+  
+  return (
+    <Card className={`overflow-hidden border shadow-md transition-all hover:shadow-lg ${
+      isEscolaSegura 
+        ? 'border-purple-200 dark:border-purple-800' 
+        : 'border-blue-200 dark:border-blue-800'
+    }`}>
+      <div className={`h-2 ${
+        isEscolaSegura 
+          ? 'bg-gradient-to-r from-purple-500 to-violet-500' 
+          : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+      }`} />
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className={`text-lg font-bold flex items-center ${
+              isEscolaSegura ? 'text-purple-700 dark:text-purple-400' : 'text-blue-700 dark:text-blue-400'
+            }`}>
+              {isEscolaSegura ? (
+                <GraduationCap className="h-5 w-5 mr-2 inline-block" />
+              ) : (
+                <Shield className="h-5 w-5 mr-2 inline-block" />
+              )}
+              {isEscolaSegura ? 'Escola Segura' : 'Polícia Mais Forte'}
+            </CardTitle>
+            <CardDescription className="text-slate-600 dark:text-slate-400">
+              {formatMonthYear(new Date(ano, mes - 1))}
+            </CardDescription>
+          </div>
+          <Badge className={`${
+            isEscolaSegura 
+              ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' 
+              : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+          }`}>
+            {resultado.dias.length} {resultado.dias.length === 1 ? 'dia' : 'dias'}
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2 mt-1">
+          {resultado.dias.map(dia => (
+            <Badge 
+              key={dia} 
+              className={`
+                text-white font-semibold py-1 px-3 rounded-full
+                ${isEscolaSegura 
+                  ? 'bg-gradient-to-r from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600' 
+                  : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600'
+                }
+              `}
+            >
+              Dia {dia}
+            </Badge>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
