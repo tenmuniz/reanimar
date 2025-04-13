@@ -500,7 +500,7 @@ export default function Relatorios() {
         },
         columnStyles: {
           4: {
-            cellCallback: function(cell, data) {
+            cellCallback: function(cell: any, data: any) {
               if (cell.text[0] === 'LIMITE ATINGIDO') {
                 cell.styles.fillColor = [255, 200, 200];
                 cell.styles.textColor = [180, 0, 0];
