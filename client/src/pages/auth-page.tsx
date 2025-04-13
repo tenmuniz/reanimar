@@ -62,7 +62,7 @@ export default function AuthPage() {
     <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">      
       {/* Formulário */}
       <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:p-12 relative z-10">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full min-h-[400px] flex flex-col">
           <div className="mb-6 flex flex-col items-center">
             <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-20 h-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-800 uppercase text-center">
@@ -85,8 +85,8 @@ export default function AuthPage() {
           </div>
 
           {/* Formulário de Login */}
-          <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-5">
+          <Form {...loginForm} className="flex-1 flex flex-col justify-between">
+            <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-5 flex-1 flex flex-col justify-between">
               <FormField
                 control={loginForm.control}
                 name="cpf"
@@ -161,22 +161,25 @@ export default function AuthPage() {
       </div>
 
       {/* Lado direito - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-center justify-center relative">
-        {/* Brasão como marca d'água no lado direito - redimensionado e ajustado */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-stretch relative">
+        {/* Brasão como marca d'água no lado direito - redimensionado e ajustado, alinhado com o topo do card */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src={brasaoCipm} 
             alt="Brasão 20ª CIPM" 
-            className="absolute top-[18%] left-1/2 transform -translate-x-1/2 -translate-y-[10%] opacity-5 w-[240px] max-w-[60%] z-0 select-none hidden sm:block filter grayscale(100%) brightness(1.2)" 
+            className="absolute top-[10%] left-1/2 transform -translate-x-1/2 opacity-5 w-[240px] max-w-[60%] z-0 select-none hidden sm:block filter grayscale(100%) brightness(1.2)" 
           />
         </div>
         
-        <div className="relative z-10 mt-12 text-center max-w-md mx-auto">
-          <h2 className="text-white text-2xl md:text-3xl font-bold mb-4 uppercase">Sistema de Gestão de Extras</h2>
-          <p className="text-white/90 text-sm md:text-base mb-8">
-            Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias,
-            desenvolvida para maximizar a eficiência operacional e transparência.
-          </p>
+        {/* Container flexível para alinhar elementos com a caixa de login */}
+        <div className="relative z-10 flex flex-col justify-between h-full min-h-[400px] text-center max-w-md mx-auto w-full">
+          <div>
+            <h2 className="text-white text-2xl md:text-3xl font-bold mb-4 uppercase">Sistema de Gestão de Extras</h2>
+            <p className="text-white/90 text-sm md:text-base mb-8">
+              Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias,
+              desenvolvida para maximizar a eficiência operacional e transparência.
+            </p>
+          </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg text-white flex flex-col items-center hover:bg-blue-600 transition-all">
