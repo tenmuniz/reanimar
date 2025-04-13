@@ -10,24 +10,59 @@ export interface SearchResult {
 export function searchMilitar(schedules: CombinedSchedules, searchTerm: string, month: number, year: number): SearchResult[] {
   const results: SearchResult[] = [];
   
-  // Buscar na PMF (estrutura: schedules.pmf[year][month][day])
-  const pmfSchedule = schedules.pmf && schedules.pmf[year] && schedules.pmf[year][month] 
-    ? schedules.pmf[year][month] 
-    : {};
-    
-  const pmfResults = searchInSchedule(pmfSchedule, searchTerm, 'pmf', month, year);
-  if (pmfResults.dias.length > 0) {
-    results.push(pmfResults);
+  if (!schedules) {
+    console.warn('Não há escalas disponíveis para busca');
+    return [];
   }
   
-  // Buscar na Escola Segura (estrutura semelhante)
-  const escolaSeguraSchedule = schedules.escolaSegura && schedules.escolaSegura[year] && schedules.escolaSegura[year][month] 
-    ? schedules.escolaSegura[year][month] 
-    : {};
+  console.log('Estrutura das escalas recebidas:', JSON.stringify(schedules, null, 2).substring(0, 200) + '...');
+  
+  // Buscar na PMF com a estrutura aninhada: schedules.pmf[year][month][day]
+  try {
+    let pmfSchedule = {};
     
-  const escolaSeguraResults = searchInSchedule(escolaSeguraSchedule, searchTerm, 'escolaSegura', month, year);
-  if (escolaSeguraResults.dias.length > 0) {
-    results.push(escolaSeguraResults);
+    if (schedules.pmf) {
+      if (schedules.pmf[year] && schedules.pmf[year][month]) {
+        // Formato: {pmf: {2025: {4: {1: [...], 2: [...] }}}}
+        pmfSchedule = schedules.pmf[year][month];
+      } else if (typeof schedules.pmf === 'object' && Object.keys(schedules.pmf).some(key => !isNaN(Number(key)))) {
+        // Formato alternativo: {pmf: {1: [...], 2: [...] }}
+        pmfSchedule = schedules.pmf;
+      }
+    }
+    
+    console.log(`PMF Schedule para busca (${year}/${month}):`, pmfSchedule);
+    
+    const pmfResults = searchInSchedule(pmfSchedule, searchTerm, 'pmf', month, year);
+    if (pmfResults.dias.length > 0) {
+      results.push(pmfResults);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar em PMF:', error);
+  }
+  
+  // Buscar na Escola Segura com a mesma lógica
+  try {
+    let escolaSeguraSchedule = {};
+    
+    if (schedules.escolaSegura) {
+      if (schedules.escolaSegura[year] && schedules.escolaSegura[year][month]) {
+        // Formato: {escolaSegura: {2025: {4: {1: [...], 2: [...] }}}}
+        escolaSeguraSchedule = schedules.escolaSegura[year][month];
+      } else if (typeof schedules.escolaSegura === 'object' && Object.keys(schedules.escolaSegura).some(key => !isNaN(Number(key)))) {
+        // Formato alternativo: {escolaSegura: {1: [...], 2: [...] }}
+        escolaSeguraSchedule = schedules.escolaSegura;
+      }
+    }
+    
+    console.log(`Escola Segura Schedule para busca (${year}/${month}):`, escolaSeguraSchedule);
+    
+    const escolaSeguraResults = searchInSchedule(escolaSeguraSchedule, searchTerm, 'escolaSegura', month, year);
+    if (escolaSeguraResults.dias.length > 0) {
+      results.push(escolaSeguraResults);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar em Escola Segura:', error);
   }
   
   return results;

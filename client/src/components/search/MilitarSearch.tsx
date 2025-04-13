@@ -27,17 +27,25 @@ export default function MilitarSearch() {
   });
 
   // Buscar escalas combinadas
-  const { data: combinedSchedulesData } = useQuery<{ schedules: CombinedSchedules }>({
+  const { data: combinedSchedulesData, refetch } = useQuery<{ schedules: CombinedSchedules }>({
     queryKey: ['/api/combined-schedules', currentYear, currentMonth],
     queryFn: async () => {
+      console.log(`Buscando dados para: ano=${currentYear}, mês=${currentMonth}`);
       const res = await fetch(`/api/combined-schedules?year=${currentYear}&month=${currentMonth}`);
       if (!res.ok) {
         throw new Error('Failed to fetch schedules');
       }
-      return res.json();
+      const data = await res.json();
+      console.log('Dados recebidos:', data);
+      return data;
     },
     enabled: true,
   });
+  
+  // Recarregar os dados quando o mês ou ano mudar
+  useEffect(() => {
+    refetch();
+  }, [currentMonth, currentYear, refetch]);
 
   const handleSearch = () => {
     if (!searchTerm || !combinedSchedulesData?.schedules) return;
