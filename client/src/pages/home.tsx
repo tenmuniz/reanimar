@@ -343,14 +343,7 @@ export default function Home() {
                 />
               </div>
               
-              <div>
-                <VerificadorInconsistencias
-                  schedule={schedule}
-                  currentDate={currentDate}
-                  combinedSchedules={combinedSchedules}
-                  operationType="pmf"
-                />
-              </div>
+              {/* Remoção do botão de verificar conforme solicitado */}
             </div>
           </div>
         </div>

@@ -365,12 +365,7 @@ export default function EscolaSegura() {
                 </div>
                 
                 <div>
-                  <VerificadorInconsistencias
-                    schedule={schedule}
-                    currentDate={currentDate}
-                    combinedSchedules={combinedSchedules}
-                    operationType="escolaSegura"
-                  />
+                  {/* Remoção do botão de verificar conforme solicitado */}
                 </div>
               </div>
             </div>
