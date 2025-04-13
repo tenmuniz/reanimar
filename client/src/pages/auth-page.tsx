@@ -162,24 +162,23 @@ export default function AuthPage() {
 
       {/* Lado direito - Hero */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-center justify-center relative">
-        {/* Brasão como marca d'água no lado direito - ajustado conforme especificações */}
+        {/* Brasão como marca d'água no lado direito - reposicionado e ajustado */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src={brasaoCipm} 
             alt="Brasão 20ª CIPM" 
-            className="absolute top-[8%] left-1/2 transform -translate-x-1/2 -translate-y-[10%] opacity-5 blur-sm w-[280px] z-0 select-none" 
+            className="absolute top-[20%] left-1/2 transform -translate-x-1/2 -translate-y-[10%] opacity-8 w-[280px] z-0 select-none" 
           />
         </div>
         
-        <div className="text-center relative z-10">
-          {/* Brasão removido conforme solicitado */}
+        <div className="text-center relative z-10 mt-10 max-w-md mx-auto">
           <h2 className="text-3xl font-bold text-white mb-4 uppercase">Sistema de Gestão de Extras</h2>
-          <p className="text-blue-100 mb-6 max-w-md mx-auto">
+          <p className="text-blue-100 mb-6">
             Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias,
             desenvolvida para maximizar a eficiência operacional e transparência.
           </p>
           
-          <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+          <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg text-white flex flex-col items-center hover:bg-blue-600 transition-all">
               <ShieldAlert className="h-6 w-6 mb-2 text-blue-200" />
               <h3 className="font-medium">Polícia Mais Forte</h3>
