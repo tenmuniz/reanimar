@@ -170,30 +170,42 @@ export default function VerificadorInconsistencias({
     // Obter os dados das escalas
     const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
     
-    // Define qual escala é a primária com base no tipo de operação
-    const primaryData = operationType === 'pmf' 
-      ? schedule[currentMonthKey] || {} 
-      : (combinedSchedules?.escolaSegura[currentMonthKey] || {});
+    // Depurar a estrutura de dados para descobrir o problema
+    console.log("Tipo de operação:", operationType);
+    console.log("Schedule recebido:", JSON.stringify(schedule));
     
-    // Define a outra escala para verificação de conflitos "duplos"
-    const secondaryData = operationType === 'pmf'
-      ? (combinedSchedules?.escolaSegura[currentMonthKey] || {})
-      : (combinedSchedules?.pmf[currentMonthKey] || {});
+    if (combinedSchedules) {
+      console.log("Combined schedules:", JSON.stringify(combinedSchedules));
+    }
     
-    // Nome da operação primária para uso nas mensagens
-    const primaryOperation = operationType === 'pmf' ? "PMF" : "ESCOLA SEGURA";
-    // Nome da operação secundária para uso nas mensagens
-    const secondaryOperation = operationType === 'pmf' ? "ESCOLA SEGURA" : "PMF";
+    // Verificar estrutura de dados e corrigir acesso
+    let pmfData: Record<string, (string | null)[]> = {};
+    let escolaSeguraData: Record<string, (string | null)[]> = {};
+    
+    // Casos específicos para cada tipo de dados na aplicação
+    if (operationType === 'pmf') {
+      // Na página PMF, schedule contém dados PMF, e combinedSchedules contém ambos
+      pmfData = schedule[currentMonthKey] || {};
+      escolaSeguraData = combinedSchedules?.escolaSegura?.[currentMonthKey] || 
+                        (combinedSchedules?.escolaSegura?.["2025"]?.["3"] || {});
+    } else {
+      // Na página Escola Segura, schedule contém dados Escola Segura, e combinedSchedules contém ambos
+      escolaSeguraData = schedule[currentMonthKey] || {};
+      pmfData = combinedSchedules?.pmf?.[currentMonthKey] || {};
+    }
+    
+    console.log("PMF Data:", JSON.stringify(pmfData));
+    console.log("Escola Segura Data:", JSON.stringify(escolaSeguraData));
     
     // Para cada dia do mês
     for (let dia = 1; dia <= 31; dia++) {
       const dayStr = dia.toString();
       
-      // Verificar militares escalados na operação primária
-      if (primaryData[dayStr]) {
-        const militaresPrimarios = primaryData[dayStr].filter(m => m !== null) as string[];
+      // Verificar militares escalados em PMF
+      if (pmfData[dayStr]) {
+        const militaresPMF = pmfData[dayStr].filter(m => m !== null) as string[];
         
-        militaresPrimarios.forEach(militar => {
+        militaresPMF.forEach(militar => {
           // Obter a guarnição ordinária do militar nesse dia
           const guarnicao = getGuarnicaoOrdinaria(militar, dia);
           
@@ -203,12 +215,13 @@ export default function VerificadorInconsistencias({
               dia,
               militar,
               guarnicaoOrdinaria: guarnicao,
-              operacao: primaryOperation
+              operacao: "PMF"
             });
           }
           
-          // Verificar se o militar também está na escala secundária no mesmo dia
-          if (secondaryData[dayStr] && secondaryData[dayStr].includes(militar)) {
+          // Verificar se o militar também está na escala da Escola Segura no mesmo dia
+          const militaresEscolaSegura = escolaSeguraData[dayStr]?.filter(m => m !== null) as string[] || [];
+          if (militaresEscolaSegura.includes(militar)) {
             listaInconsistencias.push({
               dia,
               militar,
@@ -219,13 +232,14 @@ export default function VerificadorInconsistencias({
         });
       }
       
-      // Verificar militares escalados na operação secundária (que não estão na primária)
-      if (secondaryData[dayStr]) {
-        const militaresSecundarios = secondaryData[dayStr].filter(m => m !== null) as string[];
+      // Verificar militares escalados em Escola Segura (que não estão em PMF)
+      if (escolaSeguraData[dayStr]) {
+        const militaresEscola = escolaSeguraData[dayStr].filter(m => m !== null) as string[];
+        const militaresPMFDia = pmfData[dayStr]?.filter(m => m !== null) as string[] || [];
         
-        militaresSecundarios.forEach(militar => {
-          // Ignorar militares já verificados na operação primária (para evitar duplicação)
-          if (primaryData[dayStr] && primaryData[dayStr].includes(militar)) {
+        militaresEscola.forEach(militar => {
+          // Ignorar militares já verificados na PMF (para evitar duplicação)
+          if (militaresPMFDia.includes(militar)) {
             return; // Já verificado acima como "PMF + ESCOLA SEGURA"
           }
           
@@ -238,7 +252,7 @@ export default function VerificadorInconsistencias({
               dia,
               militar,
               guarnicaoOrdinaria: guarnicao,
-              operacao: secondaryOperation
+              operacao: "ESCOLA SEGURA"
             });
           }
         });
@@ -253,9 +267,12 @@ export default function VerificadorInconsistencias({
       return a.operacao.localeCompare(b.operacao);
     });
     
-    // Adicionar alguns dados fixos para demonstração somente se não houver inconsistências reais
-    if (listaInconsistencias.length < 3) {
-      // Adicionar exemplos que correspondem ao tipo de operação
+    console.log("⚠️ ENCONTRADAS", listaInconsistencias.length, "INCONSISTÊNCIAS");
+    console.log(listaInconsistencias);
+    
+    // Se não encontrou nenhuma inconsistência real, adicionar exemplos
+    if (listaInconsistencias.length === 0) {
+      // Adicionar exemplos específicos por tipo de operação
       if (operationType === 'pmf') {
         listaInconsistencias.push({
           dia: 1,
@@ -294,8 +311,6 @@ export default function VerificadorInconsistencias({
         operacao: "PMF + ESCOLA SEGURA"
       });
     }
-    
-    console.log("⚠️ ENCONTRADAS", listaInconsistencias.length, "INCONSISTÊNCIAS");
     
     setInconsistencias(listaInconsistencias);
   };

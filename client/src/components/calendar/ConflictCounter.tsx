@@ -33,7 +33,7 @@ export default function ConflictCounter() {
   const getGuarnicaoOrdinaria = (militar: string, dia: number): string => {
     // Simplificar e melhorar a detecção de conflitos
     // Regras do serviço ordinário para este mês
-    const servicoOrdinario: Record<string, string[]> = {
+    const servicoOrdinario: Record<string, number[]> = {
       'ALFA': [1, 2, 3, 24, 25, 26, 27, 28, 29, 30], // ALFA trabalha nos dias 1-3 e 24-30
       'BRAVO': [4, 5, 6, 7, 8, 9, 25, 26, 27, 28, 29, 30], // BRAVO trabalha nos dias 4-9 e 25-30
       'CHARLIE': [1, 2, 3, 18, 19, 20, 21, 22, 23, 24] // CHARLIE trabalha nos dias 1-3 e 18-24
