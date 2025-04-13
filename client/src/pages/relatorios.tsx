@@ -677,7 +677,6 @@ export default function Relatorios() {
           <h1 className="text-2xl font-bold mb-1">Relatórios e Analytics</h1>
           <p className="text-gray-500">Visualize estatísticas e análises das operações extraordinárias</p>
         </div>
-        {/* Botão de exportação PDF removido */}
       </div>
       
       {/* Cartão GCJOs Restantes que mostra o total de 134 */}
