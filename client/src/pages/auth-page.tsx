@@ -152,16 +152,6 @@ export default function AuthPage() {
           </Form>
         </div>
       </div>
-      
-      {/* Aviso de segurança externo abaixo do card, como na imagem */}
-      <div className="fixed bottom-8 left-0 right-0 mx-auto w-full max-w-md px-4">
-        <div className="bg-white rounded-md border border-gray-200 shadow-md p-2 flex items-center">
-          <AlertCircle className="h-5 w-5 text-red-500 ml-2 mr-3 flex-shrink-0" />
-          <p className="text-xs text-gray-600">
-            Atenção: Tentativas de acesso não autorizado são registradas via IP.
-          </p>
-        </div>
-      </div>
 
       {/* Lado direito - Hero */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 items-center justify-center p-6 md:p-12 relative">
