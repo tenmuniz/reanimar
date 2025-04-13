@@ -206,7 +206,7 @@ export default function CalendarCardEscolaSegura({
       // BLOQUEIO TOTAL - Mensagem clara para o usuário
       toast({
         title: "⛔ LIMITE DE 12 SERVIÇOS ATINGIDO",
-        description: `${officer} já está com ${totalEscalasMilitar} escalas no mês. 
+        description: `${officer} já está com ${totalEscalasMilitar} extras no mês. 
                       IMPOSSÍVEL adicionar mais serviços. 
                       Esta é uma regra de negócio rigorosa do sistema.`,
         variant: "destructive",
@@ -224,7 +224,7 @@ export default function CalendarCardEscolaSegura({
     if (limitReachedOfficers.includes(officer)) {
       toast({
         title: "LIMITE ATINGIDO",
-        description: `${officer} já está escalado em 12 dias. Impossível adicionar mais escalas.`,
+        description: `${officer} já está escalado em 12 dias. Impossível adicionar mais extras.`,
         variant: "destructive",
       });
       return false;

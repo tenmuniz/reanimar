@@ -218,7 +218,7 @@ export default function CalendarCard({
       // BLOQUEIO TOTAL - Mensagem clara para o usuário
       toast({
         title: "⛔ LIMITE DE 12 SERVIÇOS ATINGIDO",
-        description: `${officer} já está com ${totalEscalasMilitar} escalas no mês. 
+        description: `${officer} já está com ${totalEscalasMilitar} extras no mês. 
                       IMPOSSÍVEL adicionar mais serviços. 
                       Esta é uma regra de negócio rigorosa do sistema.`,
         variant: "destructive",
@@ -236,7 +236,7 @@ export default function CalendarCard({
     if (limitReachedOfficers.includes(officer)) {
       toast({
         title: "LIMITE ATINGIDO",
-        description: `${officer} já está escalado em 12 dias. Impossível adicionar mais escalas.`,
+        description: `${officer} já está escalado em 12 dias. Impossível adicionar mais extras.`,
         variant: "destructive",
       });
       return;
@@ -422,7 +422,7 @@ export default function CalendarCard({
               <AlertCircle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0 animate-pulse" />
               <div>
                 <p className="font-bold">Militares com limite de 12 serviços atingido!</p>
-                <p className="mt-1 text-sm opacity-90">Não é possível adicionar mais escalas para este(s) militar(es) neste mês, conforme regras do GCJO.</p>
+                <p className="mt-1 text-sm opacity-90">Não é possível adicionar mais extras para este(s) militar(es) neste mês, conforme regras do GCJO.</p>
               </div>
             </div>
           </div>
