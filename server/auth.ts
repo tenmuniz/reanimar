@@ -7,9 +7,17 @@ import { promisify } from "util";
 import { storage } from "./storage";
 import { User } from "@shared/schema";
 
+// Adicionando um tipo User válido para passport
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Corrigindo a definição recursiva
+    interface User {
+      id: number;
+      username: string;
+      cpf: string;
+      name: string;
+      role: string;
+    }
   }
 }
 
