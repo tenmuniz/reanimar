@@ -240,7 +240,8 @@ export default function Relatorios() {
     .sort((a, b) => b[1].total - a[1].total)
     .slice(0, 10)
     .map(([nome, dados]) => ({
-      name: nome.split(' ').slice(-1)[0], // Pega o último nome para economizar espaço
+      name: nome, // Nome completo com posto e graduação
+      displayName: nome.split(' ').slice(-1)[0], // Pega o último nome para exibir na lista
       value: dados.total,
       color: dados.total > 10 ? 'var(--color-amber-500)' : 'var(--color-blue-500)'
     }));
@@ -526,7 +527,7 @@ export default function Relatorios() {
                           <div className="flex-1">
                             <div className="flex justify-between mb-1">
                               <span className="text-sm font-medium truncate max-w-[70%]" title={militar.name}>
-                                {militar.name}
+                                <span className="font-bold">{militar.name}</span>
                               </span>
                               <span className="text-lg font-bold text-blue-600 bg-blue-100/70 px-2 py-0.5 rounded-lg shadow-sm">
                                 {militar.value}
