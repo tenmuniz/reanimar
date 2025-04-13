@@ -537,7 +537,8 @@ export default function Relatorios() {
           ])
       ];
       
-      (doc as any).autoTable({
+      // @ts-ignore
+      doc.autoTable({
         startY: 30,
         head: [militaresData[0]],
         body: militaresData.slice(1),
@@ -564,8 +565,9 @@ export default function Relatorios() {
           cellPadding: 2,
           overflow: 'linebreak'
         },
-        didDrawPage: function(data) {
+        didDrawPage: function(data: any) {
           // Adicionar rodapé
+          // @ts-ignore
           const pageCount = doc.internal.getNumberOfPages();
           doc.setFontSize(8);
           doc.text(
@@ -610,7 +612,8 @@ export default function Relatorios() {
         })
       ];
       
-      (doc as any).autoTable({
+      // @ts-ignore
+      doc.autoTable({
         startY: 30,
         head: [diasData[0]],
         body: diasData.slice(1),
@@ -628,8 +631,9 @@ export default function Relatorios() {
           fontSize: 8,
           cellPadding: 2
         },
-        didDrawPage: function(data) {
+        didDrawPage: function(data: any) {
           // Adicionar rodapé
+          // @ts-ignore
           const pageCount = doc.internal.getNumberOfPages();
           doc.setFontSize(8);
           doc.text(
@@ -677,9 +681,9 @@ export default function Relatorios() {
             <span>Exportar PDF</span>
           </Button>
         </div>
-      
-      {/* Cartão GCJOs Restantes que mostra o total de 150 */}
       </div>
+      
+      {/* Cartão GCJOs Restantes que mostra o total de 134 */}
       <div className="mb-6">
         <div className="bg-green-50 rounded-lg border border-green-100 p-5 relative overflow-hidden">
           <div className="absolute top-4 right-4 bg-green-100 rounded-full p-2">
