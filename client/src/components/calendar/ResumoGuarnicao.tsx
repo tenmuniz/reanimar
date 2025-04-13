@@ -166,7 +166,7 @@ export default function ResumoGuarnicao({
   // Obter o nome do mês para exibição
   const mesAno = formatMonthYear(currentDate);
   
-  // Calcular o total de escalas
+  // Calcular o total de extras
   const totalEscalas = Object.values(guarnicoesData).reduce((sum, guarnicao) => sum + guarnicao.total, 0);
   
   // Encontrar guarnição mais escalada
@@ -218,7 +218,7 @@ export default function ResumoGuarnicao({
           {/* Estatísticas Gerais */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className={`${operationType === 'escolaSegura' ? 'bg-purple-700' : 'bg-indigo-700'} p-4 rounded-lg shadow-inner flex flex-col items-center`}>
-              <span className={`${operationType === 'escolaSegura' ? 'text-purple-200' : 'text-indigo-200'} font-medium mb-1`}>Total de Escalas</span>
+              <span className={`${operationType === 'escolaSegura' ? 'text-purple-200' : 'text-indigo-200'} font-medium mb-1`}>Total de Extras</span>
               <span className="text-3xl font-bold text-white">{totalEscalas}</span>
             </div>
             
@@ -233,7 +233,7 @@ export default function ResumoGuarnicao({
           {/* Gráfico de Barras Simples */}
           <div className="bg-indigo-800/40 rounded-lg p-4 mb-6">
             <h3 className="text-lg font-semibold mb-3 text-center text-indigo-100">
-              Distribuição de Escalas
+              Distribuição de Extras
             </h3>
             
             <div className="space-y-4">
@@ -501,13 +501,13 @@ export default function ResumoGuarnicao({
                         </div>
                         <div className="p-3">
                           <div className="flex justify-between mb-2">
-                            <span className="text-indigo-200">Total de Escalas:</span>
+                            <span className="text-indigo-200">Total de Extras:</span>
                             <span className={`${corBadge} text-white px-2 py-0.5 rounded-full text-sm font-medium`}>
                               {dados.total}
                             </span>
                           </div>
                           <div>
-                            <span className="text-indigo-200 text-sm">Dias com escalas:</span>
+                            <span className="text-indigo-200 text-sm">Dias com extras:</span>
                             <div className="flex flex-wrap mt-1">
                               {dados.dias.sort((a, b) => a - b).map(dia => (
                                 <span 
@@ -589,7 +589,7 @@ export default function ResumoGuarnicao({
                     <p className="text-sm text-white/80">Mês de referência: {mesAno}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-white/80">Total de escalas</div>
+                    <div className="text-xs text-white/80">Total de extras</div>
                     <div className="text-2xl font-bold text-white">{guarnicoesData[guarnicaoSelecionada].total}</div>
                   </div>
                 </div>
