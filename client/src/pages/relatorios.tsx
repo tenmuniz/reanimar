@@ -57,11 +57,50 @@ export default function Relatorios() {
   const [periodoSelecionado, setPeriodoSelecionado] = useState("atual");
   const [tipoOperacao, setTipoOperacao] = useState("todos");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [filtroTabelaMilitares, setFiltroTabelaMilitares] = useState("total"); // Filtro para tabela de militares
   
   // Obter data atual para o ano e mês
   const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
+  
+  // Lógica para gerenciar o período selecionado
+  const [yearMonth, setYearMonth] = useState({
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth()
+  });
+  
+  // Atualizar year/month conforme o período selecionado
+  useEffect(() => {
+    const today = new Date();
+    
+    switch(periodoSelecionado) {
+      case "atual":
+        setYearMonth({
+          year: today.getFullYear(),
+          month: today.getMonth()
+        });
+        break;
+      case "anterior":
+        const lastMonth = new Date(today);
+        lastMonth.setMonth(today.getMonth() - 1);
+        setYearMonth({
+          year: lastMonth.getFullYear(),
+          month: lastMonth.getMonth()
+        });
+        break;
+      case "trimestre":
+        // Mantém o mês atual, mas indica visualmente que estamos mostrando dados do trimestre
+        setYearMonth({
+          year: today.getFullYear(),
+          month: today.getMonth()
+        });
+        break;
+      default:
+        break;
+    }
+  }, [periodoSelecionado]);
+  
+  const currentYear = yearMonth.year;
+  const currentMonth = yearMonth.month;
   
   // Buscar dados combinados com ano e mês específicos
   const { data: combinedSchedulesData, isLoading } = useQuery<{ schedules: CombinedSchedules }>({
@@ -898,15 +937,19 @@ export default function Relatorios() {
                   <CardTitle className="text-lg font-medium">Distribuição por Tipo de Operação</CardTitle>
                   <CardDescription>Comparativo entre as operações para cada militar</CardDescription>
                 </div>
-                <Select defaultValue="total">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Ordernar por" />
+                <Select 
+                  value={filtroTabelaMilitares} 
+                  onValueChange={setFiltroTabelaMilitares}
+                >
+                  <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50/50">
+                    <Filter className="h-4 w-4 mr-2 text-purple-600" />
+                    <SelectValue placeholder="Ordenar por" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="total">Total de Extras</SelectItem>
                     <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
                     <SelectItem value="es">Escola Segura</SelectItem>
-                    <SelectItem value="alfa">Orderm Alfabética</SelectItem>
+                    <SelectItem value="alfa">Ordem Alfabética</SelectItem>
                   </SelectContent>
                 </Select>
               </CardHeader>
@@ -923,7 +966,18 @@ export default function Relatorios() {
                   </thead>
                   <tbody>
                     {Object.entries(dadosMilitares)
-                      .sort((a, b) => b[1].total - a[1].total)
+                      .sort((a, b) => {
+                        switch(filtroTabelaMilitares) {
+                          case 'pmf':
+                            return b[1].pmf - a[1].pmf;
+                          case 'es':
+                            return b[1].escolaSegura - a[1].escolaSegura;
+                          case 'alfa':
+                            return a[0].localeCompare(b[0]);
+                          default:
+                            return b[1].total - a[1].total;
+                        }
+                      })
                       .map(([nome, dados], index) => (
                         <tr key={nome} className={`border-b hover:bg-gray-50 ${index % 2 === 0 ? 'bg-gray-50/50' : ''}`}>
                           <td className="p-3 font-medium">{nome}</td>
