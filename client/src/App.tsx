@@ -157,22 +157,22 @@ function NavBar() {
               </a>
             </Link>
             
-            <Link href="/busca-militar">
+            <Link href="/busca-simples">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-                location === "/busca-militar" 
+                location === "/busca-simples" 
                   ? "bg-gradient-to-r from-indigo-500/10 to-violet-600/20 text-indigo-700 border border-indigo-200 shadow-lg shadow-indigo-200/30" 
                   : "text-gray-700 hover:bg-indigo-50/60 hover:shadow-md hover:border hover:border-indigo-100"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
-                  location === "/busca-militar" 
+                  location === "/busca-simples" 
                     ? "bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-400/30" 
                     : "bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-violet-600 group-hover:shadow-md group-hover:shadow-indigo-400/20"
                 }`}>
-                  <Search className={`h-4 w-4 ${location === "/busca-militar" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
+                  <Search className={`h-4 w-4 ${location === "/busca-simples" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
                 </div>
-                <span className={`text-sm font-medium ${location === "/busca-militar" ? "font-semibold" : ""}`}>Busca</span>
+                <span className={`text-sm font-medium ${location === "/busca-simples" ? "font-semibold" : ""}`}>Busca de Militar</span>
                 <span className="ml-1.5 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs shadow-sm font-medium border border-indigo-200">
-                  Novo
+                  Simples
                 </span>
               </a>
             </Link>

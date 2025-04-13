@@ -118,7 +118,7 @@ export default function BuscaSimples() {
             <CardContent>
               {resultados.escolaSegura.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {resultados.escolaSegura.map(dia => (
+                  {resultados.escolaSegura.map((dia: number) => (
                     <Badge key={dia} className="bg-purple-500 hover:bg-purple-600">
                       Dia {dia}
                     </Badge>
