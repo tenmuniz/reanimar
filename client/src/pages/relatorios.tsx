@@ -22,6 +22,14 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   AreaChart,
   BarChart,
   PieChart,
@@ -43,6 +51,7 @@ import {
   CheckCircle,
   Award,
   Clock,
+  School,
   Download,
   Filter,
 } from "lucide-react";
@@ -380,41 +389,71 @@ export default function Relatorios() {
     .filter(([_, dados]) => dados.total >= 12)
     .length;
     
-  // Função para exportar PDF
-  const handleExportPDF = () => {
+  // Função auxiliar para formatar data
+  const formatarData = () => {
+    const meses = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    return `${meses[currentMonth]} de ${currentYear}`;
+  };
+
+  // Função para abrir modal de exportação
+  const handleOpenExportModal = () => {
+    setExportModalOpen(true);
+  };
+  
+  // Função para fechar modal de exportação
+  const handleCloseExportModal = () => {
+    setExportModalOpen(false);
+  };
+  
+  // Função para exportar PDF com diferentes opções de relatório
+  const handleExportPDF = (tipo = 'completo') => {
     try {
+      // Fechar o modal
+      setExportModalOpen(false);
+      
       // Criar um novo documento PDF
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 10;
       
-      // Função auxiliar para formatar data
-      const formatarData = () => {
-        const meses = [
-          'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-        ];
-        return `${meses[currentMonth]} de ${currentYear}`;
-      };
-      
-      // Configurações de cabeçalho
+      // Configurações de cabeçalho - comum a todos os tipos de relatório
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
-      doc.text('RELATÓRIO DE ESCALAS EXTRAORDINÁRIAS', pageWidth / 2, 20, { align: 'center' });
+      
+      // Título do relatório de acordo com o tipo selecionado
+      let tituloRelatorio = 'RELATÓRIO DE EXTRAS EXTRAORDINÁRIOS';
+      switch(tipo) {
+        case 'pmf':
+          tituloRelatorio = 'RELATÓRIO DE EXTRAS - POLÍCIA MAIS FORTE';
+          break;
+        case 'escolaSegura':
+          tituloRelatorio = 'RELATÓRIO DE EXTRAS - ESCOLA SEGURA';
+          break;
+        case 'guarnicao':
+          tituloRelatorio = 'RELATÓRIO DE EXTRAS - POR GUARNIÇÃO';
+          break;
+      }
+      
+      doc.text(tituloRelatorio, pageWidth / 2, 20, { align: 'center' });
       
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
       doc.text(`Período: ${formatarData()}`, pageWidth / 2, 30, { align: 'center' });
       
-      // Seção de resumo
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('RESUMO GERAL', margin, 45);
-      
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
+      // Seção de resumo (exceto relatório por guarnição)
+      if (tipo !== 'guarnicao') {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('RESUMO GERAL', margin, 45);
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(60, 60, 60);
+      }
       
       // Tabela de resumo
       const resumoData = [
@@ -622,8 +661,93 @@ export default function Relatorios() {
           <h1 className="text-2xl font-bold mb-1">Relatórios e Analytics</h1>
           <p className="text-gray-500">Visualize estatísticas e análises das operações extraordinárias</p>
         </div>
-        {/* Os botões de filtro foram removidos conforme solicitado */}
+        <div>
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white border-none py-2 px-4 shadow-md hover:shadow-lg transition-all"
+            onClick={handleOpenExportModal}
+          >
+            <FileText className="h-4 w-4" />
+            <span>Exportar PDF</span>
+          </Button>
+        </div>
       </div>
+      
+      {/* Modal de exportação em PDF */}
+      <Dialog open={exportModalOpen} onOpenChange={handleCloseExportModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold">Exportar Relatório em PDF</DialogTitle>
+            <DialogDescription className="text-center">
+              Selecione o tipo de relatório que deseja exportar
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-2 gap-4 p-4">
+            <Button
+              variant="outline"
+              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
+                exportType === 'completo' 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+              }`}
+              onClick={() => setExportType('completo')}
+            >
+              <FileText className={`h-10 w-10 mb-2 ${exportType === 'completo' ? 'text-blue-500' : 'text-gray-400'}`} />
+              <span className={`text-sm font-medium ${exportType === 'completo' ? 'text-blue-700' : 'text-gray-600'}`}>Relatório Completo</span>
+            </Button>
+            
+            <Button
+              variant="outline"
+              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
+                exportType === 'pmf' 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+              }`}
+              onClick={() => setExportType('pmf')}
+            >
+              <Shield className={`h-10 w-10 mb-2 ${exportType === 'pmf' ? 'text-blue-500' : 'text-gray-400'}`} />
+              <span className={`text-sm font-medium ${exportType === 'pmf' ? 'text-blue-700' : 'text-gray-600'}`}>Somente PMF</span>
+            </Button>
+            
+            <Button
+              variant="outline"
+              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
+                exportType === 'escolaSegura' 
+                  ? 'border-purple-500 bg-purple-50' 
+                  : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+              }`}
+              onClick={() => setExportType('escolaSegura')}
+            >
+              <School className={`h-10 w-10 mb-2 ${exportType === 'escolaSegura' ? 'text-purple-500' : 'text-gray-400'}`} />
+              <span className={`text-sm font-medium ${exportType === 'escolaSegura' ? 'text-purple-700' : 'text-gray-600'}`}>Somente Escola Segura</span>
+            </Button>
+            
+            <Button
+              variant="outline"
+              className={`flex flex-col items-center justify-center p-6 rounded-lg border-2 ${
+                exportType === 'guarnicao' 
+                  ? 'border-green-500 bg-green-50' 
+                  : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
+              }`}
+              onClick={() => setExportType('guarnicao')}
+            >
+              <Users className={`h-10 w-10 mb-2 ${exportType === 'guarnicao' ? 'text-green-500' : 'text-gray-400'}`} />
+              <span className={`text-sm font-medium ${exportType === 'guarnicao' ? 'text-green-700' : 'text-gray-600'}`}>Por Guarnição</span>
+            </Button>
+          </div>
+          
+          <DialogFooter className="sm:justify-center">
+            <Button
+              type="button"
+              className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white px-6 py-2"
+              onClick={() => handleExportPDF(exportType)}
+            >
+              Gerar Relatório
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {/* Cartão GCJOs Restantes que mostra o total de 150 */}
       <div className="mb-6">
