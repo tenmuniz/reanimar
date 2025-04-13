@@ -51,33 +51,58 @@ function levenshteinDistance(a: string, b: string): number {
 }
 
 /**
- * Verifica se duas strings são similares com base na distância de Levenshtein
- * @param s1 Primeira string
- * @param s2 Segunda string
- * @param threshold Limite de similaridade (padrão: 2)
- * @returns true se as strings forem consideradas similares
+ * Normaliza uma string para comparação, removendo acentos, espaços extras e
+ * convertendo para minúsculas
+ * @param str String a ser normalizada
+ * @returns String normalizada
  */
-function stringSimilar(s1: string, s2: string, threshold = 2): boolean {
-  if (!s1 || !s2) return false;
+function normalizeString(str: string): string {
+  if (!str) return '';
   
-  // Normaliza as strings para comparação
-  const normalize = (str: string) => str.trim().toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove acentos
+  return str.trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .replace(/\s+/g, " "); // Remove espaços extras
+}
+
+/**
+ * Verifica se duas strings são similares/iguais para fins de busca de militar
+ * @param nomeRegistrado Nome como está registrado no banco de dados
+ * @param nomeBuscado Nome sendo buscado pelo usuário
+ * @returns true se os nomes forem considerados equivalentes para busca
+ */
+function isNameMatch(nomeRegistrado: string, nomeBuscado: string): boolean {
+  if (!nomeRegistrado || !nomeBuscado) return false;
   
-  const norm1 = normalize(s1);
-  const norm2 = normalize(s2);
+  // Normalizar os nomes
+  const normRegistrado = normalizeString(nomeRegistrado);
+  const normBuscado = normalizeString(nomeBuscado);
   
-  // Verificação direta de inclusão
-  if (norm1.includes(norm2) || norm2.includes(norm1)) {
+  // Verificação exata (após normalização)
+  if (normRegistrado === normBuscado) {
     return true;
   }
   
-  // Se uma string for muito curta, ajusta o threshold
-  const minLength = Math.min(norm1.length, norm2.length);
-  const adjustedThreshold = minLength <= 3 ? 0 : (minLength <= 5 ? 1 : threshold);
+  // Verificação de inclusão (nome completo inclui o termo buscado)
+  if (normRegistrado.includes(normBuscado)) {
+    // Verifica se é uma palavra completa ou parte de uma palavra
+    const words = normRegistrado.split(' ');
+    for (const word of words) {
+      // Se a palavra começa com o termo buscado
+      if (word === normBuscado || word.startsWith(normBuscado)) {
+        return true;
+      }
+    }
+  }
   
-  // Calcular distância de Levenshtein
-  return levenshteinDistance(norm1, norm2) <= adjustedThreshold;
+  // Verificação com distância Levenshtein com tolerância máxima de 1
+  const distance = levenshteinDistance(normRegistrado, normBuscado);
+  if (distance <= 1) {
+    return true;
+  }
+  
+  return false;
 }
 
 /**
@@ -161,7 +186,7 @@ export async function buscarMilitar(
         for (const militar of militares) {
           if (!militar || typeof militar !== 'string') continue;
           
-          if (stringSimilar(militar, nomeMilitar)) {
+          if (isNameMatch(militar, nomeMilitar)) {
             // Guarda o nome exato como consta no banco
             if (!nomeEncontrado) nomeEncontrado = militar;
             
