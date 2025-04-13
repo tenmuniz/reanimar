@@ -63,7 +63,7 @@ export default function AuthPage() {
       {/* Container flex para alinhar ambos os lados */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full h-[500px] flex flex-col">
-          <div className="mb-6 flex flex-col items-center">
+          <div className="mb-8 flex flex-col items-center">
             <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-20 h-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-800 uppercase text-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">
@@ -76,7 +76,7 @@ export default function AuthPage() {
           </div>
 
           {/* Título da Seção de Login */}
-          <div className="mb-6 text-center">
+          <div className="mb-8 text-center">
             <h2 className="text-lg font-semibold text-gray-800">Acesso Restrito</h2>
             <p className="text-xs text-gray-600 mt-1 max-w-sm mx-auto">
               Sistema exclusivo para policiais militares da ativa 
@@ -140,7 +140,7 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-xl hover:shadow-2xl border-b-4 border-green-800 hover:border-green-900 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 transition-all duration-200 flex items-center justify-center mt-6"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-xl hover:shadow-2xl border-b-4 border-green-800 hover:border-green-900 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 transition-all duration-200 flex items-center justify-center mt-12"
                 disabled={loginMutation.isPending}
               >
                 <LockKeyhole className="h-5 w-5 mr-2" />
