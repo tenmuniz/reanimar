@@ -148,18 +148,17 @@ export default function AuthPage() {
                 {!loginMutation.isPending && <ChevronsRight className="h-5 w-5 ml-2" />}
               </Button>
               
+              {/* Aviso de segurança */}
+              <div className="mt-4 text-center bg-gray-50 p-2 rounded-md border border-gray-200">
+                <div className="flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+                  <p className="text-xs text-gray-600">
+                    Atenção: Tentativas de acesso não autorizado são registradas via IP.
+                  </p>
+                </div>
+              </div>
             </form>
           </Form>
-        </div>
-        
-        {/* Aviso de segurança - Movido para fora do card */}
-        <div className="mt-4 text-center bg-gray-50 p-2 rounded-md border border-gray-200 max-w-md mx-auto w-full">
-          <div className="flex items-center justify-center">
-            <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-            <p className="text-xs text-gray-600">
-              Atenção: Tentativas de acesso não autorizado são registradas via IP.
-            </p>
-          </div>
         </div>
       </div>
 
