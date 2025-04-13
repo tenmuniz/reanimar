@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import brasaoCipm from "../assets/brasao-20cipm.png";
+import brasaoPmpa from "../assets/brasao-pmpa-novo.png";
 
 // Esquema de validação simplificado sem validações complexas
 const loginSchema = z.object({
@@ -173,7 +174,7 @@ export default function AuthPage() {
         
         <div className="text-center relative z-10">
           <div className="flex justify-center mb-6">
-            <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="h-32 w-auto drop-shadow-lg" />
+            <img src={brasaoPmpa} alt="Brasão PMPA" className="h-32 w-auto drop-shadow-lg" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-4 uppercase">Sistema de Gestão de Extras</h2>
           <p className="text-blue-100 mb-6 max-w-md mx-auto">
