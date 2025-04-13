@@ -44,10 +44,16 @@ import {
   Award,
   Clock,
   Download,
+  Filter,
 } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
+import 'jspdf-autotable';
 
 export default function Relatorios() {
+  // Hooks
+  const { toast } = useToast();
   const [periodoSelecionado, setPeriodoSelecionado] = useState("atual");
   const [tipoOperacao, setTipoOperacao] = useState("todos");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -262,7 +268,7 @@ export default function Relatorios() {
   const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
   
   // Determinar dias úteis (excluindo fins de semana) no mês
-  const diasUteisNoMes = [...Array(diasNoMes).keys()]
+  const diasUteisNoMes = Array.from(Array(diasNoMes).keys())
     .map(i => i + 1)
     .filter(dia => {
       const data = new Date(currentYear, currentMonth, dia);
@@ -317,6 +323,241 @@ export default function Relatorios() {
   const militaresNoLimite = Object.entries(dadosMilitares)
     .filter(([_, dados]) => dados.total >= 12)
     .length;
+    
+  // Função para exportar PDF
+  const handleExportPDF = () => {
+    try {
+      // Criar um novo documento PDF
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 10;
+      
+      // Função auxiliar para formatar data
+      const formatarData = () => {
+        const meses = [
+          'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+        return `${meses[currentMonth]} de ${currentYear}`;
+      };
+      
+      // Configurações de cabeçalho
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('RELATÓRIO DE ESCALAS EXTRAORDINÁRIAS', pageWidth / 2, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Período: ${formatarData()}`, pageWidth / 2, 30, { align: 'center' });
+      
+      // Seção de resumo
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('RESUMO GERAL', margin, 45);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(60, 60, 60);
+      
+      // Tabela de resumo
+      const resumoData = [
+        ['Operação', 'Escalas Utilizadas', 'Escalas Restantes', 'Total Disponível', 'Ocupação (%)'],
+        ['Polícia Mais Forte', `${totalEscalasPMF}`, `${restantesPMF}`, `${capacidadeTotalPMF}`, `${percentualOcupacaoPMF}%`],
+        ['Escola Segura', `${totalEscolasSegura}`, `${restantesES}`, `${capacidadeTotalES}`, `${percentualOcupacaoES}%`],
+        ['TOTAL', `${totalEscalas}`, `${restantesTotal}`, `${capacidadeTotalGeral}`, `${percentualOcupacao}%`]
+      ];
+      
+      (doc as any).autoTable({
+        startY: 50,
+        head: [resumoData[0]],
+        body: resumoData.slice(1),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 100, 80],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold'
+        },
+        alternateRowStyles: {
+          fillColor: [240, 240, 240]
+        },
+        styles: {
+          fontSize: 9,
+          cellPadding: 3
+        }
+      });
+      
+      // Militares por faixa
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DISTRIBUIÇÃO POR FAIXA DE EXTRAS', margin, (doc as any).lastAutoTable.finalY + 20);
+      
+      const faixasData = [
+        ['Faixa', 'Quantidade de Militares'],
+        ['1-3 Extras', `${Object.values(dadosMilitares).filter(d => d.total >= 1 && d.total <= 3).length}`],
+        ['4-6 Extras', `${Object.values(dadosMilitares).filter(d => d.total >= 4 && d.total <= 6).length}`],
+        ['7-9 Extras', `${Object.values(dadosMilitares).filter(d => d.total >= 7 && d.total <= 9).length}`],
+        ['10-11 Extras', `${Object.values(dadosMilitares).filter(d => d.total >= 10 && d.total <= 11).length}`],
+        ['12+ Extras (Limite)', `${Object.values(dadosMilitares).filter(d => d.total >= 12).length}`]
+      ];
+      
+      (doc as any).autoTable({
+        startY: (doc as any).lastAutoTable.finalY + 25,
+        head: [faixasData[0]],
+        body: faixasData.slice(1),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 80, 120]
+        },
+        styles: {
+          fontSize: 9
+        }
+      });
+      
+      // Adicionar nova página para detalhes por militar
+      doc.addPage();
+      
+      // Cabeçalho da segunda página
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DETALHES POR MILITAR', pageWidth / 2, 20, { align: 'center' });
+      
+      // Tabela de militares
+      const militaresData = [
+        ['Nome', 'PMF', 'Escola Segura', 'Total', 'Status'],
+        ...Object.entries(dadosMilitares)
+          .sort((a, b) => b[1].total - a[1].total)
+          .map(([nome, dados]) => [
+            nome, 
+            `${dados.pmf}`, 
+            `${dados.escolaSegura}`, 
+            `${dados.total}`,
+            dados.total >= 12 ? 'LIMITE ATINGIDO' : dados.total >= 10 ? 'PRÓXIMO AO LIMITE' : 'DENTRO DO LIMITE'
+          ])
+      ];
+      
+      (doc as any).autoTable({
+        startY: 30,
+        head: [militaresData[0]],
+        body: militaresData.slice(1),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 100, 80]
+        },
+        columnStyles: {
+          4: {
+            cellCallback: function(cell, data) {
+              if (cell.text[0] === 'LIMITE ATINGIDO') {
+                cell.styles.fillColor = [255, 200, 200];
+                cell.styles.textColor = [180, 0, 0];
+                cell.styles.fontStyle = 'bold';
+              } else if (cell.text[0] === 'PRÓXIMO AO LIMITE') {
+                cell.styles.fillColor = [255, 240, 200];
+                cell.styles.textColor = [180, 100, 0];
+              }
+            }
+          }
+        },
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+          overflow: 'linebreak'
+        },
+        didDrawPage: function(data) {
+          // Adicionar rodapé
+          const pageCount = doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.text(
+            `Página ${data.pageNumber} de ${pageCount} - Gerado em ${new Date().toLocaleDateString()}`, 
+            pageWidth / 2, 
+            pageHeight - 10, 
+            { align: 'center' }
+          );
+        }
+      });
+      
+      // Adicionar terceira página para detalhes diários
+      doc.addPage();
+      
+      // Cabeçalho da terceira página
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DETALHES POR DIA', pageWidth / 2, 20, { align: 'center' });
+      
+      // Preparar dados para a tabela por dia
+      const diasDoMes = Array.from(Array(diasNoMes).keys()).map(i => i + 1);
+      const diasData = [
+        ['Dia', 'PMF', 'Escola Segura', 'Total'],
+        ...diasDoMes.map(dia => {
+          const diaStr = String(dia);
+          
+          // Conta militares escalados para o dia
+          const pmfDia = pmfSchedule[diaStr] && Array.isArray(pmfSchedule[diaStr])
+            ? pmfSchedule[diaStr].filter(m => m !== null).length
+            : 0;
+            
+          const esDia = escolaSeguraSchedule[diaStr] && Array.isArray(escolaSeguraSchedule[diaStr])
+            ? escolaSeguraSchedule[diaStr].filter(m => m !== null).length
+            : 0;
+            
+          return [
+            diaStr,
+            `${pmfDia}`,
+            `${esDia}`,
+            `${pmfDia + esDia}`
+          ];
+        })
+      ];
+      
+      (doc as any).autoTable({
+        startY: 30,
+        head: [diasData[0]],
+        body: diasData.slice(1),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 100, 80]
+        },
+        columnStyles: {
+          0: { cellWidth: 20 },
+          1: { cellWidth: 30 },
+          2: { cellWidth: 30 },
+          3: { cellWidth: 30 }
+        },
+        styles: {
+          fontSize: 8,
+          cellPadding: 2
+        },
+        didDrawPage: function(data) {
+          // Adicionar rodapé
+          const pageCount = doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.text(
+            `Página ${data.pageNumber} de ${pageCount} - Gerado em ${new Date().toLocaleDateString()}`, 
+            pageWidth / 2, 
+            pageHeight - 10, 
+            { align: 'center' }
+          );
+        }
+      });
+      
+      // Salvar o PDF
+      doc.save(`Relatório_Operações_${formatarData()}.pdf`);
+      
+      // Mostrar mensagem de sucesso
+      toast({
+        title: "Exportação concluída!",
+        description: "O relatório foi gerado com sucesso.",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      toast({
+        title: "Erro na Exportação",
+        description: "Não foi possível gerar o relatório. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <div className="flex flex-col w-full">
@@ -327,7 +568,8 @@ export default function Relatorios() {
         </div>
         <div className="flex space-x-3">
           <Select value={periodoSelecionado} onValueChange={setPeriodoSelecionado}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] border-blue-200 bg-blue-50">
+              <Calendar className="h-4 w-4 mr-2 text-blue-600" />
               <SelectValue placeholder="Período" />
             </SelectTrigger>
             <SelectContent>
@@ -338,7 +580,8 @@ export default function Relatorios() {
           </Select>
           
           <Select value={tipoOperacao} onValueChange={setTipoOperacao}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50">
+              <Filter className="h-4 w-4 mr-2 text-purple-600" />
               <SelectValue placeholder="Tipo de Operação" />
             </SelectTrigger>
             <SelectContent>
@@ -348,9 +591,13 @@ export default function Relatorios() {
             </SelectContent>
           </Select>
           
-          <Button variant="outline" className="gap-1">
-            <Download className="h-4 w-4" />
-            Exportar
+          <Button 
+            variant="outline" 
+            className="gap-1 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
+            onClick={handleExportPDF}
+          >
+            <FileText className="h-4 w-4" />
+            Exportar PDF
           </Button>
         </div>
       </div>
