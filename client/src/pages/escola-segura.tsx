@@ -250,7 +250,7 @@ export default function EscolaSegura() {
   return (
     <div className="min-h-screen font-sans">
       {/* Header com título e seletor de mês - versão luxuosa para Escola Segura */}
-      <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 py-10 mb-6 shadow-2xl relative overflow-hidden">
+      <header className="bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 py-10 mb-6 shadow-2xl relative overflow-hidden rounded-3xl">
         {/* Elementos decorativos de fundo aprimorados */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
           <div className="absolute -top-20 -left-20 w-96 h-96 bg-fuchsia-500 opacity-15 rounded-full filter blur-3xl animate-pulse-slow"></div>

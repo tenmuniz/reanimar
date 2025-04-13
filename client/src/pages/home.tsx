@@ -231,7 +231,7 @@ export default function Home() {
   return (
     <div className="min-h-screen font-sans">
       {/* Header com título e seletor de mês - versão premium e luxuosa */}
-      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 py-10 mb-6 shadow-2xl relative overflow-hidden">
+      <header className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 py-10 mb-6 shadow-2xl relative overflow-hidden rounded-3xl">
         {/* Elementos decorativos de fundo aprimorados */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
           <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-500 opacity-15 rounded-full filter blur-3xl animate-pulse-slow"></div>
