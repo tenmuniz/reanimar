@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import brasaoCipm from "../assets/brasao-cipm.svg";
+import brasaoCipm from "../assets/brasao-20cipm.png";
 
 // Esquema de validação simplificado sem validações complexas
 const loginSchema = z.object({
