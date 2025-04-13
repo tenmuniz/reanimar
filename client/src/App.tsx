@@ -185,30 +185,30 @@ function Footer() {
   const isEscolaSegura = location === "/escola-segura";
   
   return (
-    <footer className="bg-gradient-to-b from-white to-gray-50 border-t border-gray-200 py-6">
+    <footer className="bg-gradient-to-t from-[#0a2f6b]/95 to-[#1e3a8a]/80 border-t border-blue-900/30 py-6 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
             <div className="flex items-center">
-              <div className="p-0.5 rounded-lg shadow-lg mr-2">
+              <div className="p-0.5 rounded-lg bg-white/10 shadow-lg mr-2">
                 <img src={brasaoCipm} alt="Brasão da 20ª CIPM" className="h-8 w-auto rounded-lg" />
               </div>
-              <span className="text-lg font-bold text-gray-800">EXTRAORDINÁRIO</span>
+              <span className="text-lg font-bold text-white">EXTRAORDINÁRIO</span>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Sistema de Gestão - 20ªCIPM</p>
+            <p className="text-sm text-blue-200 mt-1">Sistema de Gestão - 20ªCIPM</p>
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="#" className={`text-gray-600 transition-colors hover:${isEscolaSegura ? "text-purple-600" : "text-blue-600"} text-sm font-medium`}>Documentação</a>
-            <a href="#" className={`text-gray-600 transition-colors hover:${isEscolaSegura ? "text-purple-600" : "text-blue-600"} text-sm font-medium`}>Suporte</a>
-            <a href="#" className={`text-gray-600 transition-colors hover:${isEscolaSegura ? "text-purple-600" : "text-blue-600"} text-sm font-medium`}>Política de Privacidade</a>
+            <a href="#" className={`text-blue-100 transition-colors hover:${isEscolaSegura ? "text-purple-200" : "text-blue-50"} text-sm font-medium`}>Documentação</a>
+            <a href="#" className={`text-blue-100 transition-colors hover:${isEscolaSegura ? "text-purple-200" : "text-blue-50"} text-sm font-medium`}>Suporte</a>
+            <a href="#" className={`text-blue-100 transition-colors hover:${isEscolaSegura ? "text-purple-200" : "text-blue-50"} text-sm font-medium`}>Política de Privacidade</a>
           </div>
           
           <div className="mt-4 md:mt-0 text-right">
-            <p className="text-sm text-gray-600">© {new Date().getFullYear()} - Todos os direitos reservados</p>
-            <p className="text-xs text-gray-500 mt-1 flex items-center">
+            <p className="text-sm text-blue-100">© {new Date().getFullYear()} - Todos os direitos reservados</p>
+            <p className="text-xs text-blue-200 mt-1 flex items-center justify-end">
               <span className="mr-1">v1.1.0</span>
-              <span className="bg-blue-100 text-blue-700 text-[10px] px-1 py-0.5 rounded-full font-medium flex items-center">
+              <span className="bg-blue-900/70 text-blue-100 text-[10px] px-1.5 py-0.5 rounded-full font-medium flex items-center">
                 <Database className="h-2 w-2 mr-0.5" />
                 DB Sync
               </span>
@@ -270,7 +270,7 @@ function Router() {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gradient-to-r from-[#0a2f6b] to-[#1e3a8a]">
       {showSyncBanner && user && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 text-center text-sm font-medium relative overflow-hidden">
           <div className="absolute inset-0 bg-white/10 opacity-20">
@@ -294,7 +294,7 @@ function Router() {
         </div>
       )}
       {user && <NavBar />}
-      <main className="flex-grow container mx-auto px-4 py-6">
+      <main className="flex-grow container mx-auto px-4 py-6 text-white">
         <Switch>
           <ProtectedRoute path="/" component={Home} />
           <ProtectedRoute path="/escola-segura" component={EscolaSegura} />
