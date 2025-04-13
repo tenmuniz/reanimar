@@ -620,71 +620,7 @@ export default function Relatorios() {
           <h1 className="text-2xl font-bold mb-1">Relatórios e Analytics</h1>
           <p className="text-gray-500">Visualize estatísticas e análises das operações extraordinárias</p>
         </div>
-        <div className="flex space-x-3">
-          <Select value={periodoSelecionado} onValueChange={setPeriodoSelecionado}>
-            <SelectTrigger className="w-[180px] border-blue-200 bg-blue-50/50 shadow-sm">
-              <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="atual">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
-                  Mês Atual
-                </div>
-              </SelectItem>
-              <SelectItem value="anterior">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-amber-500 mr-2"></div>
-                  Mês Anterior
-                </div>
-              </SelectItem>
-              <SelectItem value="trimestre">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-purple-500 mr-2"></div>
-                  Último Trimestre
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={tipoOperacao} onValueChange={setTipoOperacao}>
-            <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50/50 shadow-sm">
-              <Filter className="h-4 w-4 mr-2 text-purple-600" />
-              <SelectValue placeholder="Tipo de Operação" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-blue-500 mr-2"></div>
-                  <div className="h-2 w-2 rounded-full bg-purple-500 mr-2"></div>
-                  Todas Operações
-                </div>
-              </SelectItem>
-              <SelectItem value="pmf">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-blue-500 mr-2"></div>
-                  Polícia Mais Forte
-                </div>
-              </SelectItem>
-              <SelectItem value="es">
-                <div className="flex items-center">
-                  <div className="h-2 w-2 rounded-full bg-purple-500 mr-2"></div>
-                  Escola Segura
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button 
-            variant="outline" 
-            className="gap-1 border-green-200 bg-green-50/80 text-green-700 hover:bg-green-100 hover:text-green-800 shadow-sm"
-            onClick={handleExportPDF}
-          >
-            <FileText className="h-4 w-4" />
-            <span className="font-medium">Exportar PDF</span>
-          </Button>
-        </div>
+        {/* Os botões de filtro foram removidos conforme solicitado */}
       </div>
       
       {/* Cartão GCJOs Restantes que mostra o total de 150 */}
