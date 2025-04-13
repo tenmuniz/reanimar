@@ -10,6 +10,7 @@ import ResumoGuarnicao from "@/components/calendar/ResumoGuarnicao";
 import VerificadorInconsistencias from "@/components/calendar/VerificadorInconsistencias";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import brasaoCipm from "../assets/brasao-cipm.jpg";
 
 // API endpoint for officers
 const OFFICERS_ENDPOINT = "/api/officers";
