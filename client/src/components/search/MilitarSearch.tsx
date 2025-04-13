@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
 import { Search, Calendar, Shield, GraduationCap } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,146 +6,102 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { OfficersResponse, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 
-interface SearchResult {
+// Interface simplificada para resultados da busca
+interface Resultado {
   operacao: 'pmf' | 'escolaSegura';
   dias: number[];
-  mes: number;
-  ano: number;
 }
 
 export default function MilitarSearch() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  
-  // Obter a data atual para a busca inicial
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentYear = currentDate.getFullYear();
+  const [termoBusca, setTermoBusca] = useState('');
+  const [resultados, setResultados] = useState<Resultado[]>([]);
+  const [buscando, setBuscando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
-  // Carregar dados diretamente para PMF e Escola Segura separadamente
-  const { data: pmfData } = useQuery({
-    queryKey: ['/api/schedule', 'pmf', currentYear, currentMonth],
-    queryFn: async () => {
-      const res = await fetch(`/api/schedule?operation=pmf&year=${currentYear}&month=${currentMonth}`);
-      if (!res.ok) {
-        throw new Error('Falha ao buscar agenda PMF');
-      }
-      return res.json();
-    }
-  });
+  // Dados fixos para o mês atual (abril 2025)
+  const mesAtual = 4;
+  const anoAtual = 2025;
 
-  const { data: escolaSeguraData } = useQuery({
-    queryKey: ['/api/schedule', 'escolaSegura', currentYear, currentMonth],
-    queryFn: async () => {
-      const res = await fetch(`/api/schedule?operation=escolaSegura&year=${currentYear}&month=${currentMonth}`);
-      if (!res.ok) {
-        throw new Error('Falha ao buscar agenda Escola Segura');
-      }
-      return res.json();
-    }
-  });
-
-  const handleSearch = () => {
-    if (!searchTerm) return;
+  // Função para buscar um militar nas operações
+  const buscarMilitar = async () => {
+    if (!termoBusca.trim()) return;
     
-    setIsSearching(true);
-    console.log("Iniciando busca por:", searchTerm);
-    
-    const results: SearchResult[] = [];
-    const lowerSearchTerm = searchTerm.toLowerCase().trim();
-    
-    // Buscar em PMF - Verificar dados antes de buscar
-    console.log("PMF Data:", pmfData);
+    setBuscando(true);
+    setErro(null);
+    setResultados([]);
     
     try {
-      if (pmfData?.schedule?.["2025"]?.["4"]) {
-        console.log("Encontrei dados de PMF para 2025/4");
-        const pmfSchedule = pmfData.schedule["2025"]["4"];
-        const pmfDays: number[] = [];
+      // Buscar na operação PMF
+      const resPmf = await fetch(`/api/schedule?operation=pmf&year=${anoAtual}&month=${mesAtual}`);
+      if (!resPmf.ok) throw new Error('Falha ao buscar escala PMF');
+      
+      // Buscar na operação Escola Segura
+      const resEscola = await fetch(`/api/schedule?operation=escolaSegura&year=${anoAtual}&month=${mesAtual}`);
+      if (!resEscola.ok) throw new Error('Falha ao buscar escala Escola Segura');
+      
+      const dataPmf = await resPmf.json();
+      const dataEscola = await resEscola.json();
+      
+      const resultadosFinais: Resultado[] = [];
+      const termoBuscaNormalizado = termoBusca.toLowerCase().trim();
+      
+      // Verificar PMF
+      const diasPmf: number[] = [];
+      if (dataPmf?.schedule?.[anoAtual]?.[mesAtual]) {
+        const escalaPmf = dataPmf.schedule[anoAtual][mesAtual];
         
-        // Debug - Mostrando todas as datas disponíveis no PMF
-        console.log("Dias disponíveis em PMF:", Object.keys(pmfSchedule));
-        console.log("Exemplo de dados do dia 7:", pmfSchedule["7"]);
-        
-        // Verificando cada dia
-        for (const [dayStr, officers] of Object.entries(pmfSchedule)) {
-          const day = parseInt(dayStr, 10);
-          const officersList = officers as (string | null)[];
+        Object.entries(escalaPmf).forEach(([dia, militares]) => {
+          const diaNum = parseInt(dia, 10);
+          const listaMilitares = militares as (string | null)[];
           
-          // Verificando cada oficial neste dia
-          for (const officer of officersList) {
-            if (officer && officer.toLowerCase().includes(lowerSearchTerm)) {
-              console.log(`Encontrei ${searchTerm} em PMF no dia ${day}:`, officer);
-              pmfDays.push(day);
-              break; // Passamos para o próximo dia
-            }
+          if (listaMilitares.some(militar => 
+            militar && militar.toLowerCase().includes(termoBuscaNormalizado)
+          )) {
+            diasPmf.push(diaNum);
           }
-        }
+        });
         
-        if (pmfDays.length > 0) {
-          results.push({
+        if (diasPmf.length > 0) {
+          resultadosFinais.push({
             operacao: 'pmf',
-            dias: pmfDays.sort((a, b) => a - b),
-            mes: 4, // Fixo em abril para o teste
-            ano: 2025 // Fixo em 2025 para o teste
+            dias: diasPmf.sort((a, b) => a - b)
           });
         }
-      } else {
-        console.log("Dados PMF não encontrados na estrutura esperada");
       }
-    } catch (error) {
-      console.error("Erro ao processar dados PMF:", error);
-    }
-    
-    // Buscar em Escola Segura - Verificar dados antes de buscar
-    console.log("Escola Segura Data:", escolaSeguraData);
-    
-    try {
-      if (escolaSeguraData?.schedule?.["2025"]?.["4"]) {
-        console.log("Encontrei dados de Escola Segura para 2025/4");
-        const esSchedule = escolaSeguraData.schedule["2025"]["4"];
-        const esDays: number[] = [];
+      
+      // Verificar Escola Segura
+      const diasEscola: number[] = [];
+      if (dataEscola?.schedule?.[anoAtual]?.[mesAtual]) {
+        const escalaEscola = dataEscola.schedule[anoAtual][mesAtual];
         
-        // Debug - Mostrando todas as datas disponíveis na Escola Segura
-        console.log("Dias disponíveis em Escola Segura:", Object.keys(esSchedule));
-        
-        // Verificando cada dia
-        for (const [dayStr, officers] of Object.entries(esSchedule)) {
-          const day = parseInt(dayStr, 10);
-          const officersList = officers as (string | null)[];
+        Object.entries(escalaEscola).forEach(([dia, militares]) => {
+          const diaNum = parseInt(dia, 10);
+          const listaMilitares = militares as (string | null)[];
           
-          // Verificando cada oficial neste dia
-          for (const officer of officersList) {
-            if (officer && officer.toLowerCase().includes(lowerSearchTerm)) {
-              console.log(`Encontrei ${searchTerm} em Escola Segura no dia ${day}:`, officer);
-              esDays.push(day);
-              break; // Passamos para o próximo dia
-            }
+          if (listaMilitares.some(militar => 
+            militar && militar.toLowerCase().includes(termoBuscaNormalizado)
+          )) {
+            diasEscola.push(diaNum);
           }
-        }
+        });
         
-        if (esDays.length > 0) {
-          results.push({
+        if (diasEscola.length > 0) {
+          resultadosFinais.push({
             operacao: 'escolaSegura',
-            dias: esDays.sort((a, b) => a - b),
-            mes: 4, // Fixo em abril para o teste
-            ano: 2025 // Fixo em 2025 para o teste
+            dias: diasEscola.sort((a, b) => a - b)
           });
         }
-      } else {
-        console.log("Dados Escola Segura não encontrados na estrutura esperada");
       }
+      
+      setResultados(resultadosFinais);
     } catch (error) {
-      console.error("Erro ao processar dados Escola Segura:", error);
+      console.error('Erro na busca:', error);
+      setErro('Ocorreu um erro ao buscar as escalas. Tente novamente.');
+    } finally {
+      setBuscando(false);
     }
-    
-    console.log("Resultados finais:", results);
-    setSearchResults(results);
-    setIsSearching(false);
   };
 
   return (
@@ -167,22 +122,33 @@ export default function MilitarSearch() {
             <Input
               type="text"
               placeholder="Digite o nome do militar..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              value={termoBusca}
+              onChange={(e) => setTermoBusca(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && buscarMilitar()}
               className="pl-10 border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-slate-800 h-10 shadow-sm"
             />
           </div>
           <Button 
-            onClick={handleSearch}
-            disabled={isSearching || !searchTerm}
+            onClick={buscarMilitar}
+            disabled={buscando || !termoBusca}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
           >
-            Buscar
+            {buscando ? 'Buscando...' : 'Buscar'}
           </Button>
         </div>
 
-        {searchResults.length > 0 ? (
+        {erro && (
+          <Alert className="mb-6 bg-red-50 border-red-200 dark:bg-slate-800 dark:border-red-800">
+            <AlertTitle className="text-red-600 dark:text-red-400 flex items-center">
+              Erro na busca
+            </AlertTitle>
+            <AlertDescription className="text-red-600/80 dark:text-red-400/80">
+              {erro}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {resultados.length > 0 ? (
           <div className="mt-4 space-y-6">
             <Tabs defaultValue="todos" className="w-full">
               <TabsList className="w-full bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
@@ -208,41 +174,56 @@ export default function MilitarSearch() {
               
               <TabsContent value="todos" className="mt-4">
                 <div className="grid gap-4 md:grid-cols-2">
-                  {searchResults.map((result, index) => (
-                    <ResultCard key={index} result={result} searchTerm={searchTerm} />
+                  {resultados.map((resultado, index) => (
+                    <CartaoResultado 
+                      key={index} 
+                      resultado={resultado} 
+                      mes={mesAtual} 
+                      ano={anoAtual} 
+                    />
                   ))}
                 </div>
               </TabsContent>
               
               <TabsContent value="pmf" className="mt-4">
                 <div className="grid gap-4 md:grid-cols-2">
-                  {searchResults
-                    .filter(result => result.operacao === 'pmf')
-                    .map((result, index) => (
-                      <ResultCard key={index} result={result} searchTerm={searchTerm} />
+                  {resultados
+                    .filter(resultado => resultado.operacao === 'pmf')
+                    .map((resultado, index) => (
+                      <CartaoResultado 
+                        key={index} 
+                        resultado={resultado} 
+                        mes={mesAtual} 
+                        ano={anoAtual} 
+                      />
                   ))}
                 </div>
               </TabsContent>
               
               <TabsContent value="escolaSegura" className="mt-4">
                 <div className="grid gap-4 md:grid-cols-2">
-                  {searchResults
-                    .filter(result => result.operacao === 'escolaSegura')
-                    .map((result, index) => (
-                      <ResultCard key={index} result={result} searchTerm={searchTerm} />
+                  {resultados
+                    .filter(resultado => resultado.operacao === 'escolaSegura')
+                    .map((resultado, index) => (
+                      <CartaoResultado 
+                        key={index} 
+                        resultado={resultado} 
+                        mes={mesAtual} 
+                        ano={anoAtual} 
+                      />
                   ))}
                 </div>
               </TabsContent>
             </Tabs>
           </div>
-        ) : searchTerm && !isSearching ? (
+        ) : termoBusca && !buscando ? (
           <Alert className="bg-orange-50 border-orange-200 dark:bg-slate-800 dark:border-orange-800">
             <AlertTitle className="text-orange-600 dark:text-orange-400 flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
               Nenhum resultado encontrado
             </AlertTitle>
             <AlertDescription className="text-orange-600/80 dark:text-orange-400/80">
-              Não foi encontrada nenhuma escala para "{searchTerm}".
+              Não foi encontrada nenhuma escala para "{termoBusca}".
               Verifique se digitou o nome corretamente ou tente outro termo.
             </AlertDescription>
           </Alert>
@@ -252,8 +233,16 @@ export default function MilitarSearch() {
   );
 }
 
-function ResultCard({ result, searchTerm }: { result: SearchResult; searchTerm: string }) {
-  const isEscolaSegura = result.operacao === 'escolaSegura';
+function CartaoResultado({ 
+  resultado, 
+  mes, 
+  ano 
+}: { 
+  resultado: Resultado;
+  mes: number;
+  ano: number;
+}) {
+  const isEscolaSegura = resultado.operacao === 'escolaSegura';
   
   return (
     <Card className={`overflow-hidden border-0 shadow-md transition-all duration-300 hover:shadow-lg ${
@@ -280,7 +269,7 @@ function ResultCard({ result, searchTerm }: { result: SearchResult; searchTerm: 
               {isEscolaSegura ? 'Escola Segura' : 'Polícia Mais Forte'}
             </CardTitle>
             <CardDescription className="text-slate-500 dark:text-slate-400">
-              {formatMonthYear(new Date(result.ano, result.mes - 1))}
+              {formatMonthYear(new Date(ano, mes - 1))}
             </CardDescription>
           </div>
           <Badge className={`${
@@ -288,13 +277,13 @@ function ResultCard({ result, searchTerm }: { result: SearchResult; searchTerm: 
               ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300' 
               : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
           }`}>
-            {result.dias.length} {result.dias.length === 1 ? 'dia' : 'dias'}
+            {resultado.dias.length} {resultado.dias.length === 1 ? 'dia' : 'dias'}
           </Badge>
         </div>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2 mt-1">
-          {result.dias.map(dia => (
+          {resultado.dias.map(dia => (
             <Badge 
               key={dia} 
               className={`
