@@ -2,7 +2,7 @@ import { Switch, Route, useLocation, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, Database, Cloud, CheckCircle } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
@@ -11,6 +11,7 @@ import Relatorios from "@/pages/relatorios";
 import NotFound from "@/pages/not-found";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // Componente de navegação
 function NavBar() {
@@ -188,7 +189,14 @@ function Footer() {
           
           <div className="mt-4 md:mt-0 text-right">
             <p className="text-sm text-gray-600">© {new Date().getFullYear()} - Todos os direitos reservados</p>
-            <p className="text-xs text-gray-500 mt-1">v1.0.2 - Atualizado em 12/04/2025</p>
+            <p className="text-xs text-gray-500 mt-1 flex items-center">
+              <span className="mr-1">v1.1.0</span>
+              <span className="bg-blue-100 text-blue-700 text-[10px] px-1 py-0.5 rounded-full font-medium flex items-center">
+                <Database className="h-2 w-2 mr-0.5" />
+                DB Sync
+              </span>
+              <span className="ml-1">- Atualizado em 13/04/2025</span>
+            </p>
           </div>
         </div>
       </div>
@@ -232,8 +240,41 @@ function ScrollToTop() {
 }
 
 function Router() {
+  const [showSyncBanner, setShowSyncBanner] = useState(true);
+  
+  // Ocultar banner após alguns segundos
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSyncBanner(false);
+    }, 15000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
+      {showSyncBanner && (
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 text-center text-sm font-medium relative overflow-hidden">
+          <div className="absolute inset-0 bg-white/10 opacity-20">
+            <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse-slow"></div>
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
+          </div>
+          <div className="flex items-center justify-center space-x-2 relative">
+            <Database className="h-3.5 w-3.5" />
+            <p>Nova funcionalidade: Sincronização de dados com banco PostgreSQL</p>
+            <button 
+              onClick={() => setShowSyncBanner(false)}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full p-0.5 hover:bg-white/20 transition-colors"
+              aria-label="Fechar notificação"
+            >
+              <span className="sr-only">Fechar</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
       <NavBar />
       <main className="flex-grow container mx-auto px-4 py-6">
         <Switch>
@@ -251,6 +292,35 @@ function Router() {
 }
 
 function App() {
+  const { toast } = useToast();
+  
+  // Mostrar notificação de persistência de dados ao iniciar
+  useEffect(() => {
+    const syncNotificationShown = localStorage.getItem('syncNotificationShown');
+    
+    if (!syncNotificationShown) {
+      setTimeout(() => {
+        toast({
+          title: "Persistência de dados implementada!",
+          description: "Agora suas escalas ficam salvas no banco de dados e podem ser acessadas de qualquer dispositivo.",
+          duration: 8000,
+          action: (
+            <div className="flex items-center gap-2 px-2 py-1 bg-green-100 rounded-lg text-green-700 font-medium">
+              <div className="flex">
+                <Cloud className="h-4 w-4" />
+                <CheckCircle className="h-3 w-3 -ml-1 -mt-1 text-green-600" />
+              </div>
+              <span>Sincronização em nuvem</span>
+            </div>
+          )
+        });
+        
+        // Marcar como visualizada
+        localStorage.setItem('syncNotificationShown', 'true');
+      }, 1500);
+    }
+  }, [toast]);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <Router />
