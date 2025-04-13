@@ -103,7 +103,7 @@ export default function ConflictCounter() {
           const guarnicao = getGuarnicaoOrdinaria(militar, dia);
           
           // Se o militar estiver de serviço, é uma inconsistência
-          if (guarnicao !== "FOLGA" && guarnicao !== "EXPEDIENTE" && guarnicao !== "DESCONHECIDO") {
+          if (guarnicao !== "FOLGA" && guarnicao !== "IGNORA" && guarnicao !== "DESCONHECIDO") {
             listaInconsistencias.push({
               dia,
               militar,
@@ -138,7 +138,7 @@ export default function ConflictCounter() {
           const guarnicao = getGuarnicaoOrdinaria(militar, dia);
           
           // Se o militar estiver de serviço, é uma inconsistência
-          if (guarnicao !== "FOLGA" && guarnicao !== "EXPEDIENTE" && guarnicao !== "DESCONHECIDO") {
+          if (guarnicao !== "FOLGA" && guarnicao !== "IGNORA" && guarnicao !== "DESCONHECIDO") {
             listaInconsistencias.push({
               dia,
               militar,

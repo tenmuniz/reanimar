@@ -248,52 +248,18 @@ export default function VerificadorInconsistencias({
       return a.operacao.localeCompare(b.operacao);
     });
     
-    console.log("⚠️ ENCONTRADAS", listaInconsistencias.length, "INCONSISTÊNCIAS");
-    console.log(listaInconsistencias);
+    // Remover inconsistências com guarnicaoOrdinaria IGNORA (militares que não estão em ALFA, BRAVO ou CHARLIE)
+    const inconsistenciasFiltradas = listaInconsistencias.filter(inc => 
+      inc.guarnicaoOrdinaria !== "IGNORA" && 
+      inc.guarnicaoOrdinaria !== "DESCONHECIDO"
+    );
     
-    // Se não encontrou nenhuma inconsistência real, adicionar exemplos
-    if (listaInconsistencias.length === 0) {
-      // Adicionar exemplos específicos por tipo de operação
-      if (operationType === 'pmf') {
-        listaInconsistencias.push({
-          dia: 1,
-          militar: "SD PM GOVEIA",
-          guarnicaoOrdinaria: "CHARLIE",
-          operacao: "PMF"
-        });
-        
-        listaInconsistencias.push({
-          dia: 10,
-          militar: "CB PM FELIPE",
-          guarnicaoOrdinaria: "ALFA",
-          operacao: "PMF"
-        });
-      } else {
-        listaInconsistencias.push({
-          dia: 15,
-          militar: "3º SGT PM ANA CLEIDE",
-          guarnicaoOrdinaria: "BRAVO",
-          operacao: "ESCOLA SEGURA"
-        });
-        
-        listaInconsistencias.push({
-          dia: 20,
-          militar: "SD PM PATRIK",
-          guarnicaoOrdinaria: "CHARLIE",
-          operacao: "ESCOLA SEGURA"
-        });
-      }
-      
-      // Adicionar um exemplo de conflito duplo
-      listaInconsistencias.push({
-        dia: 8,
-        militar: "CAP QOPM MUNIZ",
-        guarnicaoOrdinaria: "EXPEDIENTE",
-        operacao: "PMF + ESCOLA SEGURA"
-      });
-    }
+    console.log("⚠️ ENCONTRADAS ORIGINAIS", listaInconsistencias.length, "INCONSISTÊNCIAS");
+    console.log("⚠️ APÓS FILTRO", inconsistenciasFiltradas.length, "INCONSISTÊNCIAS REAIS");
+    console.log(inconsistenciasFiltradas);
     
-    setInconsistencias(listaInconsistencias);
+    // Usar a lista filtrada em vez da original
+    setInconsistencias(inconsistenciasFiltradas);
   };
 
   // Get the month name for display
