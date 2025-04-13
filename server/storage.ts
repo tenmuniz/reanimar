@@ -489,19 +489,18 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Verificar se temos acesso ao banco de dados
+// Sempre usar o banco de dados para persistência
 let usingDatabase = true;
 
 try {
   // Verificar se a variável DATABASE_URL está configurada
   if (!process.env.DATABASE_URL) {
-    console.log('DATABASE_URL não encontrado. Usando armazenamento em memória.');
-    usingDatabase = false;
+    console.log('Aviso: DATABASE_URL não encontrado, mas ainda tentaremos usar o banco.');
   }
 } catch (error) {
   console.error('Erro ao verificar conexão com banco de dados:', error);
-  usingDatabase = false;
+  console.log('Tentando usar o banco de dados de qualquer forma...');
 }
 
-// Usar a implementação adequada com base na disponibilidade do banco de dados
-export const storage = usingDatabase ? new DatabaseStorage() : new MemStorage();
+// Sempre usar a implementação do banco de dados para garantir persistência
+export const storage = new DatabaseStorage();

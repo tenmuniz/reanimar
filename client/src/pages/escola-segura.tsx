@@ -213,10 +213,7 @@ export default function EscolaSegura() {
   
   const saveSchedule = async () => {
     try {
-      // Save to localStorage
-      saveLocalStorageSchedule(STORAGE_KEY, schedule);
-      
-      // Salvar no servidor
+      // Salvar no servidor primeiro (persistência principal)
       const monthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
       const monthSchedule = schedule[monthKey] || {};
       
@@ -231,10 +228,22 @@ export default function EscolaSegura() {
         }
       );
       
+      // Backup no localStorage apenas como fallback
+      saveLocalStorageSchedule(STORAGE_KEY, schedule);
+      
+      // Notificar sucesso
       toast({
         title: "Escala salva com sucesso!",
-        description: "Suas alterações foram salvas",
+        description: "Suas alterações foram salvas no banco de dados e estarão disponíveis em todos os dispositivos",
+        duration: 5000,
       });
+      
+      // Atualizar dados combinados
+      const combinedResponse = await fetch(`/api/combined-schedules?year=${currentDate.getFullYear()}&month=${currentDate.getMonth()}`);
+      if (combinedResponse.ok) {
+        const combinedData = await combinedResponse.json();
+        setCombinedSchedules(combinedData.schedules);
+      }
     } catch (error) {
       console.error("Erro ao salvar escala:", error);
       toast({
