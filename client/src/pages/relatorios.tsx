@@ -59,8 +59,14 @@ import {
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
-// @ts-ignore
 import 'jspdf-autotable';
+
+// Adicionando definição de tipos para jspdf-autotable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+  }
+}
 
 export default function Relatorios() {
   // Hooks
