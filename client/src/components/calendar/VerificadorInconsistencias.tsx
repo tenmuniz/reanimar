@@ -50,46 +50,28 @@ export default function VerificadorInconsistencias({
   // Função para converter nomes de militares para suas guarnições
   // Listagem com base na imagem da escala fornecida
   const getMilitarGuarnicao = (militar: string): string => {
-    // GRUPO ALFA: PEIXOTO, RODRIGO, LEDO, NUNES, AMARAL, CARLA, FELIPE, BARROS, A. SILVA, LUAN, NAVARRO
-    // Total: 11 militares
-    if (militar.includes("PEIXOTO") || militar.includes("RODRIGO") || 
-        militar.includes("LEDO") || militar.includes("NUNES") || 
-        militar.includes("AMARAL") || militar.includes("CARLA") || 
-        militar.includes("FELIPE") || militar.includes("BARROS") || 
-        militar.includes("A. SILVA") || militar.includes("LUAN") || 
-        militar.includes("NAVARRO")) {
+    // GRUPO ALFA - policiais que precisam ser verificados
+    if (militar.includes("FELIPE") || militar.includes("RODRIGO") || 
+        militar.includes("GOVEIA") || militar.includes("ANA CLEIDE") || 
+        militar.includes("CARVALHO")) {
       return "ALFA";
     } 
-    // GRUPO BRAVO: OLIMAR, FÁBIO, ANA CLEIDE, GLEIDSON, CARLOS EDUARDO, NEGRÃO, BRASIL, MARVÃO, IDELVAN
-    // Total: 9 militares
-    else if (militar.includes("OLIMAR") || militar.includes("FÁBIO") || 
-             militar.includes("ANA CLEIDE") || militar.includes("GLEIDSON") || 
-             militar.includes("CARLOS EDUARDO") || militar.includes("NEGRÃO") || 
-             militar.includes("BRASIL") || militar.includes("MARVÃO") || 
-             militar.includes("IDELVAN")) {
+    // GRUPO BRAVO - policiais que precisam ser verificados
+    else if (militar.includes("CARLOS EDUARDO") || militar.includes("LUAN") || 
+             militar.includes("GLEIDSON") || militar.includes("BARROS") || 
+             militar.includes("S. CORREA")) {
       return "BRAVO";
     } 
-    // GRUPO CHARLIE: PINHEIRO, RAFAEL, MIQUEIAS, M. PAIXÃO, CHAGAS, CARVALHO, GOVEIA, ALMEIDA, PATRIK, GUIMARÃES
-    // Total: 10 militares
-    else if (militar.includes("PINHEIRO") || militar.includes("RAFAEL") || 
-             militar.includes("MIQUEIAS") || militar.includes("M. PAIXÃO") || 
-             militar.includes("CHAGAS") || militar.includes("CARVALHO") || 
-             militar.includes("GOVEIA") || militar.includes("ALMEIDA") || 
-             militar.includes("PATRIK") || militar.includes("GUIMARÃES")) {
+    // GRUPO CHARLIE - policiais que precisam ser verificados
+    else if (militar.includes("PATRIK") || militar.includes("BRASIL") || 
+             militar.includes("M. PAIXÃO") || militar.includes("NAVARRO") || 
+             militar.includes("MARVÃO")) {
       return "CHARLIE";
     }
-    // Militares do expediente (que estão disponíveis para operações)
-    else if (militar.includes("MUNIZ") || militar.includes("MONTEIRO") || 
-             militar.includes("VANILSON") || militar.includes("ANDRÉ") || 
-             militar.includes("CUNHA") || militar.includes("CARAVELAS") || 
-             militar.includes("TONI") || militar.includes("CORREA") || 
-             militar.includes("RODRIGUES") || militar.includes("TAVARES")) {
-      return "EXPEDIENTE";
-    }
     
-    // Se não encontrar, indica que não conseguimos classificar
-    console.log("MILITAR NÃO CLASSIFICADO:", militar);
-    return "DESCONHECIDO";
+    // Para todos os outros militares (EXPEDIENTE e outros), não vamos verificar
+    // conflitos com a escala ordinária conforme solicitado
+    return "IGNORA";
   };
 
   // Função para obter a guarnição ordinária de serviço em um dia específico
@@ -143,6 +125,11 @@ export default function VerificadorInconsistencias({
     // Obter a guarnição do militar
     const guarnicaoMilitar = getMilitarGuarnicao(militar);
     
+    // Se o militar não for de ALFA, BRAVO ou CHARLIE, ignoramos para verificação
+    if (guarnicaoMilitar === "IGNORA") {
+      return "IGNORA";
+    }
+    
     // Obter qual guarnição está escalada nesse dia
     const guarnicaoEscalada = getGuarnicaoOrdinariaByDia(dia);
     
@@ -151,13 +138,7 @@ export default function VerificadorInconsistencias({
       return guarnicaoMilitar;
     }
     
-    // Se o militar for do expediente, consideramos que ele está disponível para as operações
-    if (guarnicaoMilitar === "EXPEDIENTE") {
-      return "EXPEDIENTE";
-    }
-    
-    // Se o militar não for do expediente e sua guarnição não está escalada no dia,
-    // então ele está de folga e pode fazer operação
+    // Se o militar não estiver de serviço no dia
     return "FOLGA";
   };
 
@@ -210,7 +191,7 @@ export default function VerificadorInconsistencias({
           const guarnicao = getGuarnicaoOrdinaria(militar, dia);
           
           // Se o militar estiver de serviço, é uma inconsistência
-          if (guarnicao !== "FOLGA" && guarnicao !== "EXPEDIENTE" && guarnicao !== "DESCONHECIDO") {
+          if (guarnicao !== "FOLGA" && guarnicao !== "IGNORA" && guarnicao !== "DESCONHECIDO") {
             listaInconsistencias.push({
               dia,
               militar,
