@@ -266,19 +266,19 @@ export default function CalendarCard({
   // Obter a classe de cor base para o dia da semana
   const weekdayClass = getWeekdayClass(weekday);
 
-  // Verificar quantos policiais estão escalados
+  // Verificar quantos policiais estão em extras
   const assignedCount = selections.filter(officer => officer !== null).length;
   
   // Para depuração
-  console.log(`Dia ${day} - ${assignedCount}/3 policiais escalados:`, selections);
+  console.log(`Dia ${day} - ${assignedCount}/3 policiais em extras:`, selections);
   
-  // Definir cores com base no número de policiais escalados
+  // Definir cores com base no número de policiais em extras
   let headerBgColor = "";
   let dayTextColor = "";
   let weekdayBadgeClass = "";
   
   if (assignedCount === 3) {
-    // Todos os 3 policiais estão escalados - verde vivo
+    // Todos os 3 policiais estão em extras - verde vivo
     headerBgColor = "bg-green-500";
     dayTextColor = "text-white";
     weekdayBadgeClass = "bg-green-700 text-white";
@@ -288,7 +288,7 @@ export default function CalendarCard({
     dayTextColor = "text-white";
     weekdayBadgeClass = "bg-red-700 text-white";
   } else {
-    // Nenhum policial escalado - cinza padrão
+    // Nenhum policial em extras - cinza padrão
     headerBgColor = "bg-gray-50";
     dayTextColor = "text-gray-800";
     weekdayBadgeClass = weekdayClass;

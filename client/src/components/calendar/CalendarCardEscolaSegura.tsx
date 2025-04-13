@@ -234,13 +234,13 @@ export default function CalendarCardEscolaSegura({
     return true;
   };
   
-  // Calcular número de policiais já alocados
+  // Calcular número de policiais já em extras
   const assignedCount = selections.filter(officer => officer !== null).length;
   
   // Para depuração
-  console.log(`Dia ${day} - ${assignedCount}/2 policiais escalados:`, selections);
+  console.log(`Dia ${day} - ${assignedCount}/2 policiais em extras:`, selections);
   
-  // Definir cores com base no número de policiais escalados
+  // Definir cores com base no número de policiais em extras
   let headerBgColor = "";
   let dayTextColor = "";
   let weekdayBadgeClass = "";
