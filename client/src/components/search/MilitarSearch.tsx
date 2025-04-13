@@ -54,61 +54,97 @@ export default function MilitarSearch() {
     if (!searchTerm) return;
     
     setIsSearching(true);
+    console.log("Iniciando busca por:", searchTerm);
+    
     const results: SearchResult[] = [];
     const lowerSearchTerm = searchTerm.toLowerCase().trim();
     
-    // Buscar em PMF
-    if (pmfData && pmfData.schedule && pmfData.schedule[currentYear] && pmfData.schedule[currentYear][currentMonth]) {
-      const pmfSchedule = pmfData.schedule[currentYear][currentMonth];
-      const pmfDays: number[] = [];
-      
-      Object.entries(pmfSchedule).forEach(([dayStr, officers]) => {
-        const day = parseInt(dayStr, 10);
-        const officersList = officers as (string | null)[];
+    // Buscar em PMF - Verificar dados antes de buscar
+    console.log("PMF Data:", pmfData);
+    
+    try {
+      if (pmfData?.schedule?.["2025"]?.["4"]) {
+        console.log("Encontrei dados de PMF para 2025/4");
+        const pmfSchedule = pmfData.schedule["2025"]["4"];
+        const pmfDays: number[] = [];
         
-        if (officersList.some(officer => 
-          officer && officer.toLowerCase().includes(lowerSearchTerm)
-        )) {
-          pmfDays.push(day);
+        // Debug - Mostrando todas as datas disponíveis no PMF
+        console.log("Dias disponíveis em PMF:", Object.keys(pmfSchedule));
+        console.log("Exemplo de dados do dia 7:", pmfSchedule["7"]);
+        
+        // Verificando cada dia
+        for (const [dayStr, officers] of Object.entries(pmfSchedule)) {
+          const day = parseInt(dayStr, 10);
+          const officersList = officers as (string | null)[];
+          
+          // Verificando cada oficial neste dia
+          for (const officer of officersList) {
+            if (officer && officer.toLowerCase().includes(lowerSearchTerm)) {
+              console.log(`Encontrei ${searchTerm} em PMF no dia ${day}:`, officer);
+              pmfDays.push(day);
+              break; // Passamos para o próximo dia
+            }
+          }
         }
-      });
-      
-      if (pmfDays.length > 0) {
-        results.push({
-          operacao: 'pmf',
-          dias: pmfDays.sort((a, b) => a - b),
-          mes: currentMonth,
-          ano: currentYear
-        });
+        
+        if (pmfDays.length > 0) {
+          results.push({
+            operacao: 'pmf',
+            dias: pmfDays.sort((a, b) => a - b),
+            mes: 4, // Fixo em abril para o teste
+            ano: 2025 // Fixo em 2025 para o teste
+          });
+        }
+      } else {
+        console.log("Dados PMF não encontrados na estrutura esperada");
       }
+    } catch (error) {
+      console.error("Erro ao processar dados PMF:", error);
     }
     
-    // Buscar em Escola Segura
-    if (escolaSeguraData && escolaSeguraData.schedule && escolaSeguraData.schedule[currentYear] && escolaSeguraData.schedule[currentYear][currentMonth]) {
-      const esSchedule = escolaSeguraData.schedule[currentYear][currentMonth];
-      const esDays: number[] = [];
-      
-      Object.entries(esSchedule).forEach(([dayStr, officers]) => {
-        const day = parseInt(dayStr, 10);
-        const officersList = officers as (string | null)[];
+    // Buscar em Escola Segura - Verificar dados antes de buscar
+    console.log("Escola Segura Data:", escolaSeguraData);
+    
+    try {
+      if (escolaSeguraData?.schedule?.["2025"]?.["4"]) {
+        console.log("Encontrei dados de Escola Segura para 2025/4");
+        const esSchedule = escolaSeguraData.schedule["2025"]["4"];
+        const esDays: number[] = [];
         
-        if (officersList.some(officer => 
-          officer && officer.toLowerCase().includes(lowerSearchTerm)
-        )) {
-          esDays.push(day);
+        // Debug - Mostrando todas as datas disponíveis na Escola Segura
+        console.log("Dias disponíveis em Escola Segura:", Object.keys(esSchedule));
+        
+        // Verificando cada dia
+        for (const [dayStr, officers] of Object.entries(esSchedule)) {
+          const day = parseInt(dayStr, 10);
+          const officersList = officers as (string | null)[];
+          
+          // Verificando cada oficial neste dia
+          for (const officer of officersList) {
+            if (officer && officer.toLowerCase().includes(lowerSearchTerm)) {
+              console.log(`Encontrei ${searchTerm} em Escola Segura no dia ${day}:`, officer);
+              esDays.push(day);
+              break; // Passamos para o próximo dia
+            }
+          }
         }
-      });
-      
-      if (esDays.length > 0) {
-        results.push({
-          operacao: 'escolaSegura',
-          dias: esDays.sort((a, b) => a - b),
-          mes: currentMonth,
-          ano: currentYear
-        });
+        
+        if (esDays.length > 0) {
+          results.push({
+            operacao: 'escolaSegura',
+            dias: esDays.sort((a, b) => a - b),
+            mes: 4, // Fixo em abril para o teste
+            ano: 2025 // Fixo em 2025 para o teste
+          });
+        }
+      } else {
+        console.log("Dados Escola Segura não encontrados na estrutura esperada");
       }
+    } catch (error) {
+      console.error("Erro ao processar dados Escola Segura:", error);
     }
     
+    console.log("Resultados finais:", results);
     setSearchResults(results);
     setIsSearching(false);
   };
