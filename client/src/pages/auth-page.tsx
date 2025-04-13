@@ -62,7 +62,7 @@ export default function AuthPage() {
     <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">      
       {/* Container flex para alinhar ambos os lados */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full h-[500px] flex flex-col">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full h-[600px] flex flex-col">
           <div className="mb-8 flex flex-col items-center">
             <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-20 h-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-800 uppercase text-center">
@@ -140,7 +140,7 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-xl hover:shadow-2xl border-b-4 border-green-800 hover:border-green-900 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 transition-all duration-200 flex items-center justify-center mt-12"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-xl hover:shadow-2xl border-b-4 border-green-800 hover:border-green-900 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 transition-all duration-200 flex items-center justify-center mt-24"
                 disabled={loginMutation.isPending}
               >
                 <LockKeyhole className="h-5 w-5 mr-2" />
@@ -166,7 +166,7 @@ export default function AuthPage() {
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 items-center justify-center p-6 md:p-12 relative">
         
         {/* Estrutura flexível para alinhar com a caixa de login */}
-        <div className="flex flex-col justify-between h-[500px] relative z-10 w-full max-w-md mx-auto">
+        <div className="flex flex-col justify-between h-[600px] relative z-10 w-full max-w-md mx-auto">
           
           {/* TOPO: Brasão */}
           <div className="flex justify-center">
