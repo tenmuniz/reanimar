@@ -410,19 +410,37 @@ export default function Relatorios() {
             <p className="text-xs text-gray-500 mt-1 text-right">{percentualOcupacao}% dos extras utilizados</p>
           </div>
           
-          <h4 className="text-sm font-semibold text-gray-800 mt-3 mb-2">Capacidade Máxima Mensal</h4>
+          <h4 className="text-sm font-semibold text-gray-800 mt-3 mb-2">Extras Restantes do Mês</h4>
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-green-100 rounded-md p-2 border border-green-200 text-center shadow-sm">
-              <span className="block text-lg font-bold text-green-700">90</span>
-              <span className="text-xs font-medium text-green-600">PMF</span>
+            <div className="bg-green-100 rounded-md p-2 border border-green-200 text-center shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full bg-green-600 text-white text-xs font-bold py-0.5">
+                RESTANTES
+              </div>
+              <span className="block text-lg font-bold text-green-700 mt-3">{restantesPMF}</span>
+              <div className="flex items-center justify-center">
+                <span className="text-xs font-medium text-green-600">PMF</span>
+                <span className="text-xs text-green-500 ml-1">(de 90)</span>
+              </div>
             </div>
-            <div className="bg-purple-100 rounded-md p-2 border border-purple-200 text-center shadow-sm">
-              <span className="block text-lg font-bold text-purple-700">44</span>
-              <span className="text-xs font-medium text-purple-600">ES</span>
+            <div className="bg-purple-100 rounded-md p-2 border border-purple-200 text-center shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full bg-purple-600 text-white text-xs font-bold py-0.5">
+                RESTANTES
+              </div>
+              <span className="block text-lg font-bold text-purple-700 mt-3">{restantesES}</span>
+              <div className="flex items-center justify-center">
+                <span className="text-xs font-medium text-purple-600">ES</span>
+                <span className="text-xs text-purple-500 ml-1">(de 44)</span>
+              </div>
             </div>
-            <div className="bg-blue-50 rounded-md p-2 border border-blue-100 text-center shadow-sm">
-              <span className="block text-lg font-bold text-blue-700">134</span>
-              <span className="text-xs font-medium text-blue-600">Total</span>
+            <div className="bg-blue-50 rounded-md p-2 border border-blue-100 text-center shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full bg-blue-600 text-white text-xs font-bold py-0.5">
+                RESTANTES
+              </div>
+              <span className="block text-lg font-bold text-blue-700 mt-3">{restantesTotal}</span>
+              <div className="flex items-center justify-center">
+                <span className="text-xs font-medium text-blue-600">Total</span>
+                <span className="text-xs text-blue-500 ml-1">(de 134)</span>
+              </div>
             </div>
           </div>
         </div>
