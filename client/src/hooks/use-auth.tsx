@@ -4,7 +4,7 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User } from "@shared/schema";
+import { User, InsertUser } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,6 +14,7 @@ type AuthContextType = {
   error: Error | null;
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
+  registerMutation: UseMutationResult<User, Error, InsertUser>;
 };
 
 type LoginData = {
@@ -75,6 +76,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const registerMutation = useMutation({
+    mutationFn: async (userData: InsertUser) => {
+      const res = await apiRequest("POST", "/api/register", userData);
+      return await res.json();
+    },
+    onSuccess: (user: User) => {
+      queryClient.setQueryData(["/api/user"], user);
+      toast({
+        title: "Registro realizado com sucesso",
+        description: `Bem-vindo(a), ${user.name}`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Falha no registro",
+        description: "Não foi possível criar sua conta. Verifique seus dados e tente novamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
   return (
     <AuthContext.Provider
       value={{
@@ -83,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error,
         loginMutation,
         logoutMutation,
+        registerMutation,
       }}
     >
       {children}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="240" viewBox="0 0 200 240" fill="none">
+  <!-- Escudo -->
+  <path d="M100 10C150 10 180 40 180 40V140C180 190 100 220 100 220C100 220 20 190 20 140V40C20 40 50 10 100 10Z" fill="#003366" stroke="#FFC700" stroke-width="6"/>
+  
+  <!-- Número 20 -->
+  <path d="M70 75C70 70 75 65 85 65C95 65 100 70 100 75C100 80 95 85 85 85C75 85 70 80 70 75Z" fill="#FFC700"/>
+  <path d="M70 95V65" stroke="#FFC700" stroke-width="8" stroke-linecap="round"/>
+  <path d="M115 65H140V75H125V85H140V95H115" stroke="#FFC700" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- CIPM -->
+  <path d="M65 115C65 110 70 105 80 105C90 105 95 110 95 115C95 120 90 125 80 125C70 125 65 120 65 115Z" fill="#FFC700"/>
+  <path d="M105 105V125" stroke="#FFC700" stroke-width="6" stroke-linecap="round"/>
+  <path d="M115 105V125M115 105H135M115 125H135" stroke="#FFC700" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Estrelas -->
+  <path d="M60 155L65 165H75L67 172L72 182L60 175L48 182L53 172L45 165H55L60 155Z" fill="#FFC700"/>
+  <path d="M100 155L105 165H115L107 172L112 182L100 175L88 182L93 172L85 165H95L100 155Z" fill="#FFC700"/>
+  <path d="M140 155L145 165H155L147 172L152 182L140 175L128 182L133 172L125 165H135L140 155Z" fill="#FFC700"/>
+  
+  <!-- Texto -->
+  <path d="M40 195H160" stroke="#FFC700" stroke-width="2"/>
+  <path d="M60 205H140" stroke="#FFC700" stroke-width="2"/>
+</svg>

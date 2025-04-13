@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="240" viewBox="0 0 200 240" fill="none">
+  <!-- Escudo -->
+  <path d="M100 10C150 10 180 40 180 40V140C180 190 100 220 100 220C100 220 20 190 20 140V40C20 40 50 10 100 10Z" fill="#003366" stroke="#FFC700" stroke-width="6"/>
+  
+  <!-- Estrela -->
+  <path d="M100 50L113 90H155L121 115L134 155L100 130L66 155L79 115L45 90H87L100 50Z" fill="#FFC700"/>
+  
+  <!-- Coroa -->
+  <path d="M75 40C75 40 80 30 100 30C120 30 125 40 125 40" stroke="#FFC700" stroke-width="4"/>
+  <path d="M80 35L85 45M120 35L115 45M100 30L100 45" stroke="#FFC700" stroke-width="3"/>
+  
+  <!-- Folhas de louros -->
+  <path d="M40 120C40 120 20 90 40 60M160 120C160 120 180 90 160 60" stroke="#FFC700" stroke-width="4"/>
+  <path d="M45 110C45 110 30 90 45 70M155 110C155 110 170 90 155 70" stroke="#FFC700" stroke-width="3"/>
+  
+  <!-- Texto -->
+  <path d="M60 170H140" stroke="#FFC700" stroke-width="2"/>
+  <path d="M70 180H130" stroke="#FFC700" stroke-width="2"/>
+  <path d="M80 190H120" stroke="#FFC700" stroke-width="2"/>
+</svg>

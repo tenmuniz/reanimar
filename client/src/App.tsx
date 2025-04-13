@@ -2,13 +2,14 @@ import { Switch, Route, useLocation, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, Database, Cloud, CheckCircle } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, Database, Cloud, CheckCircle, LogOut } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
 import NotFound from "@/pages/not-found";
+import AuthPage from "@/pages/auth-page";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ import { ProtectedRoute } from "@/lib/protected-route";
 function NavBar() {
   const [location] = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const { user, logoutMutation } = useAuth();
   
   // Detectar scroll para efeito de navbar
   useEffect(() => {
@@ -64,7 +66,7 @@ function NavBar() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Contador de conflitos */}
             <ConflictCounter />
             
@@ -74,6 +76,21 @@ function NavBar() {
               <span className="text-sm text-gray-700 font-medium">
                 {new Date().toLocaleDateString('pt-BR', {weekday: 'short', day: 'numeric', month: 'long', year: 'numeric'})}
               </span>
+            </div>
+            
+            {/* Informações do usuário e botão de logout */}
+            <div className="flex items-center gap-3">
+              <div className="hidden md:block">
+                <div className="text-sm font-medium text-gray-700">{user?.name}</div>
+                <div className="text-xs text-gray-500">{user?.role || 'Usuário'}</div>
+              </div>
+              <button 
+                onClick={() => logoutMutation.mutate()}
+                className="flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg border border-red-200 transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="text-sm font-medium">Sair</span>
+              </button>
             </div>
           </div>
         </div>
@@ -241,6 +258,7 @@ function ScrollToTop() {
 
 function Router() {
   const [showSyncBanner, setShowSyncBanner] = useState(true);
+  const { user } = useAuth();
   
   // Ocultar banner após alguns segundos
   useEffect(() => {
@@ -253,7 +271,7 @@ function Router() {
   
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      {showSyncBanner && (
+      {showSyncBanner && user && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 text-center text-sm font-medium relative overflow-hidden">
           <div className="absolute inset-0 bg-white/10 opacity-20">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse-slow"></div>
@@ -275,17 +293,18 @@ function Router() {
           </div>
         </div>
       )}
-      <NavBar />
+      {user && <NavBar />}
       <main className="flex-grow container mx-auto px-4 py-6">
         <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/escola-segura" component={EscolaSegura} />
-          <Route path="/verificador-escalas" component={VerificadorEscalas} />
-          <Route path="/relatorios" component={Relatorios} />
+          <ProtectedRoute path="/" component={Home} />
+          <ProtectedRoute path="/escola-segura" component={EscolaSegura} />
+          <ProtectedRoute path="/verificador-escalas" component={VerificadorEscalas} />
+          <ProtectedRoute path="/relatorios" component={Relatorios} />
+          <Route path="/auth" component={AuthPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
-      <Footer />
+      {user && <Footer />}
       <ScrollToTop />
     </div>
   );
@@ -323,8 +342,10 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <AuthProvider>
+        <Router />
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
