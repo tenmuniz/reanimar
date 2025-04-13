@@ -103,12 +103,70 @@ export default function ResumoGuarnicao({
     pdf.text(`Total de extras: ${guarnicoesData[guarnicao].total}`, 20, 30);
     pdf.text(`Dias com extras: ${guarnicoesData[guarnicao].dias.length}`, 20, 36);
     
-    // Cabeçalho para lista de dias
+    // Organizar dados por militares para incluir as datas
+    const militaresPorDia = guarnicoesData[guarnicao].militaresPorDia!;
+    const militaresInfo: Record<string, { nome: string, dias: number[] }> = {};
+    
+    // Para cada dia, processar os militares
+    Object.entries(militaresPorDia).forEach(([dia, militares]) => {
+      const diaNum = parseInt(dia, 10);
+      
+      militares.forEach(militar => {
+        if (!militaresInfo[militar]) {
+          militaresInfo[militar] = { nome: militar, dias: [] };
+        }
+        if (!militaresInfo[militar].dias.includes(diaNum)) {
+          militaresInfo[militar].dias.push(diaNum);
+        }
+      });
+    });
+    
+    // Converter para array e ordenar por nome
+    const militaresArray = Object.values(militaresInfo).sort((a, b) => 
+      a.nome.localeCompare(b.nome)
+    );
+    
+    // Cabeçalho para lista de militares com suas datas
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Distribuição por dia', 20, 46);
+    pdf.text('Militares e suas datas de extras', 20, 46);
+    
+    // Criar tabela com os dados organizados por militar
+    const tableMilitaresData = militaresArray.map(info => {
+      return [
+        info.nome,
+        info.dias.length,
+        info.dias.sort((a, b) => a - b).join(', ')
+      ];
+    });
+    
+    // Definir cabeçalhos e estilos da tabela de militares
+    autoTable(pdf, {
+      startY: 50,
+      head: [['Militar', 'Total', 'Dias de Extras']],
+      body: tableMilitaresData,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [30, 41, 59],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240]
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+      }
+    });
+    
+    // Adicionar segunda tabela com visão por dia
+    const finalY = (pdf as any).lastAutoTable.finalY + 10;
+    
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Distribuição por dia', 20, finalY);
     
     // Criar tabela com os dados dos dias
-    const tableData = Object.entries(guarnicoesData[guarnicao].militaresPorDia!)
+    const tableDiasData = Object.entries(guarnicoesData[guarnicao].militaresPorDia!)
       .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
       .map(([dia, militares]) => {
         return [
@@ -118,11 +176,11 @@ export default function ResumoGuarnicao({
         ];
       });
     
-    // Definir cabeçalhos e estilos da tabela
+    // Definir cabeçalhos e estilos da tabela de dias
     autoTable(pdf, {
-      startY: 50,
+      startY: finalY + 4,
       head: [['Dia', 'Dia da Semana', 'Militares']],
-      body: tableData,
+      body: tableDiasData,
       theme: 'grid',
       headStyles: {
         fillColor: [30, 41, 59],
