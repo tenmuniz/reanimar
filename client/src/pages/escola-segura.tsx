@@ -286,13 +286,9 @@ export default function EscolaSegura() {
             {/* Conteúdo principal modernizado */}
             <div className="relative z-10 p-5 rounded-3xl max-w-2xl">
               <div className="flex items-start gap-6">
-                {/* Decoração de destaque no lugar do brasão */}
-                <div className="hidden md:flex relative mb-2">
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl shadow-lg opacity-60 transform -rotate-2"></div>
-                  <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-lg absolute -bottom-2 -right-2 opacity-40 transform rotate-3"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-white">20ª</span>
-                  </div>
+                {/* Decoração de destaque no lugar do brasão - formato simplificado */}
+                <div className="hidden md:flex items-center justify-center w-14 h-14 bg-purple-600 rounded-xl shadow-md mr-3">
+                  <span className="text-2xl font-bold text-white">20ª</span>
                 </div>
                 
                 {/* Conteúdo textual modernizado */}
