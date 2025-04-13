@@ -123,18 +123,14 @@ export default function OfficerSelect({
       {selectedOfficer ? (
         <div className="flex items-center">
           <div className={`${limitReachedOfficers.includes(selectedOfficer) 
-              ? 'bg-gradient-to-r from-red-50 to-orange-50 text-red-800 border-0 shadow-inner' 
-              : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-800 border-0 shadow-sm'} 
+              ? 'bg-gradient-to-r from-red-50 to-orange-50 text-red-800 border-l-4 border-l-red-500 shadow-inner' 
+              : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-slate-800 border-l-4 border-l-indigo-600 shadow-sm'} 
               rounded-lg px-4 py-2.5 text-sm flex-1 truncate relative overflow-hidden`}>
             {/* Efeito de brilho */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-70"></div>
             
             {/* Barra lateral indicadora */}
-            <div className={`absolute left-0 top-0 bottom-0 w-1.5 
-              ${limitReachedOfficers.includes(selectedOfficer) 
-                ? 'bg-gradient-to-b from-red-500 to-red-600' 
-                : 'bg-gradient-to-b from-blue-500 to-indigo-600'}`}>
-            </div>
+            {/* Barra lateral transformada em borda para evitar duplicação */}
             
             <div className="relative flex items-center">
               {/* Remover qualquer indicador de número */}
@@ -175,7 +171,7 @@ export default function OfficerSelect({
           onValueChange={handleChange}
         >
           <SelectTrigger 
-            className="w-full rounded-lg border-0 text-sm min-h-[46px] bg-gradient-to-r from-blue-50 to-indigo-50 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-4"
+            className="w-full rounded-lg border-0 border-l-4 border-l-indigo-600 text-sm min-h-[46px] bg-gradient-to-r from-blue-50 to-indigo-50 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-4"
             style={{
               backgroundSize: '200% 100%',
               backgroundPosition: '0 0',
@@ -188,8 +184,7 @@ export default function OfficerSelect({
               (e.target as HTMLElement).style.backgroundPosition = '0 0';
             }}
           >
-            {/* Decoração lateral */}
-            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 to-indigo-600"></div>
+            {/* Decoração lateral removida para evitar duplicação */}
             
             {/* Sem ícone decorativo */}
             
