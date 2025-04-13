@@ -85,7 +85,7 @@ export default function AuthPage() {
           </div>
 
           {/* Formulário de Login */}
-          <Form {...loginForm} className="flex-1 flex flex-col justify-between">
+          <Form {...loginForm}>
             <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-5 flex-1 flex flex-col justify-between">
               <FormField
                 control={loginForm.control}
@@ -161,27 +161,31 @@ export default function AuthPage() {
       </div>
 
       {/* Lado direito - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-stretch relative">
-        {/* Brasão como marca d'água no lado direito - redimensionado e ajustado, alinhado com o topo do card */}
-        <div className="absolute inset-0 pointer-events-none">
-          <img 
-            src={brasaoCipm} 
-            alt="Brasão 20ª CIPM" 
-            className="absolute top-[10%] left-1/2 transform -translate-x-1/2 opacity-5 w-[240px] max-w-[60%] z-0 select-none hidden sm:block filter grayscale(100%) brightness(1.2)" 
-          />
-        </div>
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 py-4 px-6 items-stretch relative">
         
-        {/* Container flexível para alinhar elementos com a caixa de login */}
-        <div className="relative z-10 flex flex-col justify-between h-full min-h-[400px] text-center max-w-md mx-auto w-full">
-          <div>
-            <h2 className="text-white text-2xl md:text-3xl font-bold mb-4 uppercase">Sistema de Gestão de Extras</h2>
-            <p className="text-white/90 text-sm md:text-base mb-8">
-              Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias,
+        {/* Estrutura flexível para alinhar com a caixa de login */}
+        <div className="flex flex-col justify-between h-[500px] relative z-10 w-full max-w-md mx-auto">
+          
+          {/* TOPO: Brasão */}
+          <div className="flex justify-center">
+            <img
+              src={brasaoCipm}
+              alt="Brasão 20ª CIPM"
+              className="w-[200px] opacity-10 pointer-events-none select-none"
+            />
+          </div>
+          
+          {/* MEIO: Texto */}
+          <div className="text-center mt-4">
+            <h2 className="text-white text-2xl font-bold uppercase">Sistema de Gestão de Extras</h2>
+            <p className="text-white/90 text-sm mt-2 max-w-md mx-auto">
+              Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias, 
               desenvolvida para maximizar a eficiência operacional e transparência.
             </p>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          {/* BASE: Botões */}
+          <div className="grid grid-cols-2 gap-4 mt-6">
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg text-white flex flex-col items-center hover:bg-blue-600 transition-all">
               <ShieldAlert className="h-6 w-6 mb-2 text-blue-200" />
               <h3 className="font-medium">Polícia Mais Forte</h3>
