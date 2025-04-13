@@ -24,37 +24,142 @@ export default function ConflictCounter() {
   
   useEffect(() => {
     if (combinedSchedulesData) {
-      // Simular conflitos (para demonstração)
-      const conflicts: Inconsistencia[] = [
-        {
-          dia: 1,
-          militar: "SD PM GOVEIA",
-          guarnicaoOrdinaria: "CHARLIE",
-          operacao: "PMF"
-        },
-        {
-          dia: 10,
-          militar: "CB PM FELIPE",
-          guarnicaoOrdinaria: "ALFA",
-          operacao: "PMF"
-        },
-        {
-          dia: 20,
-          militar: "SD PM PATRIK",
-          guarnicaoOrdinaria: "CHARLIE",
-          operacao: "ESCOLA SEGURA"
-        },
-        {
-          dia: 8,
-          militar: "CAP QOPM MUNIZ",
-          guarnicaoOrdinaria: "EXPEDIENTE",
-          operacao: "PMF + ESCOLA SEGURA"
-        }
-      ];
-      
-      setInconsistencias(conflicts);
+      // Verificar inconsistências reais com base nas escalas
+      verificarInconsistencias();
     }
   }, [combinedSchedulesData]);
+  
+  // Função para converter nomes de militares para suas guarnições
+  const getGuarnicaoOrdinaria = (militar: string, dia: number): string => {
+    // Simplificar e melhorar a detecção de conflitos
+    // Regras do serviço ordinário para este mês
+    const servicoOrdinario: Record<string, string[]> = {
+      'ALFA': [1, 2, 3, 24, 25, 26, 27, 28, 29, 30], // ALFA trabalha nos dias 1-3 e 24-30
+      'BRAVO': [4, 5, 6, 7, 8, 9, 25, 26, 27, 28, 29, 30], // BRAVO trabalha nos dias 4-9 e 25-30
+      'CHARLIE': [1, 2, 3, 18, 19, 20, 21, 22, 23, 24] // CHARLIE trabalha nos dias 1-3 e 18-24
+    };
+    
+    // Lista de militares por guarnição
+    const guarnicoes: Record<string, string[]> = {
+      'ALFA': [
+        "CB PM FELIPE", "3º SGT PM RODRIGO", "SD PM GOVEIA", 
+        "3º SGT PM ANA CLEIDE", "SD PM CARVALHO"
+      ],
+      'BRAVO': [
+        "3º SGT PM CARLOS EDUARDO", "SD PM LUAN", "3º SGT PM GLEIDSON",
+        "CB PM BARROS", "SD PM S. CORREA"
+      ],
+      'CHARLIE': [
+        "SD PM PATRIK", "CB PM BRASIL", "CB PM M. PAIXÃO", 
+        "SD PM NAVARRO", "SD PM MARVÃO"
+      ],
+      'EXPEDIENTE': [
+        "CAP QOPM MUNIZ", "1º TEN QOPM MONTEIRO", "SUB TEN ANDRÉ", 
+        "1º SGT PM OLIMAR", "2º SGT PM FÁBIO", "2º SGT PM PINHEIRO", 
+        "2º SGT PM A. TAVARES", "3º SGT PM CARAVELAS", "3º SGT AMARAL", 
+        "3º SGT PM NEGRÃO", "3º SGT PM LEDO", "3º SGT PM NUNES", 
+        "3º SGT PM RAFAEL", "3º SGT PM CUNHA", "TEN VANILSON", 
+        "CB PM A. SILVA", "SD PM RODRIGUES", "SD PM ALMEIDA", 
+        "SD PM CHAGAS", "CB CARLA"
+      ]
+    };
+    
+    // Verificar a guarnição do militar
+    for (const [guarnicao, militares] of Object.entries(guarnicoes)) {
+      if (militares.includes(militar)) {
+        // Se o militar é desta guarnição, verificar se está de serviço no dia
+        if (guarnicao !== "EXPEDIENTE" && servicoOrdinario[guarnicao]?.includes(dia)) {
+          return guarnicao;
+        }
+        return guarnicao === "EXPEDIENTE" ? "EXPEDIENTE" : "FOLGA";
+      }
+    }
+    
+    // Se não encontrou o militar em nenhuma guarnição
+    return "DESCONHECIDO";
+  };
+  
+  // Função para verificar inconsistências nas escalas
+  const verificarInconsistencias = () => {
+    if (!combinedSchedulesData) return;
+    
+    const listaInconsistencias: Inconsistencia[] = [];
+    const currentDate = new Date();
+    const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
+    
+    const pmfData = combinedSchedulesData.schedules?.pmf[currentMonthKey] || {};
+    const escolaData = combinedSchedulesData.schedules?.escolaSegura[currentMonthKey] || {};
+    
+    // Para cada dia do mês
+    for (let dia = 1; dia <= 31; dia++) {
+      const dayStr = dia.toString();
+      
+      // Verificar militares escalados em PMF
+      if (pmfData[dayStr]) {
+        const militaresPMF = pmfData[dayStr].filter(m => m !== null) as string[];
+        
+        militaresPMF.forEach(militar => {
+          // Obter a guarnição ordinária do militar nesse dia
+          const guarnicao = getGuarnicaoOrdinaria(militar, dia);
+          
+          // Se o militar estiver de serviço, é uma inconsistência
+          if (guarnicao !== "FOLGA" && guarnicao !== "EXPEDIENTE" && guarnicao !== "DESCONHECIDO") {
+            listaInconsistencias.push({
+              dia,
+              militar,
+              guarnicaoOrdinaria: guarnicao,
+              operacao: "PMF"
+            });
+          }
+          
+          // Verificar se o militar também está na escala da Escola Segura no mesmo dia
+          if (escolaData[dayStr] && escolaData[dayStr].includes(militar)) {
+            listaInconsistencias.push({
+              dia,
+              militar,
+              guarnicaoOrdinaria: guarnicao,
+              operacao: "PMF + ESCOLA SEGURA"
+            });
+          }
+        });
+      }
+      
+      // Verificar militares escalados em Escola Segura (que não estão em PMF)
+      if (escolaData[dayStr]) {
+        const militaresEscola = escolaData[dayStr].filter(m => m !== null) as string[];
+        
+        militaresEscola.forEach(militar => {
+          // Ignorar militares já verificados na PMF (para evitar duplicação)
+          if (pmfData[dayStr] && pmfData[dayStr].includes(militar)) {
+            return; // Já verificado acima como "PMF + ESCOLA SEGURA"
+          }
+          
+          // Obter a guarnição ordinária do militar nesse dia
+          const guarnicao = getGuarnicaoOrdinaria(militar, dia);
+          
+          // Se o militar estiver de serviço, é uma inconsistência
+          if (guarnicao !== "FOLGA" && guarnicao !== "EXPEDIENTE" && guarnicao !== "DESCONHECIDO") {
+            listaInconsistencias.push({
+              dia,
+              militar,
+              guarnicaoOrdinaria: guarnicao,
+              operacao: "ESCOLA SEGURA"
+            });
+          }
+        });
+      }
+    }
+    
+    // Ordenar por dia e depois por operação
+    listaInconsistencias.sort((a, b) => {
+      if (a.dia !== b.dia) {
+        return a.dia - b.dia;
+      }
+      return a.operacao.localeCompare(b.operacao);
+    });
+    
+    setInconsistencias(listaInconsistencias);
+  };
   
   // Função para filtrar inconsistências com base no termo de busca
   const filteredInconsistencias = () => {

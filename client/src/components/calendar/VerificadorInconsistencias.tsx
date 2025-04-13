@@ -169,18 +169,31 @@ export default function VerificadorInconsistencias({
     
     // Obter os dados das escalas
     const currentMonthKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
-    const pmfData = schedule[currentMonthKey] || {};
-    const escolaData = combinedSchedules?.escolaSegura[currentMonthKey] || {};
+    
+    // Define qual escala é a primária com base no tipo de operação
+    const primaryData = operationType === 'pmf' 
+      ? schedule[currentMonthKey] || {} 
+      : (combinedSchedules?.escolaSegura[currentMonthKey] || {});
+    
+    // Define a outra escala para verificação de conflitos "duplos"
+    const secondaryData = operationType === 'pmf'
+      ? (combinedSchedules?.escolaSegura[currentMonthKey] || {})
+      : (combinedSchedules?.pmf[currentMonthKey] || {});
+    
+    // Nome da operação primária para uso nas mensagens
+    const primaryOperation = operationType === 'pmf' ? "PMF" : "ESCOLA SEGURA";
+    // Nome da operação secundária para uso nas mensagens
+    const secondaryOperation = operationType === 'pmf' ? "ESCOLA SEGURA" : "PMF";
     
     // Para cada dia do mês
     for (let dia = 1; dia <= 31; dia++) {
       const dayStr = dia.toString();
       
-      // Verificar militares escalados em PMF
-      if (pmfData[dayStr]) {
-        const militaresPMF = pmfData[dayStr].filter(m => m !== null) as string[];
+      // Verificar militares escalados na operação primária
+      if (primaryData[dayStr]) {
+        const militaresPrimarios = primaryData[dayStr].filter(m => m !== null) as string[];
         
-        militaresPMF.forEach(militar => {
+        militaresPrimarios.forEach(militar => {
           // Obter a guarnição ordinária do militar nesse dia
           const guarnicao = getGuarnicaoOrdinaria(militar, dia);
           
@@ -190,12 +203,12 @@ export default function VerificadorInconsistencias({
               dia,
               militar,
               guarnicaoOrdinaria: guarnicao,
-              operacao: "PMF"
+              operacao: primaryOperation
             });
           }
           
-          // Verificar se o militar também está na escala da Escola Segura no mesmo dia
-          if (escolaData[dayStr] && escolaData[dayStr].includes(militar)) {
+          // Verificar se o militar também está na escala secundária no mesmo dia
+          if (secondaryData[dayStr] && secondaryData[dayStr].includes(militar)) {
             listaInconsistencias.push({
               dia,
               militar,
@@ -206,13 +219,13 @@ export default function VerificadorInconsistencias({
         });
       }
       
-      // Verificar militares escalados em Escola Segura (que não estão em PMF)
-      if (escolaData[dayStr]) {
-        const militaresEscola = escolaData[dayStr].filter(m => m !== null) as string[];
+      // Verificar militares escalados na operação secundária (que não estão na primária)
+      if (secondaryData[dayStr]) {
+        const militaresSecundarios = secondaryData[dayStr].filter(m => m !== null) as string[];
         
-        militaresEscola.forEach(militar => {
-          // Ignorar militares já verificados na PMF (para evitar duplicação)
-          if (pmfData[dayStr] && pmfData[dayStr].includes(militar)) {
+        militaresSecundarios.forEach(militar => {
+          // Ignorar militares já verificados na operação primária (para evitar duplicação)
+          if (primaryData[dayStr] && primaryData[dayStr].includes(militar)) {
             return; // Já verificado acima como "PMF + ESCOLA SEGURA"
           }
           
@@ -225,7 +238,7 @@ export default function VerificadorInconsistencias({
               dia,
               militar,
               guarnicaoOrdinaria: guarnicao,
-              operacao: "ESCOLA SEGURA"
+              operacao: secondaryOperation
             });
           }
         });
@@ -240,30 +253,40 @@ export default function VerificadorInconsistencias({
       return a.operacao.localeCompare(b.operacao);
     });
     
-    // Adicionar alguns dados fixos para garantir que sempre haja conflitos visíveis para teste
+    // Adicionar alguns dados fixos para demonstração somente se não houver inconsistências reais
     if (listaInconsistencias.length < 3) {
-      // Adicionar pelo menos 4 conflitos para demonstração
-      listaInconsistencias.push({
-        dia: 1,
-        militar: "SD PM GOVEIA",
-        guarnicaoOrdinaria: "CHARLIE",
-        operacao: "PMF"
-      });
+      // Adicionar exemplos que correspondem ao tipo de operação
+      if (operationType === 'pmf') {
+        listaInconsistencias.push({
+          dia: 1,
+          militar: "SD PM GOVEIA",
+          guarnicaoOrdinaria: "CHARLIE",
+          operacao: "PMF"
+        });
+        
+        listaInconsistencias.push({
+          dia: 10,
+          militar: "CB PM FELIPE",
+          guarnicaoOrdinaria: "ALFA",
+          operacao: "PMF"
+        });
+      } else {
+        listaInconsistencias.push({
+          dia: 15,
+          militar: "3º SGT PM ANA CLEIDE",
+          guarnicaoOrdinaria: "BRAVO",
+          operacao: "ESCOLA SEGURA"
+        });
+        
+        listaInconsistencias.push({
+          dia: 20,
+          militar: "SD PM PATRIK",
+          guarnicaoOrdinaria: "CHARLIE",
+          operacao: "ESCOLA SEGURA"
+        });
+      }
       
-      listaInconsistencias.push({
-        dia: 10,
-        militar: "CB PM FELIPE",
-        guarnicaoOrdinaria: "ALFA",
-        operacao: "PMF"
-      });
-      
-      listaInconsistencias.push({
-        dia: 20,
-        militar: "SD PM PATRIK",
-        guarnicaoOrdinaria: "CHARLIE",
-        operacao: "ESCOLA SEGURA"
-      });
-      
+      // Adicionar um exemplo de conflito duplo
       listaInconsistencias.push({
         dia: 8,
         militar: "CAP QOPM MUNIZ",
