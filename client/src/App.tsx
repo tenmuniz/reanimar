@@ -62,19 +62,6 @@ function NavBar() {
           </div>
           
           <div className="flex items-center gap-2">
-            {/* Estatísticas rápidas */}
-            <div className="hidden md:flex items-center">
-              <div className="flex items-center px-3 py-1.5 bg-blue-50 rounded-l-full border border-blue-100">
-                <Users className="h-3.5 w-3.5 text-blue-500 mr-1.5" />
-                <span className="text-xs font-medium text-blue-700">GCJO: 48</span>
-              </div>
-              
-              <div className="flex items-center px-3 py-1.5 bg-purple-50 rounded-r-full border-t border-r border-b border-purple-100">
-                <Shield className="h-3.5 w-3.5 text-purple-500 mr-1.5" />
-                <span className="text-xs font-medium text-purple-700">16 guarniçoes</span>
-              </div>
-            </div>
-            
             {/* Contador de conflitos */}
             <ConflictCounter />
             
