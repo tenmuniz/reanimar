@@ -301,6 +301,143 @@ export default function ResumoGuarnicao({
                       guarnicao === "CHARLIE" ? "bg-red-500" :
                       "bg-gray-500";
                     
+
+                        
+                        // Organizar dados por militares (para mostrar todos os dias de cada militar)
+                        const militaresPorDia = dados.militaresPorDia || {};
+                        const militaresInfo: Record<string, { nome: string, dias: number[] }> = {};
+                        
+                        // Para cada dia, processar os militares
+                        Object.entries(militaresPorDia).forEach(([dia, militares]) => {
+                          const diaNum = parseInt(dia, 10);
+                          
+                          militares.forEach(militar => {
+                            if (!militaresInfo[militar]) {
+                              militaresInfo[militar] = { nome: militar, dias: [] };
+                            }
+                            militaresInfo[militar].dias.push(diaNum);
+                          });
+                        });
+                        
+                        // Converter para array e ordenar por nome
+                        const militaresArray = Object.values(militaresInfo).sort((a, b) => 
+                          a.nome.localeCompare(b.nome)
+                        );
+                        
+                        // Dados para a tabela
+                        const tableRows: any[] = [];
+                        
+                        militaresArray.forEach(info => {
+                          // Ordenar os dias
+                          const diasOrdenados = [...info.dias].sort((a, b) => a - b);
+                          
+                          // Formatar os dias como string
+                          const diasStr = diasOrdenados.join(', ');
+                          
+                          tableRows.push([
+                            info.nome,
+                            diasStr,
+                            diasOrdenados.length
+                          ]);
+                        });
+                        
+                        // Importando a função autoTable e usando na instância do PDF
+                        import('jspdf-autotable').then((module) => {
+                          const autoTable = module.default;
+                          
+                          autoTable(pdf, {
+                            head: [['Militar', 'Datas de Escala', 'Total']],
+                            body: tableRows,
+                            startY: 95,
+                            margin: { top: 40 },
+                            styles: { fontSize: 10 },
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 'auto' },  // Nome do militar
+                              1: { cellWidth: 'auto' },  // Dias
+                              2: { cellWidth: 20 }      // Total
+                            }
+                          });
+                          
+                          // Adicionar uma tabela secundária detalhando por dia
+                          pdf.addPage();
+                          
+                          // Cabeçalho na nova página
+                          pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                          pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                          
+                          pdf.setTextColor(255, 255, 255);
+                          pdf.setFontSize(16);
+                          pdf.setFont('helvetica', 'bold');
+                          pdf.text(`DETALHAMENTO POR DIA - GUARNIÇÃO ${guarnicao}`, 105, 20, { align: 'center' });
+                          
+                          pdf.setTextColor(0, 0, 0);
+                          
+                          // Dados para a segunda tabela (por dia)
+                          const tableRowsPorDia: any[] = [];
+                          const diasOrdenados = [...dados.dias].sort((a, b) => a - b);
+                          
+                          // Para cada dia, pegar os militares dessa guarnição
+                          diasOrdenados.forEach(dia => {
+                            if (dados.militaresPorDia && dados.militaresPorDia[dia]) {
+                              // Juntar todos os militares do dia
+                              const militaresDoDia = dados.militaresPorDia[dia].join(', ');
+                              
+                              tableRowsPorDia.push([
+                                dia,
+                                militaresDoDia,
+                                dados.militaresPorDia[dia].length
+                              ]);
+                            }
+                          });
+                          
+                          autoTable(pdf, {
+                            head: [['Dia', 'Militares', 'Total']],
+                            body: tableRowsPorDia,
+                            startY: 50,
+                            margin: { top: 40 },
+                            styles: { fontSize: 10 },
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 20 },     // Dia
+                              1: { cellWidth: 'auto' }, // Militares
+                              2: { cellWidth: 20 }      // Total
+                            }
+                          });
+                          
+                          // Rodapé em todas as páginas
+                          const pageCount = pdf.getNumberOfPages();
+                          for (let i = 1; i <= pageCount; i++) {
+                            pdf.setPage(i);
+                            
+                            // Adicionar linha no rodapé
+                            pdf.setDrawColor(200, 200, 200);
+                            pdf.line(20, pdf.internal.pageSize.height - 20, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 20);
+                            
+                            pdf.setFontSize(8);
+                            pdf.setTextColor(100, 100, 100);
+                            pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                          }
+                          
+                          // Salvar o PDF
+                          pdf.save(`Escala_${guarnicao}_${mesAno.replace(' ', '_')}.pdf`);
+                        });
+                      } catch (error) {
+                        console.error("Erro ao gerar PDF:", error);
+                        alert("Erro ao gerar PDF. Tente novamente.");
+                      }
+                    };
+                    
                     // Função para abrir o modal de detalhes
                     const abrirDetalhesGuarnicao = () => {
                       setGuarnicaoSelecionada(guarnicao);
@@ -346,6 +483,8 @@ export default function ResumoGuarnicao({
                               <Users className="h-3 w-3 mr-1" />
                               Detalhes
                             </Button>
+                            
+
                           </div>
                         </div>
                       </div>
@@ -560,6 +699,202 @@ export default function ResumoGuarnicao({
                 >
                   <X className="h-4 w-4 mr-2" />
                   Fechar
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  className={`${
+                    guarnicaoSelecionada === "EXPEDIENTE" ? "bg-cyan-700 hover:bg-cyan-600" :
+                    guarnicaoSelecionada === "ALFA" ? "bg-green-700 hover:bg-green-600" :
+                    guarnicaoSelecionada === "BRAVO" ? "bg-yellow-700 hover:bg-yellow-600" :
+                    guarnicaoSelecionada === "CHARLIE" ? "bg-red-700 hover:bg-red-600" :
+                    "bg-gray-700 hover:bg-gray-600"
+                  } text-white border-transparent shadow-md`}
+                  onClick={() => {
+                    if (guarnicaoSelecionada) {
+                      try {
+                        const pdf = new jsPDF();
+                        
+                        // Cores por guarnição
+                        const guarnicaoCores: Record<string, number[]> = {
+                          "EXPEDIENTE": [0, 128, 170], // Azul ciano  
+                          "ALFA": [20, 150, 20],       // Verde
+                          "BRAVO": [180, 150, 0],      // Amarelo
+                          "CHARLIE": [170, 20, 20],    // Vermelho
+                          "OUTROS": [100, 100, 100]    // Cinza
+                        };
+                        
+                        // Cor da guarnição selecionada
+                        const corGuarnicao = guarnicaoCores[guarnicaoSelecionada] || [0, 0, 0];
+                        
+                        // Adicionar um cabeçalho colorido
+                        pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                        pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                        
+                        // Título do Documento
+                        pdf.setTextColor(255, 255, 255);
+                        pdf.setFontSize(18);
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.text(`ESCALA DE SERVIÇO EXTRAORDINÁRIO`, 105, 15, { align: 'center' });
+                        pdf.setFontSize(14);
+                        pdf.text(`GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 25, { align: 'center' });
+                        
+                        // Reset cor do texto
+                        pdf.setTextColor(0, 0, 0);
+                        
+                        // Informações do mês
+                        pdf.setFontSize(12);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.text(`Mês de Referência: ${mesAno}`, 105, 50, { align: 'center' });
+                        pdf.text(`Operação: ${operationType === 'pmf' ? 'Polícia Mais Forte' : 'Escola Segura'}`, 105, 58, { align: 'center' });
+                        
+                        // Adicionar estatísticas
+                        pdf.setFillColor(240, 240, 240);
+                        pdf.rect(20, 65, pdf.internal.pageSize.width - 40, 25, 'F');
+                        
+                        pdf.setFontSize(10);
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.text(`• Total de militares escalados: ${guarnicoesData[guarnicaoSelecionada].total}`, 25, 75);
+                        pdf.text(`• Dias com extras: ${guarnicoesData[guarnicaoSelecionada].dias.length} dias`, 25, 83);
+                        
+                        // Organizar dados por militares (para mostrar todos os dias de cada militar)
+                        const militaresPorDia = guarnicoesData[guarnicaoSelecionada].militaresPorDia || {};
+                        const militaresInfo: Record<string, { nome: string, dias: number[] }> = {};
+                        
+                        // Para cada dia, processar os militares
+                        Object.entries(militaresPorDia).forEach(([dia, militares]) => {
+                          const diaNum = parseInt(dia, 10);
+                          
+                          militares.forEach(militar => {
+                            if (!militaresInfo[militar]) {
+                              militaresInfo[militar] = { nome: militar, dias: [] };
+                            }
+                            militaresInfo[militar].dias.push(diaNum);
+                          });
+                        });
+                        
+                        // Converter para array e ordenar por nome
+                        const militaresArray = Object.values(militaresInfo).sort((a, b) => 
+                          a.nome.localeCompare(b.nome)
+                        );
+                        
+                        // Dados para a tabela
+                        const tableRows: any[] = [];
+                        
+                        militaresArray.forEach(info => {
+                          // Ordenar os dias
+                          const diasOrdenados = [...info.dias].sort((a, b) => a - b);
+                          
+                          // Formatar os dias como string
+                          const diasStr = diasOrdenados.join(', ');
+                          
+                          tableRows.push([
+                            info.nome,
+                            diasStr,
+                            diasOrdenados.length
+                          ]);
+                        });
+                        
+                        // Importando a função autoTable e usando na instância do PDF
+                        import('jspdf-autotable').then((module) => {
+                          const autoTable = module.default;
+                          
+                          autoTable(pdf, {
+                            head: [['Militar', 'Datas de Escala', 'Total']],
+                            body: tableRows,
+                            startY: 95,
+                            margin: { top: 40 },
+                            styles: { fontSize: 10 },
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 'auto' },  // Nome do militar
+                              1: { cellWidth: 'auto' },  // Dias
+                              2: { cellWidth: 20 }      // Total
+                            }
+                          });
+                          
+                          // Adicionar uma tabela secundária detalhando por dia
+                          pdf.addPage();
+                          
+                          // Cabeçalho na nova página
+                          pdf.setFillColor(corGuarnicao[0], corGuarnicao[1], corGuarnicao[2]);
+                          pdf.rect(0, 0, pdf.internal.pageSize.width, 40, 'F');
+                          
+                          pdf.setTextColor(255, 255, 255);
+                          pdf.setFontSize(16);
+                          pdf.setFont('helvetica', 'bold');
+                          pdf.text(`DETALHAMENTO POR DIA - GUARNIÇÃO ${guarnicaoSelecionada}`, 105, 20, { align: 'center' });
+                          
+                          pdf.setTextColor(0, 0, 0);
+                          
+                          // Dados para a segunda tabela (por dia)
+                          const tableRowsPorDia: any[] = [];
+                          const diasOrdenados = [...guarnicoesData[guarnicaoSelecionada].dias].sort((a, b) => a - b);
+                          
+                          // Para cada dia, pegar os militares dessa guarnição
+                          diasOrdenados.forEach(dia => {
+                            if (guarnicoesData[guarnicaoSelecionada].militaresPorDia && guarnicoesData[guarnicaoSelecionada].militaresPorDia[dia]) {
+                              // Juntar todos os militares do dia
+                              const militaresDoDia = guarnicoesData[guarnicaoSelecionada].militaresPorDia[dia].join(', ');
+                              
+                              tableRowsPorDia.push([
+                                dia,
+                                militaresDoDia,
+                                guarnicoesData[guarnicaoSelecionada].militaresPorDia[dia].length
+                              ]);
+                            }
+                          });
+                          
+                          autoTable(pdf, {
+                            head: [['Dia', 'Militares', 'Total']],
+                            body: tableRowsPorDia,
+                            startY: 50,
+                            margin: { top: 40 },
+                            styles: { fontSize: 10 },
+                            headStyles: { 
+                              fillColor: corGuarnicao, 
+                              textColor: [255, 255, 255],
+                              fontStyle: 'bold'
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            columnStyles: {
+                              0: { cellWidth: 20 },     // Dia
+                              1: { cellWidth: 'auto' }, // Militares
+                              2: { cellWidth: 20 }      // Total
+                            }
+                          });
+                          
+                          // Rodapé em todas as páginas
+                          const pageCount = pdf.getNumberOfPages();
+                          for (let i = 1; i <= pageCount; i++) {
+                            pdf.setPage(i);
+                            
+                            // Adicionar linha no rodapé
+                            pdf.setDrawColor(200, 200, 200);
+                            pdf.line(20, pdf.internal.pageSize.height - 20, pdf.internal.pageSize.width - 20, pdf.internal.pageSize.height - 20);
+                            
+                            pdf.setFontSize(8);
+                            pdf.setTextColor(100, 100, 100);
+                            pdf.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')} - Página ${i} de ${pageCount}`, 105, pdf.internal.pageSize.height - 10, { align: 'center' });
+                          }
+                          
+                          // Salvar o PDF
+                          pdf.save(`Escala_${guarnicaoSelecionada}_${mesAno.replace(' ', '_')}.pdf`);
+                        });
+                      } catch (error) {
+                        console.error("Erro ao gerar PDF:", error);
+                        alert("Erro ao gerar PDF. Tente novamente.");
+                      }
+                    }
+                  }}
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Exportar PDF
                 </Button>
               </div>
             </>
