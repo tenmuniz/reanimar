@@ -254,8 +254,8 @@ export default function Relatorios() {
   const anoAtual = today.getFullYear();
   
   // Capacidade total fixa
-  const capacidadeTotalPMF = 90; // Fixo como solicitado na imagem de referência
-  const capacidadeTotalES = 60;  // Fixo como solicitado na imagem de referência
+  const capacidadeTotalPMF = 90; // Total de extras disponíveis para PMF (3 por dia * 30 dias)
+  const capacidadeTotalES = 44;  // Total de extras disponíveis para Escola Segura (conforme solicitação)
   const capacidadeTotalGeral = capacidadeTotalPMF + capacidadeTotalES;
   
   // Calcular dias no mês e dias úteis
@@ -399,7 +399,7 @@ export default function Relatorios() {
           <div className="mt-4 pt-3 border-t border-green-100">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs text-gray-600">Total restante:</span>
-              <span className="text-lg font-bold text-green-800">{restantesTotal} de 150</span>
+              <span className="text-lg font-bold text-green-800">{restantesTotal} de 134</span>
             </div>
             <div className="w-full bg-gray-100 rounded-full h-2.5">
               <div 
@@ -413,8 +413,8 @@ export default function Relatorios() {
           <p className="text-xs text-gray-500 mt-3">Capacidade máxima mensal</p>
           <div className="flex justify-between mt-1 text-xs font-medium">
             <span className="text-green-600">PMF: 90</span>
-            <span className="text-purple-600">ES: 60</span>
-            <span className="text-gray-700">Total: 150</span>
+            <span className="text-purple-600">ES: 44</span>
+            <span className="text-gray-700">Total: 134</span>
           </div>
         </div>
       </div>
