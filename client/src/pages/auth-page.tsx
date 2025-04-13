@@ -83,8 +83,8 @@ export default function AuthPage() {
           <div className="mb-6 text-center">
             <h2 className="text-lg font-semibold text-gray-800">Acesso Restrito</h2>
             <p className="text-xs text-gray-600 mt-1 max-w-sm mx-auto">
-              Sistema restrito a policiais militares da ativa lotados na 20ª CIPM – Muaná / Ponta de Pedras.
-              Atenção: Tentativas de acesso não autorizado são registradas.
+              Sistema exclusivo para policiais militares da ativa 
+              <br />lotados na 20ª CIPM - Muaná
             </p>
           </div>
 
@@ -151,6 +151,14 @@ export default function AuthPage() {
                 {loginMutation.isPending ? "Autenticando..." : "Entrar"}
                 {!loginMutation.isPending && <ChevronsRight className="h-4 w-4 ml-2" />}
               </Button>
+              
+              {/* Aviso de segurança */}
+              <div className="mt-4 text-center">
+                <p className="text-xs text-red-600 font-medium">
+                  <AlertCircle className="h-3 w-3 inline mr-1" />
+                  Atenção: Tentativas de acesso não autorizado são registradas via IP.
+                </p>
+              </div>
             </form>
           </Form>
         </div>
