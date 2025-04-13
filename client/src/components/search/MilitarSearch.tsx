@@ -9,7 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OfficersResponse, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
-import { searchMilitar, SearchResult } from "@/lib/search-helper";
+
+interface SearchResult {
+  operacao: 'pmf' | 'escolaSegura';
+  dias: number[];
+  mes: number;
+  ano: number;
+}
 
 export default function MilitarSearch() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,58 +27,91 @@ export default function MilitarSearch() {
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
-  // Buscar oficiais
-  const { data: officersData } = useQuery<OfficersResponse>({
-    queryKey: ['/api/officers'],
+  // Carregar dados diretamente para PMF e Escola Segura separadamente
+  const { data: pmfData } = useQuery({
+    queryKey: ['/api/schedule', 'pmf', currentYear, currentMonth],
+    queryFn: async () => {
+      const res = await fetch(`/api/schedule?operation=pmf&year=${currentYear}&month=${currentMonth}`);
+      if (!res.ok) {
+        throw new Error('Falha ao buscar agenda PMF');
+      }
+      return res.json();
+    }
   });
 
-  // Buscar escalas combinadas
-  const { data: combinedSchedulesData, refetch } = useQuery<{ schedules: CombinedSchedules }>({
-    queryKey: ['/api/combined-schedules', currentYear, currentMonth],
+  const { data: escolaSeguraData } = useQuery({
+    queryKey: ['/api/schedule', 'escolaSegura', currentYear, currentMonth],
     queryFn: async () => {
-      console.log(`Buscando dados para: ano=${currentYear}, mês=${currentMonth}`);
-      const res = await fetch(`/api/combined-schedules?year=${currentYear}&month=${currentMonth}`);
+      const res = await fetch(`/api/schedule?operation=escolaSegura&year=${currentYear}&month=${currentMonth}`);
       if (!res.ok) {
-        throw new Error('Failed to fetch schedules');
+        throw new Error('Falha ao buscar agenda Escola Segura');
       }
-      const data = await res.json();
-      console.log('Dados recebidos:', data);
-      return data;
-    },
-    enabled: true,
+      return res.json();
+    }
   });
-  
-  // Recarregar os dados quando o mês ou ano mudar
-  useEffect(() => {
-    refetch();
-  }, [currentMonth, currentYear, refetch]);
 
   const handleSearch = () => {
-    if (!searchTerm || !combinedSchedulesData?.schedules) return;
+    if (!searchTerm) return;
     
     setIsSearching(true);
+    const results: SearchResult[] = [];
+    const lowerSearchTerm = searchTerm.toLowerCase().trim();
     
-    // Usar o helper para realizar a busca
-    const results = searchMilitar(
-      combinedSchedulesData.schedules,
-      searchTerm,
-      currentMonth,
-      currentYear
-    );
+    // Buscar em PMF
+    if (pmfData && pmfData.schedule && pmfData.schedule[currentYear] && pmfData.schedule[currentYear][currentMonth]) {
+      const pmfSchedule = pmfData.schedule[currentYear][currentMonth];
+      const pmfDays: number[] = [];
+      
+      Object.entries(pmfSchedule).forEach(([dayStr, officers]) => {
+        const day = parseInt(dayStr, 10);
+        const officersList = officers as (string | null)[];
+        
+        if (officersList.some(officer => 
+          officer && officer.toLowerCase().includes(lowerSearchTerm)
+        )) {
+          pmfDays.push(day);
+        }
+      });
+      
+      if (pmfDays.length > 0) {
+        results.push({
+          operacao: 'pmf',
+          dias: pmfDays.sort((a, b) => a - b),
+          mes: currentMonth,
+          ano: currentYear
+        });
+      }
+    }
+    
+    // Buscar em Escola Segura
+    if (escolaSeguraData && escolaSeguraData.schedule && escolaSeguraData.schedule[currentYear] && escolaSeguraData.schedule[currentYear][currentMonth]) {
+      const esSchedule = escolaSeguraData.schedule[currentYear][currentMonth];
+      const esDays: number[] = [];
+      
+      Object.entries(esSchedule).forEach(([dayStr, officers]) => {
+        const day = parseInt(dayStr, 10);
+        const officersList = officers as (string | null)[];
+        
+        if (officersList.some(officer => 
+          officer && officer.toLowerCase().includes(lowerSearchTerm)
+        )) {
+          esDays.push(day);
+        }
+      });
+      
+      if (esDays.length > 0) {
+        results.push({
+          operacao: 'escolaSegura',
+          dias: esDays.sort((a, b) => a - b),
+          mes: currentMonth,
+          ano: currentYear
+        });
+      }
+    }
     
     setSearchResults(results);
     setIsSearching(false);
   };
-
-  // Ordenar os dias nos resultados
-  useEffect(() => {
-    setSearchResults(prevResults => 
-      prevResults.map(result => ({
-        ...result,
-        dias: [...result.dias].sort((a, b) => a - b)
-      }))
-    );
-  }, [searchResults.length]);
 
   return (
     <Card className="w-full shadow-lg border-0 bg-gradient-to-br from-white to-blue-50 dark:from-slate-900 dark:to-slate-800">
