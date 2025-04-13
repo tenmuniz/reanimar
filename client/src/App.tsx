@@ -185,7 +185,7 @@ function Footer() {
   const isEscolaSegura = location === "/escola-segura";
   
   return (
-    <footer className="bg-gradient-to-t from-[#0a2f6b]/95 to-[#1e3a8a]/80 border-t border-blue-900/30 py-6 backdrop-blur-sm">
+    <footer className="bg-[#0a2f6b] border-t border-blue-900/30 py-6">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
@@ -270,7 +270,7 @@ function Router() {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-[#0a2f6b] to-[#1e3a8a]">
+    <div className="flex flex-col min-h-screen w-full bg-[#0a2f6b]">
       {showSyncBanner && user && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 text-center text-sm font-medium relative overflow-hidden">
           <div className="absolute inset-0 bg-white/10 opacity-20">

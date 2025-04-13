@@ -59,7 +59,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0]">      
+    <div className="relative min-h-screen flex flex-col md:flex-row bg-[#0a2f6b]">      
       {/* Container flex para alinhar ambos os lados */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full h-[600px] flex flex-col">
@@ -154,7 +154,7 @@ export default function AuthPage() {
       </div>
 
       {/* Lado direito - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 items-center justify-center p-6 md:p-12 relative">
+      <div className="hidden md:flex md:w-1/2 bg-[#0a2f6b] items-center justify-center p-6 md:p-12 relative">
         
         {/* Estrutura flexível para alinhar com a caixa de login */}
         <div className="flex flex-col justify-between h-[600px] relative z-10 w-full max-w-md mx-auto">
