@@ -677,16 +677,7 @@ export default function Relatorios() {
           <h1 className="text-2xl font-bold mb-1">Relatórios e Analytics</h1>
           <p className="text-gray-500">Visualize estatísticas e análises das operações extraordinárias</p>
         </div>
-        <div>
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white border-none py-2 px-4 shadow-md hover:shadow-lg transition-all"
-            onClick={() => handleExportPDF('completo')}
-          >
-            <FileText className="h-4 w-4" />
-            <span>Exportar PDF</span>
-          </Button>
-        </div>
+        {/* Botão de exportação PDF removido */}
       </div>
       
       {/* Cartão GCJOs Restantes que mostra o total de 134 */}
