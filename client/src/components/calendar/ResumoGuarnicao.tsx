@@ -2,11 +2,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Calendar, FileText, Printer, ChevronRight, X, Download, User } from "lucide-react";
+import { Users, Calendar, FileText, ChevronRight, X, User } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { formatMonthYear, getWeekdayName } from "@/lib/utils";
-import jsPDF from "jspdf";
-import 'jspdf-autotable';
 
 // Estendendo a interface para incluir os militares por dia na guarnição
 interface GuarnicaoData {
@@ -531,14 +529,7 @@ export default function ResumoGuarnicao({
                               Detalhes
                             </Button>
                             
-                            <Button
-                              variant="outline"
-                              className="bg-white/10 hover:bg-white/20 text-white border-white/20 flex items-center p-1.5 h-auto text-xs"
-                              onClick={gerarPDFGuarnicao}
-                            >
-                              <Download className="h-3 w-3 mr-1" />
-                              PDF
-                            </Button>
+
                           </div>
                         </div>
                       </div>
