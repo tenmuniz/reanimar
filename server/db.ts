@@ -2,31 +2,62 @@ import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
+import { eq } from 'drizzle-orm';
 
+// Configurar o WebSocket para o NeonDB
 neonConfig.webSocketConstructor = ws;
 
-// Configuração de conexão personalizada (usar a mesma conexão no deploy)
+// Sempre utilizar a variável de ambiente para o banco de dados, com fallback para a URL fixa
 const DATABASE_URL = process.env.DATABASE_URL || 
   'postgresql://neondb_owner:npg_TP1lKjG6pxqc@ep-bold-queen-a63l3hze.us-west-2.aws.neon.tech/neondb?sslmode=require';
+
+// Configuração para aumentar a resiliência da conexão
+const poolConfig = {
+  connectionString: DATABASE_URL,
+  max: 20, // máximo de conexões no pool
+  connectionTimeoutMillis: 5000, // timeout para obter conexão do pool
+  idleTimeoutMillis: 30000, // tempo máximo que uma conexão pode ficar ociosa
+  allowExitOnIdle: false // não fechar a pool quando ociosa
+};
 
 // Criar pool e cliente drizzle
 let pool;
 let db;
 
 try {
-  // Tentar conectar com a URL definida acima
-  pool = new Pool({ connectionString: DATABASE_URL });
+  // Tentar conectar com a URL definida
+  pool = new Pool(poolConfig);
   db = drizzle(pool, { schema });
-  console.log('Banco de dados PostgreSQL conectado com sucesso.');
+  
+  // Testar a conexão
+  pool.query('SELECT NOW()').then(() => {
+    console.log('Banco de dados PostgreSQL conectado com sucesso.');
+  }).catch(error => {
+    console.error('Erro ao testar conexão com o banco de dados:', error);
+  });
+  
+  // Configurar eventos para melhor gestão de conexão
+  pool.on('error', (err) => {
+    console.error('Erro inesperado no pool de conexões:', err);
+  });
+  
+  // Verificar banco periodicamente para manter conexão ativa
+  setInterval(() => {
+    pool.query('SELECT 1').catch(err => {
+      console.log('Erro na verificação de conexão:', err);
+    });
+  }, 60000); // Verificar a cada minuto
+  
 } catch (error) {
-  console.error('Erro ao conectar ao banco de dados:', error);
-  // Criar um objeto db que não faz nada para evitar erros
+  console.error('Erro ao inicializar conexão com o banco de dados:', error);
+  
+  // Criar um objeto db que não faz nada para evitar erros de runtime
   db = new Proxy({}, {
     get: () => () => {
-      console.log('Erro na conexão com o banco de dados. Operação ignorada.');
+      console.error('Erro na conexão com o banco de dados. Operação ignorada.');
       return Promise.resolve([]);
     }
   });
 }
 
-export { pool, db };
+export { pool, db, eq };
