@@ -162,18 +162,18 @@ export default function AuthPage() {
 
       {/* Lado direito - Hero */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-[#0a2f6b]/90 to-[#3f78e0]/90 p-12 items-center justify-center relative">
-        {/* Brasão como marca d'água no lado direito - reposicionado e ajustado */}
+        {/* Brasão como marca d'água no lado direito - redimensionado e ajustado */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src={brasaoCipm} 
             alt="Brasão 20ª CIPM" 
-            className="absolute top-[20%] left-1/2 transform -translate-x-1/2 -translate-y-[10%] opacity-8 w-[280px] z-0 select-none" 
+            className="absolute top-[18%] left-1/2 transform -translate-x-1/2 -translate-y-[10%] opacity-5 w-[240px] max-w-[60%] z-0 select-none hidden sm:block filter grayscale(100%) brightness(1.2)" 
           />
         </div>
         
-        <div className="text-center relative z-10 mt-10 max-w-md mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-4 uppercase">Sistema de Gestão de Extras</h2>
-          <p className="text-blue-100 mb-6">
+        <div className="relative z-10 mt-12 text-center max-w-md mx-auto">
+          <h2 className="text-white text-2xl md:text-3xl font-bold mb-4 uppercase">Sistema de Gestão de Extras</h2>
+          <p className="text-white/90 text-sm md:text-base mb-8">
             Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias,
             desenvolvida para maximizar a eficiência operacional e transparência.
           </p>
