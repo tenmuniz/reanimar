@@ -9,6 +9,7 @@ import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
 import BuscaMilitar from "@/pages/busca-militar";
+import BuscaSimples from "@/pages/busca-simples";
 import NotFound from "@/pages/not-found";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
@@ -302,6 +303,7 @@ function Router() {
           <Route path="/verificador-escalas" component={VerificadorEscalas} />
           <Route path="/relatorios" component={Relatorios} />
           <Route path="/busca-militar" component={BuscaMilitar} />
+          <Route path="/busca-simples" component={BuscaSimples} />
           <Route component={NotFound} />
         </Switch>
       </main>
