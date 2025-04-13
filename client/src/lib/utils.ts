@@ -49,3 +49,15 @@ export function getLocalStorageSchedule(key: string): Record<string, Record<stri
 export function saveLocalStorageSchedule(key: string, data: Record<string, Record<string, (string | null)[]>>): void {
   localStorage.setItem(key, JSON.stringify(data));
 }
+
+/**
+ * Formata uma data no padrão brasileiro DD/MM/YYYY
+ * @param date Data a ser formatada
+ * @returns String da data no formato DD/MM/YYYY
+ */
+export function formatDateBR(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
