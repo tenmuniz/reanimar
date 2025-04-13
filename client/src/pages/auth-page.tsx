@@ -140,18 +140,18 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#0a2f6b] to-[#3f78e0] hover:from-[#0a2f6b] hover:to-[#2060d0] text-white font-medium py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center mt-6"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-xl hover:shadow-2xl border-b-4 border-green-800 hover:border-green-900 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 transition-all duration-200 flex items-center justify-center mt-6"
                 disabled={loginMutation.isPending}
               >
-                <LockKeyhole className="h-4 w-4 mr-2" />
-                {loginMutation.isPending ? "Autenticando..." : "Entrar"}
-                {!loginMutation.isPending && <ChevronsRight className="h-4 w-4 ml-2" />}
+                <LockKeyhole className="h-5 w-5 mr-2" />
+                {loginMutation.isPending ? "Autenticando..." : "ENTRAR"}
+                {!loginMutation.isPending && <ChevronsRight className="h-5 w-5 ml-2" />}
               </Button>
               
               {/* Aviso de segurança */}
-              <div className="mt-4 text-center">
-                <p className="text-xs text-red-600 font-medium">
-                  <AlertCircle className="h-3 w-3 inline mr-1" />
+              <div className="mt-4 text-center bg-red-50 p-2 rounded-md border border-red-200">
+                <p className="text-sm text-red-600 font-medium">
+                  <AlertCircle className="h-4 w-4 inline mr-1" />
                   Atenção: Tentativas de acesso não autorizado são registradas via IP.
                 </p>
               </div>
