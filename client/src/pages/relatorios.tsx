@@ -183,9 +183,24 @@ export default function Relatorios() {
     const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
     const dadosPorDiaSemana = diasSemana.map(dia => ({ name: dia, pmf: 0, escolaSegura: 0 }));
     
-    const hoje = new Date();
-    const mes = hoje.getMonth();
-    const ano = hoje.getFullYear();
+    // Definir o período a ser analisado com base na seleção
+    let hoje = new Date();
+    let mes = hoje.getMonth();
+    let ano = hoje.getFullYear();
+    
+    // Ajustar período com base na seleção
+    if (periodoSelecionado === "anterior") {
+      // Mês anterior
+      if (mes === 0) {
+        mes = 11;
+        ano--;
+      } else {
+        mes--;
+      }
+    } else if (periodoSelecionado === "trimestre") {
+      // Usando mês atual, mas considerando 3 meses
+      // A lógica de processamento será ajustada para considerar 3 meses
+    }
     
     // Processar escala PMF
     Object.entries(pmfSchedule).forEach(([diaStr, escalasDia]) => {
@@ -607,36 +622,67 @@ export default function Relatorios() {
         </div>
         <div className="flex space-x-3">
           <Select value={periodoSelecionado} onValueChange={setPeriodoSelecionado}>
-            <SelectTrigger className="w-[180px] border-blue-200 bg-blue-50">
+            <SelectTrigger className="w-[180px] border-blue-200 bg-blue-50/50 shadow-sm">
               <Calendar className="h-4 w-4 mr-2 text-blue-600" />
               <SelectValue placeholder="Período" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="atual">Mês Atual</SelectItem>
-              <SelectItem value="anterior">Mês Anterior</SelectItem>
-              <SelectItem value="trimestre">Último Trimestre</SelectItem>
+              <SelectItem value="atual">
+                <div className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
+                  Mês Atual
+                </div>
+              </SelectItem>
+              <SelectItem value="anterior">
+                <div className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-amber-500 mr-2"></div>
+                  Mês Anterior
+                </div>
+              </SelectItem>
+              <SelectItem value="trimestre">
+                <div className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-purple-500 mr-2"></div>
+                  Último Trimestre
+                </div>
+              </SelectItem>
             </SelectContent>
           </Select>
           
           <Select value={tipoOperacao} onValueChange={setTipoOperacao}>
-            <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50">
+            <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50/50 shadow-sm">
               <Filter className="h-4 w-4 mr-2 text-purple-600" />
               <SelectValue placeholder="Tipo de Operação" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todos">Todas Operações</SelectItem>
-              <SelectItem value="pmf">Polícia Mais Forte</SelectItem>
-              <SelectItem value="es">Escola Segura</SelectItem>
+              <SelectItem value="todos">
+                <div className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 mr-2"></div>
+                  <div className="h-2 w-2 rounded-full bg-purple-500 mr-2"></div>
+                  Todas Operações
+                </div>
+              </SelectItem>
+              <SelectItem value="pmf">
+                <div className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 mr-2"></div>
+                  Polícia Mais Forte
+                </div>
+              </SelectItem>
+              <SelectItem value="es">
+                <div className="flex items-center">
+                  <div className="h-2 w-2 rounded-full bg-purple-500 mr-2"></div>
+                  Escola Segura
+                </div>
+              </SelectItem>
             </SelectContent>
           </Select>
           
           <Button 
             variant="outline" 
-            className="gap-1 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
+            className="gap-1 border-green-200 bg-green-50/80 text-green-700 hover:bg-green-100 hover:text-green-800 shadow-sm"
             onClick={handleExportPDF}
           >
             <FileText className="h-4 w-4" />
-            Exportar PDF
+            <span className="font-medium">Exportar PDF</span>
           </Button>
         </div>
       </div>
