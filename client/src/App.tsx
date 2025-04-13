@@ -2,7 +2,7 @@ import { Switch, Route, useLocation, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, FileCheck } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
@@ -167,12 +167,7 @@ function NavBar() {
               </a>
             </Link>
             
-            <a href="#" className="group flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-indigo-50/60 hover:shadow-md hover:border hover:border-indigo-100">
-              <div className="mr-2 rounded-lg p-1.5 bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-indigo-600 group-hover:shadow-md group-hover:shadow-indigo-400/20">
-                <FileCheck className="h-4 w-4 text-gray-500 group-hover:text-white" />
-              </div>
-              <span className="text-sm font-medium">Exportar PDF</span>
-            </a>
+
           </div>
         </nav>
       </div>
