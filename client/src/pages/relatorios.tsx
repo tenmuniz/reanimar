@@ -410,11 +410,20 @@ export default function Relatorios() {
             <p className="text-xs text-gray-500 mt-1 text-right">{percentualOcupacao}% dos extras utilizados</p>
           </div>
           
-          <p className="text-xs text-gray-500 mt-3">Capacidade máxima mensal</p>
-          <div className="flex justify-between mt-1 text-xs font-medium">
-            <span className="text-green-600">PMF: 90</span>
-            <span className="text-purple-600">ES: 44</span>
-            <span className="text-gray-700">Total: 134</span>
+          <h4 className="text-sm font-semibold text-gray-800 mt-3 mb-2">Capacidade Máxima Mensal</h4>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-green-100 rounded-md p-2 border border-green-200 text-center shadow-sm">
+              <span className="block text-lg font-bold text-green-700">90</span>
+              <span className="text-xs font-medium text-green-600">PMF</span>
+            </div>
+            <div className="bg-purple-100 rounded-md p-2 border border-purple-200 text-center shadow-sm">
+              <span className="block text-lg font-bold text-purple-700">44</span>
+              <span className="text-xs font-medium text-purple-600">ES</span>
+            </div>
+            <div className="bg-blue-50 rounded-md p-2 border border-blue-100 text-center shadow-sm">
+              <span className="block text-lg font-bold text-blue-700">134</span>
+              <span className="text-xs font-medium text-blue-600">Total</span>
+            </div>
           </div>
         </div>
       </div>
