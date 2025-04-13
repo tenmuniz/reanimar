@@ -9,6 +9,7 @@ import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
 import NotFound from "@/pages/not-found";
+import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
 
 // Componente de navegação
@@ -73,6 +74,9 @@ function NavBar() {
                 <span className="text-xs font-medium text-purple-700">16 guarniçoes</span>
               </div>
             </div>
+            
+            {/* Contador de conflitos */}
+            <ConflictCounter />
             
             {/* Data atual */}
             <div className="hidden lg:flex items-center bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
