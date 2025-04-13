@@ -343,7 +343,14 @@ export default function Home() {
                 />
               </div>
               
-              {/* Componente de verificação removido */}
+              <div>
+                <VerificadorInconsistencias
+                  schedule={schedule}
+                  currentDate={currentDate}
+                  combinedSchedules={combinedSchedules}
+                  operationType="pmf"
+                />
+              </div>
             </div>
           </div>
         </div>

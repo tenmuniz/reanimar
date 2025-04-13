@@ -32,13 +32,11 @@ export default function VerificadorInconsistencias({
   const [inconsistencias, setInconsistencias] = useState<Inconsistencia[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   
-  // Atualizar inconsistências quando o modal for aberto ou mudar os dados
+  // Atualizar inconsistências quando a escala mudar ou ao iniciar o componente
   useEffect(() => {
-    if (open) {
-      console.log("Verificador aberto - verificando inconsistências");
-      verificarInconsistencias();
-    }
-  }, [open, schedule, combinedSchedules, currentDate]);
+    console.log("Verificando inconsistências automaticamente");
+    verificarInconsistencias();
+  }, [schedule, combinedSchedules, currentDate]);
   
   // Função para filtrar inconsistências com base no termo de busca
   const filteredInconsistencias = () => {

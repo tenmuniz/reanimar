@@ -363,6 +363,15 @@ export default function EscolaSegura() {
                     operationType="escolaSegura"
                   />
                 </div>
+                
+                <div>
+                  <VerificadorInconsistencias
+                    schedule={schedule}
+                    currentDate={currentDate}
+                    combinedSchedules={combinedSchedules}
+                    operationType="escolaSegura"
+                  />
+                </div>
               </div>
             </div>
           </div>
