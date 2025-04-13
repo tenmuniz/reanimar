@@ -2,8 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import path from "path";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar autenticação
+  setupAuth(app);
+
   // API routes for the application
   
   // Get all officers
@@ -17,8 +21,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Save schedule
-  app.post("/api/schedule", async (req, res) => {
+  // Save schedule - rota protegida
+  app.post("/api/schedule", (req, res, next) => {
+    // Verificar autenticação
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Não autorizado. Faça login para continuar." });
+    }
+    next();
+  }, async (req, res) => {
     try {
       const { operation, year, month, data } = req.body;
       
@@ -67,8 +77,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get schedule for a specific operation
-  app.get("/api/schedule", async (req, res) => {
+  // Get schedule for a specific operation - rota protegida
+  app.get("/api/schedule", (req, res, next) => {
+    // Verificar autenticação
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Não autorizado. Faça login para continuar." });
+    }
+    next();
+  }, async (req, res) => {
     try {
       const { operation, year, month } = req.query;
       
@@ -88,8 +104,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get combined schedules
-  app.get("/api/combined-schedules", async (req, res) => {
+  // Get combined schedules - rota protegida
+  app.get("/api/combined-schedules", (req, res, next) => {
+    // Verificar autenticação
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Não autorizado. Faça login para continuar." });
+    }
+    next();
+  }, async (req, res) => {
     try {
       const { year, month } = req.query;
       

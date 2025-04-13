@@ -100,6 +100,12 @@ export class MemStorage implements IStorage {
       (user) => user.username === username,
     );
   }
+  
+  async getUserByCpf(cpf: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.cpf === cpf,
+    );
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
@@ -175,6 +181,16 @@ export class DatabaseStorage implements IStorage {
   
   async getUserByUsername(username: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.username, username));
+    if (user) {
+      const internalId = 1; // Para simplificar, usamos ID 1 para o usuário
+      this.userIdMap.set(internalId, user.id.toString());
+      return { ...user, id: internalId };
+    }
+    return undefined;
+  }
+  
+  async getUserByCpf(cpf: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.cpf, cpf));
     if (user) {
       const internalId = 1; // Para simplificar, usamos ID 1 para o usuário
       this.userIdMap.set(internalId, user.id.toString());

@@ -12,6 +12,8 @@ import NotFound from "@/pages/not-found";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 
 // Componente de navegação
 function NavBar() {
