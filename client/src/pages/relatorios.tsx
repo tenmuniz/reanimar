@@ -21,15 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+// Diálogos removidos
 import {
   AreaChart,
   BarChart,
@@ -53,20 +45,11 @@ import {
   Award,
   Clock,
   School,
-  Download,
   Filter,
 } from "lucide-react";
 import { MonthSchedule, CombinedSchedules } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-import jsPDF from "jspdf";
-import 'jspdf-autotable';
-
-// Adicionando definição de tipos para jspdf-autotable
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
+// Import do jsPDF removido
 
 export default function Relatorios() {
   // Hooks
