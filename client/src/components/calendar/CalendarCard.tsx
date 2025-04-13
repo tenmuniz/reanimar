@@ -392,10 +392,7 @@ export default function CalendarCard({
             <div 
               key={`select-${day}-${position}`} 
               className={`relative rounded-xl overflow-hidden transition-all duration-200
-                ${selections[position] ? 'bg-white/70 shadow-md' : 'bg-white/30'}
-                ${position === 0 ? 'border-l-4 border-blue-500' : 
-                  position === 1 ? 'border-l-4 border-indigo-500' : 
-                  'border-l-4 border-purple-500'}`}
+                ${selections[position] ? 'bg-white/70 shadow-md' : 'bg-white/30'}`}
             >
               <OfficerSelect
                 key={`day-${day}-position-${position}`}
