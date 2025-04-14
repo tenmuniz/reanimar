@@ -108,42 +108,255 @@ export default function Guarnicoes() {
     }
   };
 
-  // Dados do quadro de distribuição
+  // Datas completas do mês de abril 2025 e início de maio
   const diasMes = [
-    {dia: "01/04", diaSemana: "TER", guarnicao: ["CHARLIE", "BRAVO"]},
-    {dia: "02/04", diaSemana: "QUA", guarnicao: ["CHARLIE"]},
-    {dia: "03/04", diaSemana: "QUI", guarnicao: ["CHARLIE"]},
-    {dia: "04/04", diaSemana: "SEX", guarnicao: ["BRAVO"]},
-    {dia: "05/04", diaSemana: "SAB", guarnicao: ["BRAVO"]},
-    {dia: "06/04", diaSemana: "DOM", guarnicao: ["BRAVO"]},
-    {dia: "07/04", diaSemana: "SEG", guarnicao: ["BRAVO"]},
-    {dia: "08/04", diaSemana: "TER", guarnicao: ["BRAVO"]},
-    {dia: "09/04", diaSemana: "QUA", guarnicao: ["BRAVO", "ALFA"]},
-    {dia: "10/04", diaSemana: "QUI", guarnicao: ["ALFA"]},
-    {dia: "11/04", diaSemana: "SEX", guarnicao: ["ALFA"]},
-    {dia: "12/04", diaSemana: "SAB", guarnicao: ["ALFA"]},
-    {dia: "13/04", diaSemana: "DOM", guarnicao: ["ALFA"]},
-    {dia: "14/04", diaSemana: "SEG", guarnicao: ["ALFA"]},
-    {dia: "15/04", diaSemana: "TER", guarnicao: ["ALFA"]},
-    {dia: "16/04", diaSemana: "QUA", guarnicao: ["ALFA"]},
-    {dia: "17/04", diaSemana: "QUI", guarnicao: ["ALFA", "CHARLIE"]},
-    {dia: "18/04", diaSemana: "SEX", guarnicao: ["CHARLIE"]},
-    {dia: "19/04", diaSemana: "SAB", guarnicao: ["CHARLIE"]},
-    {dia: "20/04", diaSemana: "DOM", guarnicao: ["CHARLIE"]},
-    {dia: "21/04", diaSemana: "SEG", guarnicao: ["CHARLIE"]},
-    {dia: "22/04", diaSemana: "TER", guarnicao: ["CHARLIE"]},
-    {dia: "23/04", diaSemana: "QUA", guarnicao: ["CHARLIE"]},
-    {dia: "24/04", diaSemana: "QUI", guarnicao: ["CHARLIE", "BRAVO"]},
-    {dia: "25/04", diaSemana: "SEX", guarnicao: ["BRAVO"]},
-    {dia: "26/04", diaSemana: "SAB", guarnicao: ["BRAVO"]},
-    {dia: "27/04", diaSemana: "DOM", guarnicao: ["BRAVO"]},
-    {dia: "28/04", diaSemana: "SEG", guarnicao: ["BRAVO"]},
-    {dia: "29/04", diaSemana: "TER", guarnicao: ["BRAVO"]},
-    {dia: "30/04", diaSemana: "QUA", guarnicao: ["BRAVO"]},
-    {dia: "01/05", diaSemana: "QUI", guarnicao: ["BRAVO", "ALFA"]},
-    {dia: "02/05", diaSemana: "SEX", guarnicao: ["ALFA"]},
-    {dia: "03/05", diaSemana: "SAB", guarnicao: ["ALFA"]},
-    {dia: "04/05", diaSemana: "DOM", guarnicao: ["ALFA"]}
+    // Semana 1
+    {dia: "01/04", diaSemana: "TER", 
+      status: {
+        CHARLIE: "SERVIÇO", // Serviço até 03/04 (quinta)
+        BRAVO: "SERVIÇO",   // Começou serviço em 28/03 (quinta anterior)
+        ALFA: "FOLGA"       // Em folga até 10/04 (próxima quinta)
+      }
+    },
+    {dia: "02/04", diaSemana: "QUA", 
+      status: {
+        CHARLIE: "SERVIÇO", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "03/04", diaSemana: "QUI", 
+      status: {
+        CHARLIE: "TROCA", // Último dia de CHARLIE -> troca para folga
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "04/04", diaSemana: "SEX", 
+      status: {
+        CHARLIE: "FOLGA", // Começa folga após troca de quinta
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "05/04", diaSemana: "SAB", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "06/04", diaSemana: "DOM", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "07/04", diaSemana: "SEG", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    
+    // Semana 2
+    {dia: "08/04", diaSemana: "TER", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "09/04", diaSemana: "QUA", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "10/04", diaSemana: "QUI", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "TROCA", // Último dia de BRAVO -> troca para folga
+        ALFA: "TROCA"   // ALFA entra em serviço
+      }
+    },
+    {dia: "11/04", diaSemana: "SEX", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", // Começa folga após troca
+        ALFA: "SERVIÇO" // Começa serviço após troca
+      }
+    },
+    {dia: "12/04", diaSemana: "SAB", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    {dia: "13/04", diaSemana: "DOM", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    {dia: "14/04", diaSemana: "SEG", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    
+    // Semana 3
+    {dia: "15/04", diaSemana: "TER", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    {dia: "16/04", diaSemana: "QUA", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    {dia: "17/04", diaSemana: "QUI", 
+      status: {
+        CHARLIE: "TROCA", // CHARLIE entra de serviço
+        BRAVO: "FOLGA", 
+        ALFA: "TROCA"     // Último dia de ALFA -> troca para folga
+      }
+    },
+    {dia: "18/04", diaSemana: "SEX", 
+      status: {
+        CHARLIE: "SERVIÇO", // Começa serviço após troca
+        BRAVO: "FOLGA", 
+        ALFA: "FOLGA"       // Começa folga após troca
+      }
+    },
+    {dia: "19/04", diaSemana: "SAB", 
+      status: {
+        CHARLIE: "SERVIÇO", 
+        BRAVO: "FOLGA", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "20/04", diaSemana: "DOM", 
+      status: {
+        CHARLIE: "SERVIÇO", 
+        BRAVO: "FOLGA", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "21/04", diaSemana: "SEG", 
+      status: {
+        CHARLIE: "SERVIÇO", 
+        BRAVO: "FOLGA", 
+        ALFA: "FOLGA"
+      }
+    },
+    
+    // Semana 4
+    {dia: "22/04", diaSemana: "TER", 
+      status: {
+        CHARLIE: "SERVIÇO", 
+        BRAVO: "FOLGA", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "23/04", diaSemana: "QUA", 
+      status: {
+        CHARLIE: "SERVIÇO", 
+        BRAVO: "FOLGA", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "24/04", diaSemana: "QUI", 
+      status: {
+        CHARLIE: "TROCA", // Último dia de CHARLIE -> troca para folga
+        BRAVO: "TROCA",   // BRAVO entra de serviço
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "25/04", diaSemana: "SEX", 
+      status: {
+        CHARLIE: "FOLGA",  // Começa folga após troca
+        BRAVO: "SERVIÇO",  // Começa serviço após troca
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "26/04", diaSemana: "SAB", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "27/04", diaSemana: "DOM", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "28/04", diaSemana: "SEG", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    
+    // Semana 5
+    {dia: "29/04", diaSemana: "TER", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "30/04", diaSemana: "QUA", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "SERVIÇO", 
+        ALFA: "FOLGA"
+      }
+    },
+    {dia: "01/05", diaSemana: "QUI", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "TROCA",   // Último dia de BRAVO -> troca para folga
+        ALFA: "TROCA"     // ALFA entra em serviço
+      }
+    },
+    {dia: "02/05", diaSemana: "SEX", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    {dia: "03/05", diaSemana: "SAB", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
+    {dia: "04/05", diaSemana: "DOM", 
+      status: {
+        CHARLIE: "FOLGA", 
+        BRAVO: "FOLGA", 
+        ALFA: "SERVIÇO"
+      }
+    },
   ];
 
   // Informações adicionais
@@ -225,8 +438,22 @@ export default function Guarnicoes() {
     // Função para determinar se um dia é troca de guarnição (quinta-feira)
     const isDiaTrocaGuarnicao = (diaSemana: string) => diaSemana === "QUI";
 
+    // Cores para cada status
+    const statusColors: Record<string, { bg: string, text: string, border: string }> = {
+      "SERVIÇO": { bg: "bg-green-500", text: "text-white", border: "border-green-600" },
+      "FOLGA": { bg: "bg-gray-200", text: "text-gray-800", border: "border-gray-300" },
+      "TROCA": { bg: "bg-red-500", text: "text-white", border: "border-red-600" }
+    };
+
+    // Cores para cada guarnição
+    const guarnicaoColors: Record<string, { bg: string, lightBg: string, text: string, darkText: string }> = {
+      "ALFA": { bg: "bg-amber-500", lightBg: "bg-amber-100", text: "text-white", darkText: "text-amber-900" },
+      "BRAVO": { bg: "bg-green-600", lightBg: "bg-green-100", text: "text-white", darkText: "text-green-900" },
+      "CHARLIE": { bg: "bg-blue-600", lightBg: "bg-blue-100", text: "text-white", darkText: "text-blue-900" }
+    };
+
     return (
-      <div className="overflow-x-auto">
+      <div className="overflow-auto">
         <div className="mb-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg overflow-hidden">
           <div className="bg-blue-900/30 backdrop-blur-sm p-5">
             <div className="flex items-center mb-3">
@@ -313,110 +540,141 @@ export default function Guarnicoes() {
                 })
               }
             </div>
+
+            {/* Legenda do quadro */}
+            <div className="mt-4 bg-black/20 backdrop-blur-md p-3 rounded-lg border border-white/20">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-4 h-4 rounded-full bg-white"></div>
+                <span className="text-white font-bold">LEGENDA:</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="flex items-center gap-2 bg-green-500 text-white p-1.5 rounded border border-green-600">
+                  <div className="w-3 h-3 rounded-full bg-white"></div>
+                  <span className="text-xs font-bold">SERVIÇO</span>
+                </div>
+                <div className="flex items-center gap-2 bg-red-500 text-white p-1.5 rounded border border-red-600">
+                  <div className="w-3 h-3 rounded-full bg-white"></div>
+                  <span className="text-xs font-bold">TROCA</span>
+                </div>
+                <div className="flex items-center gap-2 bg-gray-200 text-gray-800 p-1.5 rounded border border-gray-300">
+                  <div className="w-3 h-3 rounded-full bg-gray-600"></div>
+                  <span className="text-xs font-bold">FOLGA</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <Table className="border rounded-lg shadow-sm">
-          <TableCaption className="text-lg font-bold caption-top mb-4">
-            QUADRO DE DISTRIBUIÇÃO DE GUARNIÇÕES / {monthYear} - SEDE
-          </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead colSpan={7} className="text-center bg-gray-100 font-bold py-3">
-                Semana 1
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {semanas.map((semana, semanaIndex) => (
-              <React.Fragment key={semanaIndex}>
-                {semanaIndex > 0 && (
+
+        {/* Tabela com novo formato de guarnições com visibilidade clara do status */}
+        <div className="mb-10 overflow-x-auto">
+          <Table className="border rounded-lg shadow-lg">
+            <TableCaption className="text-xl font-bold caption-top mb-4">
+              QUADRO DE DISTRIBUIÇÃO DE GUARNIÇÕES / {monthYear} - SEDE
+            </TableCaption>
+            
+            {/* Cabeçalho com as guarnições */}
+            <TableHeader>
+              <TableRow className="bg-gray-100">
+                <TableHead className="text-center font-bold py-2 w-16">Data</TableHead>
+                <TableHead className="text-center font-bold py-2 w-16">Dia</TableHead>
+                <TableHead className="text-center bg-amber-500 text-white font-bold py-2">ALFA</TableHead>
+                <TableHead className="text-center bg-green-600 text-white font-bold py-2">BRAVO</TableHead>
+                <TableHead className="text-center bg-blue-600 text-white font-bold py-2">CHARLIE</TableHead>
+              </TableRow>
+            </TableHeader>
+            
+            <TableBody>
+              {semanas.map((semana, semanaIndex) => (
+                <React.Fragment key={semanaIndex}>
+                  {/* Cabeçalho da semana */}
                   <TableRow>
-                    <TableHead colSpan={7} className="text-center bg-gray-100 font-bold py-3">
+                    <TableHead colSpan={5} className="text-center bg-gray-100 font-bold py-2">
                       Semana {semanaIndex + 1}
                     </TableHead>
                   </TableRow>
-                )}
-                <TableRow>
+                  
+                  {/* Dias da semana */}
                   {semana.map((dia, diaIndex) => {
                     const isTrocaDia = isDiaTrocaGuarnicao(dia.diaSemana);
+                    
                     return (
-                      <TableCell 
+                      <TableRow 
                         key={diaIndex} 
-                        className={`p-0 border ${isTrocaDia ? 'border-red-500 border-2' : ''}`}
+                        className={isTrocaDia ? 'bg-red-50' : diaIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
                       >
-                        <div className="flex flex-col">
-                          <div className={`${isTrocaDia ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-900'} font-medium text-center p-1`}>
-                            <span className="text-base font-bold">{dia.dia.split('/').join('/')}</span>
-                            <div className={`text-xs ${isTrocaDia ? 'text-white font-bold' : 'text-gray-800 font-medium'}`}>
-                              {dia.diaSemana}
-                              {isTrocaDia && <span className="ml-1 bg-red-100 text-red-600 px-1 rounded-full text-[10px] font-black animate-pulse">TROCA</span>}
-                            </div>
-                          </div>
-                          <div className="min-h-20 p-1">
-                            {dia.guarnicao.map((g, i) => {
-                              // Definir cores específicas para melhor contraste
-                              let bgColor = "";
-                              let textColor = "";
-                              
-                              switch(g) {
-                                case "ALFA":
-                                  bgColor = "bg-amber-400";
-                                  textColor = "text-black";
-                                  break;
-                                case "BRAVO":
-                                  bgColor = "bg-green-600";
-                                  textColor = "text-white";
-                                  break;
-                                case "CHARLIE":
-                                  bgColor = "bg-blue-600";
-                                  textColor = "text-white";
-                                  break;
-                                default:
-                                  bgColor = "bg-gray-600";
-                                  textColor = "text-white";
-                              }
-                              
-                              return (
-                                <TooltipProvider key={i}>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div 
-                                        className={`text-center font-bold p-1.5 mb-1 ${bgColor} ${textColor} rounded shadow-md border border-black/10`}
-                                      >
-                                        {g}
+                        {/* Coluna de data */}
+                        <TableCell 
+                          className={`text-center font-bold ${isTrocaDia ? 'bg-blue-700 text-white' : ''}`}
+                        >
+                          {dia.dia}
+                        </TableCell>
+                        
+                        {/* Coluna de dia da semana */}
+                        <TableCell 
+                          className={`text-center ${isTrocaDia ? 'bg-blue-600 text-white font-bold' : 'font-medium'}`}
+                        >
+                          {dia.diaSemana}
+                          {isTrocaDia && <div className="text-[10px] font-black bg-red-100 text-red-600 px-1 mt-1 rounded-full animate-pulse">TROCA</div>}
+                        </TableCell>
+                        
+                        {/* Status de cada guarnição */}
+                        {["ALFA", "BRAVO", "CHARLIE"].map((guarnicao) => {
+                          const status = dia.status[guarnicao];
+                          const statusColor = statusColors[status] || { bg: "bg-gray-200", text: "text-gray-800", border: "border-gray-300" };
+                          const guarnicaoColor = guarnicaoColors[guarnicao];
+                          
+                          return (
+                            <TableCell 
+                              key={guarnicao} 
+                              className="p-1"
+                            >
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div 
+                                      className={`
+                                        ${statusColor.bg} ${statusColor.text} 
+                                        rounded-md p-2 text-center font-bold 
+                                        border ${statusColor.border}
+                                        ${status === "TROCA" ? 'animate-pulse' : ''}
+                                      `}
+                                    >
+                                      {status === "TROCA" && (
+                                        <div className="text-xs mb-1 bg-white/20 rounded px-1 py-0.5">
+                                          {status === "TROCA" && dia.status[guarnicao] === "TROCA" ? 
+                                            (Object.entries(dia.status).some(([g, s]) => g !== guarnicao && s === "TROCA") ? "ENTRA" : "SAI") : 
+                                            status
+                                          }
+                                        </div>
+                                      )}
+                                      <div className={`text-sm ${status === "FOLGA" ? "opacity-50" : ""}`}>
+                                        {status}
                                       </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-gray-800 text-white border-0 p-3">
-                                      <div className="text-xs">
-                                        <div className="font-bold mb-1">Guarnição {g}</div>
-                                        <div>Militares: {guarnicoes[g as keyof typeof guarnicoes].militares.length}</div>
-                                        {g !== "EXPEDIENTE" && (
-                                          <>
-                                            <div>Folga: {guarnicoes[g as keyof typeof guarnicoes].folga}</div>
-                                            <div>Troca: {guarnicoes[g as keyof typeof guarnicoes].horarioTroca}</div>
-                                          </>
-                                        )}
-                                      </div>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              );
-                            })}
-                            {dia.guarnicao.length === 2 && (
-                              <div className="text-xs text-center mt-1 bg-yellow-300 text-black py-0.5 px-1 rounded font-bold">
-                                Dia de troca
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="bg-gray-800 text-white border-0 p-3">
+                                    <div className="text-xs">
+                                      <div className="font-bold mb-1">Guarnição {guarnicao}</div>
+                                      <div>Status: {status}</div>
+                                      <div>Militares: {guarnicoes[guarnicao].militares.length}</div>
+                                      {guarnicao !== "EXPEDIENTE" && guarnicoes[guarnicao].folga && (
+                                        <div>Período de folga: {guarnicoes[guarnicao].folga}</div>
+                                      )}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
                     );
                   })}
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   };
