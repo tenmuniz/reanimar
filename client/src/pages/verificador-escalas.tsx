@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, AlertCircle, Calendar, CheckCircle, ClipboardList, FileText } from "lucide-react";
 import { CombinedSchedules, MonthSchedule } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
+import ConflictBadge from "@/components/calendar/ConflictBadge";
 
 // Interface para conflitos entre escalas
 interface ConflitosEscala {
@@ -432,7 +433,7 @@ export default function VerificadorEscalas() {
           size="lg" 
           onClick={verificarConflitos}
           disabled={isVerificando}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-600 hover:bg-blue-700 relative"
         >
           {isVerificando ? (
             <>
@@ -443,6 +444,7 @@ export default function VerificadorEscalas() {
             <>
               <AlertCircle className="mr-2 h-4 w-4" />
               Verificar Conflitos
+              <ConflictBadge />
             </>
           )}
         </Button>

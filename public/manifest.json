@@ -1,12 +1,12 @@
 {
   "name": "Sistema de Gestão de Extras - 20ª CIPM",
   "short_name": "Extras CIPM",
-  "description": "Sistema de escalas extraordinárias da 20ª Companhia Independente da Polícia Militar",
+  "description": "Sistema oficial de gestão de escalas extraordinárias da 20ª CIPM - Muaná/Ponta de Pedras",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a2f6b",
   "theme_color": "#0a2f6b",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -19,12 +19,32 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Verificar Escalas",
+      "short_name": "Verificar",
+      "description": "Verificar conflitos entre escalas",
+      "url": "/verificador-escalas",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
-      "src": "/icons/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "apple touch icon"
+      "name": "Relatórios",
+      "short_name": "Relatórios",
+      "description": "Ver relatórios de escalas",
+      "url": "/relatorios",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
