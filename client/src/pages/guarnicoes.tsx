@@ -18,10 +18,11 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Guarnicoes() {
+  // Corrige erro "Invalid prop `data-replit-metadata` supplied to `React.Fragment`"
   const { user } = useAuth();
   const [monthYear] = useState('ABRIL 2025');
 
-  // Dados das guarnições (podem ser substituídos por dados dinâmicos de API posteriormente)
+  // Dados das guarnições (sistema 7x14 - 7 dias de serviço por 14 de folga)
   const guarnicoes = {
     ALFA: {
       militares: [
@@ -29,12 +30,16 @@ export default function Guarnicoes() {
         "3º SGT AMARAL", "CB CARLA", "CB PM FELIPE", "CB PM BARROS", 
         "CB PM A. SILVA", "SD PM LUAN", "SD PM NAVARRO"
       ],
+      // Períodos de 7 dias com troca na quinta-feira
       diasServico: ["10", "11", "12", "13", "14", "15", "16", "17", "01/05", "02/05", "03/05", "04/05"],
+      folga: "17/04 a 01/05", // 14 dias de folga após o serviço
+      horarioTroca: "quinta-feira",
       color: "#FFC107", // amarelo
-      gradient: "from-yellow-400 to-amber-500",
+      gradient: "from-yellow-500 to-amber-600",
       lightBg: "bg-amber-100",
       darkBg: "bg-amber-800",
-      lightText: "text-amber-800",
+      lightText: "text-amber-900", // texto mais escuro para melhor legibilidade
+      darkText: "text-white",
       border: "border-amber-300"
     },
     BRAVO: {
@@ -42,12 +47,16 @@ export default function Guarnicoes() {
         "1º SGT PM OLIMAR", "2º SGT PM FÁBIO", "3º SGT PM ANA CLEIDE", "3º SGT PM GLEIDSON",
         "3º SGT PM CARLOS EDUARDO", "3º SGT PM NEGRÃO", "CB PM BRASIL", "SD PM MARVÃO", "SD PM IDELVAN"
       ],
+      // Períodos de 7 dias com troca na quinta-feira
       diasServico: ["04", "05", "06", "07", "08", "09", "24", "25", "26", "27", "28", "29", "30"],
+      folga: "10/04 a 24/04", // 14 dias de folga após o serviço
+      horarioTroca: "quinta-feira",
       color: "#4CAF50", // verde
-      gradient: "from-green-500 to-emerald-600",
+      gradient: "from-green-600 to-emerald-700",
       lightBg: "bg-green-100",
       darkBg: "bg-green-800",
-      lightText: "text-green-800",
+      lightText: "text-green-900", // texto mais escuro para melhor legibilidade
+      darkText: "text-white",
       border: "border-green-300"
     },
     CHARLIE: {
@@ -55,12 +64,16 @@ export default function Guarnicoes() {
         "2º SGT PM PINHEIRO", "3º SGT PM RAFAEL", "CB PM MIQUEIAS", "CB PM M. PAIXÃO",
         "SD PM CHAGAS", "SD PM CARVALHO", "SD PM GOVEIA", "SD PM ALMEIDA", "SD PM PATRIK", "SD PM GUIMARÃES"
       ],
+      // Períodos de 7 dias com troca na quinta-feira
       diasServico: ["01", "02", "03", "18", "19", "20", "21", "22", "23", "24"],
+      folga: "03/04 a 17/04", // 14 dias de folga após o serviço
+      horarioTroca: "quinta-feira",
       color: "#2196F3", // azul
-      gradient: "from-blue-500 to-cyan-600",
+      gradient: "from-blue-600 to-blue-800",
       lightBg: "bg-blue-100",
       darkBg: "bg-blue-800",
-      lightText: "text-blue-800",
+      lightText: "text-blue-900", // texto mais escuro para melhor legibilidade
+      darkText: "text-white",
       border: "border-blue-300"
     },
     EXPEDIENTE: {
@@ -69,11 +82,13 @@ export default function Guarnicoes() {
         "3º SGT PM CARAVELAS", "CB PM TONI", "SD PM S. CORRÊA", "SD PM RODRIGUES"
       ],
       diasServico: ["Segunda a Sexta (expediente administrativo)"],
+      horarioTroca: "N/A",
       color: "#9C27B0", // roxo
-      gradient: "from-purple-500 to-indigo-600",
+      gradient: "from-purple-600 to-indigo-700",
       lightBg: "bg-purple-100",
       darkBg: "bg-purple-800",
-      lightText: "text-purple-800",
+      lightText: "text-purple-900", // texto mais escuro para melhor legibilidade
+      darkText: "text-white",
       border: "border-purple-300"
     }
   };
@@ -184,7 +199,7 @@ export default function Guarnicoes() {
     );
   };
 
-  // Render da tabela do quadro de distribuição
+  // Render da tabela do quadro de distribuição com destaque para sistema 7x14 e trocas nas quintas-feiras
   const renderDistribuicaoTable = () => {
     // Agrupar dias em semanas para facilitar a visualização
     const semanas = [];
@@ -192,11 +207,44 @@ export default function Guarnicoes() {
       semanas.push(diasMes.slice(i, i + 7));
     }
 
+    // Função para determinar se um dia é troca de guarnição (quinta-feira)
+    const isDiaTrocaGuarnicao = (diaSemana: string) => diaSemana === "QUI";
+
     return (
       <div className="overflow-x-auto">
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+          <div className="flex items-center mb-2">
+            <div className="bg-blue-100 p-1 rounded-md mr-2">
+              <Clock className="h-5 w-5 text-blue-600" />
+            </div>
+            <h3 className="font-bold text-blue-800">Sistema de Escala 7x14</h3>
+          </div>
+          <p className="text-blue-700 text-sm">
+            Cada guarnição trabalha 7 dias consecutivos e folga 14 dias. <span className="font-bold">A troca de guarnição ocorre toda quinta-feira</span>.
+          </p>
+          
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {Object.keys(guarnicoes).filter(g => g !== "EXPEDIENTE").map((guarnicao) => (
+              <div 
+                key={guarnicao} 
+                className={`p-2 rounded-md border ${guarnicoes[guarnicao as keyof typeof guarnicoes].border}`}
+              >
+                <div className="flex items-center gap-1 mb-1">
+                  <div className={`h-3 w-3 rounded-full bg-gradient-to-br ${guarnicoes[guarnicao as keyof typeof guarnicoes].gradient}`}></div>
+                  <span className="font-bold">{guarnicao}</span>
+                </div>
+                <div className="flex flex-col text-xs">
+                  <span><span className="font-medium">Serviço:</span> 7 dias</span>
+                  <span><span className="font-medium">Folga:</span> {guarnicoes[guarnicao as keyof typeof guarnicoes].folga}</span>
+                  <span><span className="font-medium">Troca:</span> quinta-feira</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         <Table className="border rounded-lg shadow-sm">
           <TableCaption className="text-lg font-bold caption-top mb-4">
-            QUADRO DE DISTRIBUIÇÃO DE GU / {monthYear} - SEDE
+            QUADRO DE DISTRIBUIÇÃO DE GUARNIÇÕES / {monthYear} - SEDE
           </TableCaption>
           <TableHeader>
             <TableRow>
@@ -216,26 +264,59 @@ export default function Guarnicoes() {
                   </TableRow>
                 )}
                 <TableRow>
-                  {semana.map((dia, diaIndex) => (
-                    <TableCell key={diaIndex} className="p-0 border">
-                      <div className="flex flex-col">
-                        <div className="bg-gray-200 font-medium text-center p-1">
-                          {dia.dia.split('/').join('/')}
-                          <div className="text-xs text-gray-600">{dia.diaSemana}</div>
-                        </div>
-                        <div className="min-h-20 p-1">
-                          {dia.guarnicao.map((g, i) => (
-                            <div 
-                              key={i} 
-                              className={`text-center font-bold p-1 my-1 ${getBgColor(g)} ${getTextColor(g)} rounded shadow-sm`}
-                            >
-                              {g}
+                  {semana.map((dia, diaIndex) => {
+                    const isTrocaDia = isDiaTrocaGuarnicao(dia.diaSemana);
+                    return (
+                      <TableCell 
+                        key={diaIndex} 
+                        className={`p-0 border ${isTrocaDia ? 'border-blue-400 border-2' : ''}`}
+                      >
+                        <div className="flex flex-col">
+                          <div className={`${isTrocaDia ? 'bg-blue-100 text-blue-800' : 'bg-gray-200'} font-medium text-center p-1`}>
+                            {dia.dia.split('/').join('/')}
+                            <div className={`text-xs ${isTrocaDia ? 'text-blue-700 font-bold' : 'text-gray-600'}`}>
+                              {dia.diaSemana}
+                              {isTrocaDia && <span className="ml-1">↺</span>}
                             </div>
-                          ))}
+                          </div>
+                          <div className="min-h-20 p-1">
+                            {dia.guarnicao.map((g, i) => (
+                              <TooltipProvider key={i}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div 
+                                      className={`text-center font-bold p-1 mb-1 ${getBgColor(g)} rounded shadow-sm border border-white/20`}
+                                    >
+                                      <span className={guarnicoes[g as keyof typeof guarnicoes].darkText}>
+                                        {g}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="bg-gray-800 text-white border-0 p-3">
+                                    <div className="text-xs">
+                                      <div className="font-bold mb-1">Guarnição {g}</div>
+                                      <div>Militares: {guarnicoes[g as keyof typeof guarnicoes].militares.length}</div>
+                                      {g !== "EXPEDIENTE" && (
+                                        <>
+                                          <div>Folga: {guarnicoes[g as keyof typeof guarnicoes].folga}</div>
+                                          <div>Troca: {guarnicoes[g as keyof typeof guarnicoes].horarioTroca}</div>
+                                        </>
+                                      )}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ))}
+                            {dia.guarnicao.length === 2 && (
+                              <div className="text-xs text-center mt-1 bg-yellow-100 text-yellow-800 py-0.5 px-1 rounded">
+                                Dia de troca
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                  ))}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               </React.Fragment>
             ))}
