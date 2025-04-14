@@ -22,8 +22,23 @@ export default function Guarnicoes() {
   const { user } = useAuth();
   const [monthYear] = useState('ABRIL 2025');
 
+  // Definição de tipo para evitar erros de tipagem
+  type GuarnicaoType = {
+    militares: string[];
+    diasServico: string[];
+    folga?: string;
+    horarioTroca: string;
+    color: string;
+    gradient: string;
+    lightBg: string;
+    darkBg: string;
+    lightText: string;
+    darkText: string;
+    border: string;
+  };
+
   // Dados das guarnições (sistema 7x14 - 7 dias de serviço por 14 de folga)
-  const guarnicoes = {
+  const guarnicoes: Record<string, GuarnicaoType> = {
     ALFA: {
       militares: [
         "2º SGT PM PEIXOTO", "3º SGT PM RODRIGO", "3º SGT PM LEDO", "3º SGT PM NUNES", 
@@ -39,7 +54,7 @@ export default function Guarnicoes() {
       lightBg: "bg-amber-100",
       darkBg: "bg-amber-800",
       lightText: "text-amber-900", // texto mais escuro para melhor legibilidade
-      darkText: "text-white",
+      darkText: "text-black", // texto preto para melhor contraste no fundo amarelo
       border: "border-amber-300"
     },
     BRAVO: {
@@ -56,7 +71,7 @@ export default function Guarnicoes() {
       lightBg: "bg-green-100",
       darkBg: "bg-green-800",
       lightText: "text-green-900", // texto mais escuro para melhor legibilidade
-      darkText: "text-white",
+      darkText: "text-white", // texto branco para melhor contraste no fundo verde
       border: "border-green-300"
     },
     CHARLIE: {
@@ -73,7 +88,7 @@ export default function Guarnicoes() {
       lightBg: "bg-blue-100",
       darkBg: "bg-blue-800",
       lightText: "text-blue-900", // texto mais escuro para melhor legibilidade
-      darkText: "text-white",
+      darkText: "text-white", // texto branco para melhor contraste no fundo azul
       border: "border-blue-300"
     },
     EXPEDIENTE: {
@@ -88,7 +103,7 @@ export default function Guarnicoes() {
       lightBg: "bg-purple-100",
       darkBg: "bg-purple-800",
       lightText: "text-purple-900", // texto mais escuro para melhor legibilidade
-      darkText: "text-white",
+      darkText: "text-white", // texto branco para melhor contraste no fundo roxo
       border: "border-purple-300"
     }
   };
@@ -212,34 +227,92 @@ export default function Guarnicoes() {
 
     return (
       <div className="overflow-x-auto">
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
-          <div className="flex items-center mb-2">
-            <div className="bg-blue-100 p-1 rounded-md mr-2">
-              <Clock className="h-5 w-5 text-blue-600" />
+        <div className="mb-6 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-blue-900/30 backdrop-blur-sm p-5">
+            <div className="flex items-center mb-3">
+              <div className="bg-white p-1.5 rounded-md mr-3 shadow-md">
+                <Clock className="h-6 w-6 text-blue-700" />
+              </div>
+              <h3 className="font-bold text-white text-xl">Sistema de Escala 7x14</h3>
             </div>
-            <h3 className="font-bold text-blue-800">Sistema de Escala 7x14</h3>
-          </div>
-          <p className="text-blue-700 text-sm">
-            Cada guarnição trabalha 7 dias consecutivos e folga 14 dias. <span className="font-bold">A troca de guarnição ocorre toda quinta-feira</span>.
-          </p>
-          
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {Object.keys(guarnicoes).filter(g => g !== "EXPEDIENTE").map((guarnicao) => (
-              <div 
-                key={guarnicao} 
-                className={`p-2 rounded-md border ${guarnicoes[guarnicao as keyof typeof guarnicoes].border}`}
-              >
-                <div className="flex items-center gap-1 mb-1">
-                  <div className={`h-3 w-3 rounded-full bg-gradient-to-br ${guarnicoes[guarnicao as keyof typeof guarnicoes].gradient}`}></div>
-                  <span className="font-bold">{guarnicao}</span>
+            
+            <div className="bg-white/20 backdrop-blur-md p-4 rounded-lg mb-4">
+              <p className="text-white font-medium">
+                • Cada guarnição trabalha <strong>7 dias consecutivos</strong> e folga <strong>14 dias</strong>.<br/>
+                • <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs font-black animate-pulse">ATENÇÃO</span> <span className="text-white font-bold">A troca de guarnição ocorre TODA QUINTA-FEIRA</span>
+              </p>
+              
+              <div className="bg-black/20 rounded-lg p-3 mt-3 border border-white/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
+                  <span className="text-white font-bold">DIAS DE TROCA:</span>
                 </div>
-                <div className="flex flex-col text-xs">
-                  <span><span className="font-medium">Serviço:</span> 7 dias</span>
-                  <span><span className="font-medium">Folga:</span> {guarnicoes[guarnicao as keyof typeof guarnicoes].folga}</span>
-                  <span><span className="font-medium">Troca:</span> quinta-feira</span>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  {diasMes
+                    .filter(d => d.diaSemana === "QUI")
+                    .map((dia, index) => (
+                      <div key={index} className="bg-blue-700 text-white text-center py-1 px-2 rounded-md border border-white/20 shadow-inner">
+                        <span className="text-xs font-bold">{dia.dia}</span>
+                      </div>
+                    ))
+                  }
                 </div>
               </div>
-            ))}
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
+              {Object.keys(guarnicoes)
+                .filter(g => g !== "EXPEDIENTE")
+                .map((guarnicao) => {
+                  // Seleciona estilos personalizados para cada guarnição
+                  let cardBg = "";
+                  let headerBg = "";
+                  
+                  switch(guarnicao) {
+                    case "ALFA":
+                      cardBg = "bg-amber-100";
+                      headerBg = "bg-amber-500";
+                      break;
+                    case "BRAVO":
+                      cardBg = "bg-green-100"; 
+                      headerBg = "bg-green-600";
+                      break;
+                    case "CHARLIE":
+                      cardBg = "bg-blue-100";
+                      headerBg = "bg-blue-600";
+                      break;
+                  }
+                  
+                  return (
+                    <div key={guarnicao} className={`rounded-lg overflow-hidden shadow-md border border-white/30`}>
+                      <div className={`${headerBg} text-white py-2 px-3 font-bold text-center`}>
+                        GUARNIÇÃO {guarnicao}
+                      </div>
+                      <div className={`${cardBg} p-3 text-black`}>
+                        <div className="flex flex-col space-y-2 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold">Serviço:</span>
+                            <span className="bg-white px-2 py-0.5 rounded-md border shadow-sm">7 dias</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold">Folga:</span> 
+                            <span className="bg-white px-2 py-0.5 rounded-md border shadow-sm">{guarnicoes[guarnicao]?.folga || "14 dias"}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold">Troca:</span>
+                            <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-md border border-red-200 shadow-sm font-bold">quinta-feira</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold">Militares:</span>
+                            <span className="bg-white px-2 py-0.5 rounded-md border shadow-sm">{guarnicoes[guarnicao].militares.length}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              }
+            </div>
           </div>
         </div>
         <Table className="border rounded-lg shadow-sm">
@@ -269,46 +342,68 @@ export default function Guarnicoes() {
                     return (
                       <TableCell 
                         key={diaIndex} 
-                        className={`p-0 border ${isTrocaDia ? 'border-blue-400 border-2' : ''}`}
+                        className={`p-0 border ${isTrocaDia ? 'border-red-500 border-2' : ''}`}
                       >
                         <div className="flex flex-col">
-                          <div className={`${isTrocaDia ? 'bg-blue-100 text-blue-800' : 'bg-gray-200'} font-medium text-center p-1`}>
-                            {dia.dia.split('/').join('/')}
-                            <div className={`text-xs ${isTrocaDia ? 'text-blue-700 font-bold' : 'text-gray-600'}`}>
+                          <div className={`${isTrocaDia ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-900'} font-medium text-center p-1`}>
+                            <span className="text-base font-bold">{dia.dia.split('/').join('/')}</span>
+                            <div className={`text-xs ${isTrocaDia ? 'text-white font-bold' : 'text-gray-800 font-medium'}`}>
                               {dia.diaSemana}
-                              {isTrocaDia && <span className="ml-1">↺</span>}
+                              {isTrocaDia && <span className="ml-1 bg-red-100 text-red-600 px-1 rounded-full text-[10px] font-black animate-pulse">TROCA</span>}
                             </div>
                           </div>
                           <div className="min-h-20 p-1">
-                            {dia.guarnicao.map((g, i) => (
-                              <TooltipProvider key={i}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div 
-                                      className={`text-center font-bold p-1 mb-1 ${getBgColor(g)} rounded shadow-sm border border-white/20`}
-                                    >
-                                      <span className={guarnicoes[g as keyof typeof guarnicoes].darkText}>
+                            {dia.guarnicao.map((g, i) => {
+                              // Definir cores específicas para melhor contraste
+                              let bgColor = "";
+                              let textColor = "";
+                              
+                              switch(g) {
+                                case "ALFA":
+                                  bgColor = "bg-amber-400";
+                                  textColor = "text-black";
+                                  break;
+                                case "BRAVO":
+                                  bgColor = "bg-green-600";
+                                  textColor = "text-white";
+                                  break;
+                                case "CHARLIE":
+                                  bgColor = "bg-blue-600";
+                                  textColor = "text-white";
+                                  break;
+                                default:
+                                  bgColor = "bg-gray-600";
+                                  textColor = "text-white";
+                              }
+                              
+                              return (
+                                <TooltipProvider key={i}>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div 
+                                        className={`text-center font-bold p-1.5 mb-1 ${bgColor} ${textColor} rounded shadow-md border border-black/10`}
+                                      >
                                         {g}
-                                      </span>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent className="bg-gray-800 text-white border-0 p-3">
-                                    <div className="text-xs">
-                                      <div className="font-bold mb-1">Guarnição {g}</div>
-                                      <div>Militares: {guarnicoes[g as keyof typeof guarnicoes].militares.length}</div>
-                                      {g !== "EXPEDIENTE" && (
-                                        <>
-                                          <div>Folga: {guarnicoes[g as keyof typeof guarnicoes].folga}</div>
-                                          <div>Troca: {guarnicoes[g as keyof typeof guarnicoes].horarioTroca}</div>
-                                        </>
-                                      )}
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ))}
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-gray-800 text-white border-0 p-3">
+                                      <div className="text-xs">
+                                        <div className="font-bold mb-1">Guarnição {g}</div>
+                                        <div>Militares: {guarnicoes[g as keyof typeof guarnicoes].militares.length}</div>
+                                        {g !== "EXPEDIENTE" && (
+                                          <>
+                                            <div>Folga: {guarnicoes[g as keyof typeof guarnicoes].folga}</div>
+                                            <div>Troca: {guarnicoes[g as keyof typeof guarnicoes].horarioTroca}</div>
+                                          </>
+                                        )}
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              );
+                            })}
                             {dia.guarnicao.length === 2 && (
-                              <div className="text-xs text-center mt-1 bg-yellow-100 text-yellow-800 py-0.5 px-1 rounded">
+                              <div className="text-xs text-center mt-1 bg-yellow-300 text-black py-0.5 px-1 rounded font-bold">
                                 Dia de troca
                               </div>
                             )}
