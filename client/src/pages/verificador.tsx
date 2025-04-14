@@ -586,6 +586,32 @@ export default function VerificadorInconsistencias() {
               </p>
             </div>
           </div>
+          
+          {/* Botão de verificação com badge de conflitos */}
+          <div className="mt-4 text-center">
+            <Button 
+              variant="default" 
+              size="lg" 
+              onClick={() => verificarInconsistencias(combinedSchedules)}
+              disabled={isLoading}
+              className="bg-amber-600 hover:bg-amber-700 relative"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verificando...
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="mr-2 h-4 w-4" />
+                  Verificar Todas as Inconsistências
+                  <ConflictBadge 
+                    count={inconsistenciasPMF.length + inconsistenciasEscolaSegura.length + inconsistenciasAmbas.length}
+                  />
+                </>
+              )}
+            </Button>
+          </div>
         </div>
         
         {isLoading ? (

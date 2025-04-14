@@ -4,9 +4,10 @@ import { CombinedSchedules } from '@/lib/types';
 
 interface ConflictBadgeProps {
   className?: string;
+  count?: number;
 }
 
-export default function ConflictBadge({ className = "" }: ConflictBadgeProps) {
+export default function ConflictBadge({ className = "", count }: ConflictBadgeProps) {
   const [conflictsCount, setConflictsCount] = useState(0);
   const [isBlinking, setIsBlinking] = useState(false);
 
@@ -160,16 +161,14 @@ export default function ConflictBadge({ className = "" }: ConflictBadgeProps) {
     }
   }, [combinedSchedulesData]);
 
-  // Para testes, sempre exibir o badge (mesmo sem conflitos)
-  // Remova estas linhas depois
+  // Usar contagem fornecida externamente se disponível
   useEffect(() => {
-    console.log("Badge ativado com", conflictsCount, "conflitos");
-    // Forçar pelo menos um conflito para testes
-    if (conflictsCount === 0) {
-      setConflictsCount(8);
-      setIsBlinking(true);
+    console.log("Badge ativado com", count !== undefined ? count : conflictsCount, "conflitos");
+    if (count !== undefined) {
+      setConflictsCount(count);
+      setIsBlinking(count > 0);
     }
-  }, [conflictsCount]);
+  }, [count, conflictsCount]);
 
   return (
     <div className={`absolute -top-2 -right-2 ${className}`}>
