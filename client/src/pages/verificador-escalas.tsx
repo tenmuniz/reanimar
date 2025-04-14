@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, AlertCircle, Calendar, CheckCircle, ClipboardList, FileText, GraduationCap, Building2 } from "lucide-react";
+import { Loader2, AlertCircle, Calendar, CheckCircle, ClipboardList, FileText } from "lucide-react";
 import { CombinedSchedules, MonthSchedule } from "@/lib/types";
 import { formatMonthYear } from "@/lib/utils";
 
@@ -292,38 +292,23 @@ export default function VerificadorEscalas() {
       // Atualizar estado com conflitos encontrados
       setConflitos(conflitosEncontrados);
       
-      // Se houver conflitos e o diálogo não estiver aberto, abri-lo
-      if (conflitosEncontrados.length > 0 && !open) {
+      // Abrir o diálogo com resultados se houver conflitos
+      if (conflitosEncontrados.length > 0) {
         setOpen(true);
       }
     } catch (error) {
-      console.error("Erro na verificação automática:", error);
+      console.error("Erro ao verificar conflitos automaticamente:", error);
     }
-  }, [combinedSchedulesData, autoVerificacao, open]);
+  }, [combinedSchedulesData, autoVerificacao, open, conflitos.length]);
 
   // Executar verificação automática quando os dados da escala são atualizados
   useEffect(() => {
-    verificarConflitosAutomatico();
+    if (combinedSchedulesData) {
+      verificarConflitosAutomatico();
+    }
   }, [dataUpdatedAt, verificarConflitosAutomatico]);
-  
-  // Verificar conflitos automaticamente ao carregar a página
-  useEffect(() => {
-    const verificarInicial = async () => {
-      setIsVerificando(true);
-      try {
-        await refetch();
-        // Abrir os resultados automaticamente
-        setOpen(true);
-        verificarConflitosAutomatico();
-      } finally {
-        setIsVerificando(false);
-      }
-    };
-    
-    verificarInicial();
-  }, [refetch]);
-  
-  // Função para fechar o diálogo 
+
+  // Função para fechar o diálogo de resultados
   const fecharDialogo = () => {
     setOpen(false);
   };
@@ -336,163 +321,120 @@ export default function VerificadorEscalas() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col items-center justify-center mb-10 text-center">
-        <div className="mb-2 relative">
-          <div className="absolute -top-10 -left-10 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
-          <h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white relative z-10">
-            Verificador de Conflitos de Escalas
-          </h1>
-        </div>
-        <p className="text-blue-100 mb-6 max-w-3xl text-lg">
-          Esta ferramenta verifica automaticamente se há militares escalados em operações extras
-          que também estão de serviço na escala ordinária da 20ª CIPM no mesmo dia.
+        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-700 to-blue-500 text-transparent bg-clip-text">
+          Verificador de Conflitos de Escalas
+        </h1>
+        <p className="text-gray-600 mb-6 max-w-2xl">
+          Esta ferramenta verifica automaticamente se há militares escalados na Operação PMF que também estão de serviço na escala ordinária da 20ª CIPM no mesmo dia.
         </p>
         
-        <div className="flex mt-4">
-          <button
-            onClick={() => verificarConflitos()}
-            disabled={isVerificando}
-            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-medium flex items-center backdrop-blur-md border border-amber-500/30 disabled:opacity-70 disabled:pointer-events-none transform hover:scale-[1.02]"
-          >
-            <AlertCircle className="h-5 w-5 mr-2" />
-            {isVerificando ? "Verificando..." : "Verificar Conflitos Agora"}
-          </button>
-        </div>
-        
         {isVerificando && (
-          <div className="mt-4 flex items-center justify-center space-x-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 shadow-lg animate-pulse">
-            <Loader2 className="h-5 w-5 text-amber-500 animate-spin" />
-            <span className="text-white font-medium">Verificando conflitos...</span>
+          <div className="flex items-center justify-center space-x-2 bg-blue-50 px-6 py-3 rounded-lg border border-blue-200">
+            <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+            <span className="text-blue-700 font-medium">Verificando conflitos...</span>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
-          <div className="absolute -top-20 -left-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
-          <CardHeader className="pb-2 relative">
-            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-2 rounded-lg shadow-md">
-                <Calendar className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">
-                Escala Ordinária
-              </span>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-blue-700 flex items-center gap-2 text-lg">
+              <Calendar className="h-5 w-5" /> Escala Ordinária
             </CardTitle>
           </CardHeader>
-          <CardContent className="relative">
-            <p className="text-blue-100 text-sm">
+          <CardContent>
+            <p className="text-gray-700 text-sm">
               Baseada no Quadro de Distribuição de GU para Abril 2025 da 20ª CIPM.
-              <span className="block mt-1 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-md border border-white/20 shadow-md">
-                <span className="text-xs font-medium text-white">Guarnições: </span>
-                <span className="ml-1 bg-amber-500/80 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">ALFA</span>
-                <span className="ml-1 bg-red-500/80 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">BRAVO</span>
-                <span className="ml-1 bg-indigo-500/80 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">CHARLIE</span>
-              </span>
+              Inclui militares das guarnições ALFA, BRAVO, CHARLIE e do Expediente.
             </p>
           </CardContent>
         </Card>
         
-        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
-          <div className="absolute -top-20 -left-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
-          <CardHeader className="pb-2 relative">
-            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-2 rounded-lg shadow-md">
-                <FileText className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">
-                Operação PMF
-              </span>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-green-700 flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5" /> Operação PMF
             </CardTitle>
           </CardHeader>
-          <CardContent className="relative">
-            <p className="text-blue-100 text-sm">
+          <CardContent>
+            <p className="text-gray-700 text-sm">
               Escala de Operação Polícia Mais Forte (PMF), com dados registrados no sistema.
-              <span className="block mt-1 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-md inline-flex items-center border border-white/20">
-                <span className="text-xs font-medium text-white">Permite até </span>
-                <span className="mx-1 inline-flex items-center justify-center h-5 w-5 bg-blue-600 rounded-full text-xs font-bold text-white border border-blue-400 shadow-inner">3</span>
-                <span className="text-xs font-medium text-white"> militares por dia</span>
-              </span>
+              Permite até 3 militares por dia.
             </p>
           </CardContent>
         </Card>
         
-        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
-          <div className="absolute -top-20 -left-20 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"></div>
-          <CardHeader className="pb-2 relative">
-            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
-              <div className="bg-gradient-to-br from-purple-500 to-purple-700 p-2 rounded-lg shadow-md">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-white">
-                Operação Escola Segura
-              </span>
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-purple-700 flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5" /> Operação Escola Segura
             </CardTitle>
           </CardHeader>
-          <CardContent className="relative">
-            <p className="text-purple-100 text-sm">
+          <CardContent>
+            <p className="text-gray-700 text-sm">
               Escala de Operação Escola Segura, com dados registrados no sistema.
-              <span className="block mt-1 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-md inline-flex items-center border border-white/20">
-                <span className="text-xs font-medium text-white">Permite até </span>
-                <span className="mx-1 inline-flex items-center justify-center h-5 w-5 bg-purple-600 rounded-full text-xs font-bold text-white border border-purple-400 shadow-inner">2</span>
-                <span className="text-xs font-medium text-white"> militares por dia</span>
-              </span>
+              Permite até 2 militares por dia.
             </p>
           </CardContent>
         </Card>
       </div>
         
       <div className="mx-auto max-w-2xl mb-8">
-        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
-          <div className="absolute -top-20 -left-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl"></div>
-          <CardHeader className="pb-2 relative">
-            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
-              <div className="bg-gradient-to-br from-amber-500 to-amber-700 p-2 rounded-lg shadow-md">
-                <AlertCircle className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-white">
-                Verificação de Inconsistências
-              </span>
+        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-amber-700 flex items-center gap-2 text-lg">
+              <AlertCircle className="h-5 w-5" /> Verificação
             </CardTitle>
           </CardHeader>
-          <CardContent className="relative">
-            <p className="text-amber-100 text-sm leading-relaxed">
+          <CardContent>
+            <p className="text-gray-700 text-sm">
               O sistema verifica dia a dia os conflitos, identificando militares escalados 
               em operações (PMF ou Escola Segura) que também estão de serviço na escala ordinária no mesmo dia.
-              <span className="block mt-2 text-white/80 text-xs bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 rounded-md">
-                Militares não podem ser escalados em operações extras no mesmo dia em que estão de serviço ordinário.
-              </span>
             </p>
           </CardContent>
         </Card>
       </div>
 
+      <div className="text-center mb-8">
+        <Button 
+          variant="default" 
+          size="lg" 
+          onClick={verificarConflitos}
+          disabled={isVerificando}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          {isVerificando ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Verificando...
+            </>
+          ) : (
+            <>
+              <AlertCircle className="mr-2 h-4 w-4" />
+              Verificar Conflitos
+            </>
+          )}
+        </Button>
+      </div>
+
       {/* Resultados exibidos diretamente quando há conflitos (sem diálogo) */}
       {open && conflitos.length > 0 && (
-        <div className="mt-8 bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 p-6 animate-fade-in-down overflow-hidden relative">
-          <div className="absolute -top-20 -left-20 w-80 h-80 bg-red-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-red-500/10 rounded-full blur-3xl"></div>
-          
-          <div className="flex justify-between items-start mb-4 relative">
+        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-fade-in-down">
+          <div className="flex justify-between items-start mb-4">
             <div className="flex items-center">
-              <div className="bg-gradient-to-br from-red-500 to-red-700 p-2 rounded-lg shadow-lg mr-3">
-                <ClipboardList className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-red-200">
+              <ClipboardList className="h-6 w-6 mr-2 text-blue-600" />
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 text-transparent bg-clip-text">
                 Resultado da Verificação de Conflitos
               </h2>
             </div>
             <button
               onClick={fecharDialogo}
-              className="p-2 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-200 border border-white/20"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-white"
+                className="h-5 w-5 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -507,21 +449,14 @@ export default function VerificadorEscalas() {
             </button>
           </div>
           
-          <div className="bg-gradient-to-r from-red-500/20 to-red-600/20 backdrop-blur-md rounded-xl border border-red-500/30 mb-4 shadow-xl p-4 relative overflow-hidden">
-            <div className="absolute inset-0 bg-white/5"></div>
-            <div className="flex items-center mb-2">
-              <div className="bg-red-600 rounded-full p-1.5 mr-2 shadow-md">
-                <AlertCircle className="h-5 w-5 text-white" />
-              </div>
-              <div className="text-white font-bold text-lg">Atenção! Conflitos encontrados</div>
-            </div>
-            <div className="text-red-100 pl-9">
-              Foram encontrados <span className="font-bold text-white">{conflitos.length}</span> conflitos entre a escala ordinária e as operações extras.
-              <span className="block mt-1 bg-red-600/20 rounded-md px-3 py-1.5 text-white/90 font-medium text-sm border border-red-500/30">
-                Militares não podem estar escalados em dois serviços no mesmo dia. Resolva estes conflitos antes de finalizar as escalas.
-              </span>
-            </div>
-          </div>
+          <Alert variant="destructive" className="bg-gradient-to-r from-red-50 to-red-100 border-red-200 mb-4 shadow-md">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <AlertTitle className="text-red-800 font-bold text-lg">Atenção! Conflitos encontrados</AlertTitle>
+            <AlertDescription className="text-red-700">
+              Foram encontrados <span className="font-bold">{conflitos.length}</span> conflitos entre a escala ordinária e as operações PMF/Escola Segura.
+              <span className="block mt-1">Militares não podem estar escalados em dois serviços no mesmo dia.</span>
+            </AlertDescription>
+          </Alert>
           
           <div className="relative mb-4">
             <input
@@ -529,24 +464,24 @@ export default function VerificadorEscalas() {
               placeholder="Filtrar por nome do militar..."
               value={filtroMilitar}
               onChange={(e) => setFiltroMilitar(e.target.value)}
-              className="w-full px-4 py-3 pl-12 bg-white/10 backdrop-blur-md rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 text-white font-medium shadow-md placeholder-white/60"
+              className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-12 bg-gradient-to-r from-blue-50 to-white text-blue-800 font-medium shadow-sm"
             />
-            <div className="absolute left-4 top-3.5 text-white/70">
+            <div className="absolute left-4 top-3.5 text-blue-500">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
           </div>
           
-          <div className="rounded-xl border border-white/20 overflow-hidden bg-white/10 backdrop-blur-md shadow-xl">
-            <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/30 scrollbar-track-white/5">
+          <div className="rounded-lg border overflow-hidden">
+            <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50">
               <Table>
-                <TableHeader className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-md sticky top-0 z-10">
+                <TableHeader className="bg-gradient-to-r from-blue-50 to-blue-100 sticky top-0 z-10">
                   <TableRow>
-                    <TableHead className="w-[80px] text-center font-bold text-white border-b border-white/10">Dia</TableHead>
-                    <TableHead className="font-bold text-white border-b border-white/10">Militar</TableHead>
-                    <TableHead className="w-[180px] font-bold text-white border-b border-white/10">Guarnição</TableHead>
-                    <TableHead className="w-[120px] text-center font-bold text-white border-b border-white/10">Operação</TableHead>
+                    <TableHead className="w-[80px] text-center font-bold text-blue-800">Dia</TableHead>
+                    <TableHead className="font-bold text-blue-800">Militar</TableHead>
+                    <TableHead className="w-[180px] font-bold text-blue-800">Guarnição</TableHead>
+                    <TableHead className="w-[120px] text-center font-bold text-blue-800">Operação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -653,33 +588,22 @@ export default function VerificadorEscalas() {
             </div>
           </div>
           
-          <div className="mt-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-4 shadow-xl overflow-hidden relative">
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl"></div>
-            
-            <div className="flex items-center mb-2">
-              <div className="bg-gradient-to-br from-amber-500 to-amber-700 p-2 rounded-lg shadow-md mr-2">
-                <AlertCircle className="h-5 w-5 text-white" />
-              </div>
-              <h3 className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-white font-bold text-lg">
-                Recomendação
-              </h3>
-            </div>
-            
-            <p className="text-amber-100 ml-10">
-              Remova estes militares das escalas de operações extras nos dias em que já estão escalados 
-              em seu serviço ordinário, conforme indicado acima.
+          <div className="mt-4 bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200 shadow-md">
+            <h3 className="text-amber-800 font-bold mb-2 flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2 text-amber-600" />
+              Recomendação
+            </h3>
+            <p className="text-amber-700">
+              Recomenda-se remover estes militares das escalas de operações especiais nos dias em que 
+              já estão escalados em seu serviço ordinário, conforme indicado acima.
             </p>
-            
-            <div className="mt-3 ml-10 flex flex-wrap gap-2">
-              <div className="bg-gradient-to-r from-blue-600/20 to-blue-700/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-blue-500/30 text-white flex items-center">
-                <Building2 className="h-4 w-4 mr-1.5 text-blue-400" />
-                <span className="text-sm font-medium">PMF</span>
-              </div>
-              <div className="bg-gradient-to-r from-purple-600/20 to-purple-700/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-purple-500/30 text-white flex items-center">
-                <GraduationCap className="h-4 w-4 mr-1.5 text-purple-400" />
-                <span className="text-sm font-medium">E.SEGURA</span>
-              </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
+                PMF
+              </Badge>
+              <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">
+                E.SEGURA
+              </Badge>
             </div>
           </div>
         </div>
@@ -687,26 +611,21 @@ export default function VerificadorEscalas() {
       
       {/* Mensagem de sucesso quando não há conflitos */}
       {open && conflitos.length === 0 && (
-        <div className="mt-8 bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 p-6 animate-fade-in-down overflow-hidden relative">
-          <div className="absolute -top-20 -left-20 w-80 h-80 bg-green-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-green-500/10 rounded-full blur-3xl"></div>
-          
-          <div className="flex justify-between items-start mb-4 relative">
+        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 animate-fade-in-down">
+          <div className="flex justify-between items-start mb-4">
             <div className="flex items-center">
-              <div className="bg-gradient-to-br from-green-500 to-green-700 p-2 rounded-lg shadow-lg mr-3">
-                <CheckCircle className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-green-200">
+              <CheckCircle className="h-6 w-6 mr-2 text-green-600" />
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-600 text-transparent bg-clip-text">
                 Verificação Concluída
               </h2>
             </div>
             <button
               onClick={fecharDialogo}
-              className="p-2 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all duration-200 border border-white/20"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-white"
+                className="h-5 w-5 text-gray-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -721,46 +640,24 @@ export default function VerificadorEscalas() {
             </button>
           </div>
           
-          <div className="py-8 text-center relative">
-            <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-full mx-auto flex items-center justify-center mb-6 shadow-xl border border-green-400/50 animate-pulse-slow overflow-hidden relative">
-              <div className="absolute inset-0 bg-white/20"></div>
-              <CheckCircle className="h-14 w-14 text-white relative z-10" />
+          <div className="py-8 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 rounded-full mx-auto flex items-center justify-center mb-4 shadow-md border border-green-200">
+              <CheckCircle className="h-10 w-10 text-green-600" />
             </div>
-            
-            <div className="bg-gradient-to-r from-green-500/20 to-green-600/20 backdrop-blur-md rounded-xl border border-green-500/30 mb-6 shadow-xl p-4 relative overflow-hidden max-w-xl mx-auto">
-              <div className="absolute inset-0 bg-white/5"></div>
-              <h3 className="text-xl font-bold text-white mb-2">Nenhum conflito encontrado</h3>
-              <p className="text-green-100">
-                Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e as operações extras.
-                Todos os militares estão escalados corretamente sem sobreposição de serviços.
-              </p>
-            </div>
-            
-            <div className="flex justify-center gap-3 max-w-lg mx-auto">
-              <div className="flex-1 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="bg-blue-600 rounded-full p-1.5 shadow-md">
-                    <Building2 className="h-4 w-4 text-white" /> 
-                  </div>
-                  <span className="text-white font-bold">PMF</span>
-                </div>
-                <div className="text-blue-100 text-sm text-center">
-                  Operação Polícia Mais Forte sem conflitos com escala ordinária
-                </div>
-              </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">Nenhum conflito encontrado</h3>
+            <p className="text-gray-600 max-w-lg mx-auto">
+              Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e as operações PMF/Escola Segura.
+              Todos os militares estão escalados corretamente sem sobreposição de serviços.
               
-              <div className="flex-1 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="bg-purple-600 rounded-full p-1.5 shadow-md">
-                    <GraduationCap className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-white font-bold">E.SEGURA</span>
-                </div>
-                <div className="text-purple-100 text-sm text-center">
-                  Operação Escola Segura sem conflitos com escala ordinária
-                </div>
+              <div className="mt-4 flex justify-center gap-3">
+                <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 px-3 py-1">
+                  PMF
+                </Badge>
+                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 px-3 py-1">
+                  E.SEGURA
+                </Badge>
               </div>
-            </div>
+            </p>
           </div>
         </div>
       )}
