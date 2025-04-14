@@ -9,7 +9,11 @@ import {
   Shield, 
   School, 
   BarChart4,
-  Search
+  Search,
+  AlertCircle,
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import MonthSelector from "@/components/calendar/MonthSelector";
 import { apiRequest } from "@/lib/queryClient";
