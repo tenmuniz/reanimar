@@ -1,50 +1,31 @@
 {
-  "name": "Sistema de Gestão de Extras - 20ª CIPM",
-  "short_name": "Extras CIPM",
-  "description": "Sistema oficial de gestão de escalas extraordinárias da 20ª CIPM - Muaná/Ponta de Pedras",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0a2f6b",
-  "theme_color": "#0a2f6b",
-  "orientation": "portrait-primary",
+  "name": "Escala PMF",
+  "short_name": "Escala PMF",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     },
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
+      "src": "logo192.png",
       "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Verificar Escalas",
-      "short_name": "Verificar",
-      "description": "Verificar conflitos entre escalas",
-      "url": "/verificador-escalas",
-      "icons": [
-        {
-          "src": "/icons/icon-192x192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Relatórios",
-      "short_name": "Relatórios",
-      "description": "Ver relatórios de escalas",
-      "url": "/relatorios",
-      "icons": [
-        {
-          "src": "/icons/icon-192x192.png",
-          "sizes": "192x192"
-        }
-      ]
-    }
-  ]
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0070EA",
+  "background_color": "#ffffff",
+  "orientation": "portrait"
 }
