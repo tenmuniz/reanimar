@@ -476,7 +476,12 @@ export default function VerificadorEscalas() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[80px] text-center">Dia</TableHead>
+                    <TableHead className="w-[80px] text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Calendar className="h-4 w-4 text-blue-600" />
+                        <span>Dia</span>
+                      </div>
+                    </TableHead>
                     <TableHead>Militar</TableHead>
                     <TableHead className="w-[180px]">Guarnição</TableHead>
                     <TableHead className="w-[120px] text-center">Operação</TableHead>
@@ -485,7 +490,11 @@ export default function VerificadorEscalas() {
                 <TableBody>
                   {conflitrosFiltrados.map((conflito, index) => (
                     <TableRow key={index}>
-                      <TableCell className="text-center font-medium">{conflito.dia}</TableCell>
+                      <TableCell className="text-center">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0a2f6b] to-[#1e3a8a] flex items-center justify-center mx-auto shadow-lg shadow-blue-500/20 border border-blue-400/30">
+                          <span className="text-white font-bold text-lg drop-shadow-md">{conflito.dia}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="font-medium text-gray-900">
                           {conflito.militar}
