@@ -204,11 +204,17 @@ function Footer() {
             <p className="text-sm text-blue-100">© {new Date().getFullYear()} - Todos os direitos reservados</p>
             <p className="text-xs text-blue-200 mt-1 flex items-center justify-end">
               <span className="mr-1">v1.1.0</span>
-              <span className="bg-blue-900/70 text-blue-100 text-[10px] px-1.5 py-0.5 rounded-full font-medium flex items-center">
-                <Database className="h-2 w-2 mr-0.5" />
-                DB Sync
+              <span className="bg-gradient-to-r from-green-700 to-blue-700 text-white text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center border border-blue-400/20 shadow-inner">
+                <div className="relative mr-1">
+                  <Database className="h-3 w-3 text-white" />
+                  <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                </div>
+                <span>PostgreSQL</span>
               </span>
-              <span className="ml-1">- Atualizado em 13/04/2025</span>
+              <span className="ml-1">- Atualizado em 14/04/2025</span>
             </p>
           </div>
         </div>
@@ -240,14 +246,17 @@ function ScrollToTop() {
   return visible ? (
     <button 
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className={`fixed right-5 bottom-5 z-50 p-2.5 rounded-full ${
+      className={`fixed right-5 bottom-5 z-50 p-3 rounded-full ${
         isEscolaSegura 
           ? "bg-gradient-to-br from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800" 
           : "bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
-      } text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110`}
+      } text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 backdrop-blur-md border border-white/20`}
       aria-label="Voltar ao topo"
     >
-      <ArrowUp className="h-5 w-5 drop-shadow-sm" />
+      <div className="absolute inset-0 overflow-hidden rounded-full">
+        <div className="absolute top-1/2 left-0 right-0 h-12 bg-white/10 blur-md transform -translate-y-1/2"></div>
+      </div>
+      <ArrowUp className="h-5 w-5 drop-shadow-md relative z-10" />
     </button>
   ) : null;
 }
@@ -268,21 +277,31 @@ function Router() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a]">
       {showSyncBanner && user && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 text-center text-sm font-medium relative overflow-hidden">
-          <div className="absolute inset-0 bg-white/10 opacity-20">
+        <div className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-4 py-2 text-center text-sm font-medium relative overflow-hidden">
+          <div className="absolute inset-0 backdrop-blur-sm">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/20 rounded-full blur-3xl animate-pulse-slow"></div>
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
+            
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-full h-full opacity-20">
+              <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-white rounded-full"></div>
+              <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-white rounded-full"></div>
+              <div className="absolute bottom-1/4 right-1/4 w-5 h-5 bg-white rounded-full"></div>
+            </div>
           </div>
-          <div className="flex items-center justify-center space-x-2 relative">
-            <Database className="h-3.5 w-3.5" />
-            <p>Nova funcionalidade: Sincronização de dados com banco PostgreSQL</p>
+          
+          <div className="flex items-center justify-center space-x-3 relative">
+            <div className="flex items-center justify-center bg-white/20 rounded-full p-1 shadow-inner">
+              <Database className="h-4 w-4 drop-shadow-md" />
+            </div>
+            <p className="font-medium text-sm drop-shadow-md">Nova funcionalidade: Sincronização em tempo real com PostgreSQL</p>
             <button 
               onClick={() => setShowSyncBanner(false)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full p-0.5 hover:bg-white/20 transition-colors"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/20 rounded-full p-1 hover:bg-white/30 transition-all duration-200 shadow-inner"
               aria-label="Fechar notificação"
             >
               <span className="sr-only">Fechar</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
@@ -316,16 +335,16 @@ function App() {
     if (!syncNotificationShown) {
       setTimeout(() => {
         toast({
-          title: "Persistência de dados implementada!",
-          description: "Agora suas escalas ficam salvas no banco de dados e podem ser acessadas de qualquer dispositivo.",
+          title: "Sincronização com PostgreSQL ativada!",
+          description: "Suas escalas agora estão armazenadas de forma segura em banco de dados e podem ser acessadas de qualquer dispositivo.",
           duration: 8000,
+          variant: "default",
           action: (
-            <div className="flex items-center gap-2 px-2 py-1 bg-green-100 rounded-lg text-green-700 font-medium">
-              <div className="flex">
-                <Cloud className="h-4 w-4" />
-                <CheckCircle className="h-3 w-3 -ml-1 -mt-1 text-green-600" />
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg text-white font-medium shadow-md">
+              <div className="flex items-center bg-white/20 p-1 rounded-full">
+                <Database className="h-3.5 w-3.5 text-blue-100" />
               </div>
-              <span>Sincronização em nuvem</span>
+              <span className="text-sm">Persistência habilitada</span>
             </div>
           )
         });
