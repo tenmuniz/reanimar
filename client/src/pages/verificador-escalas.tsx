@@ -321,9 +321,7 @@ export default function VerificadorEscalas() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col items-center justify-center mb-10 text-center">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-700 to-blue-500 text-transparent bg-clip-text">
-          Verificador de Conflitos de Escalas
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">Verificador de Conflitos de Escalas</h1>
         <p className="text-gray-600 mb-6 max-w-2xl">
           Esta ferramenta verifica automaticamente se há militares escalados na Operação PMF que também estão de serviço na escala ordinária da 20ª CIPM no mesmo dia.
         </p>
@@ -337,7 +335,7 @@ export default function VerificadorEscalas() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-blue-700 flex items-center gap-2 text-lg">
               <Calendar className="h-5 w-5" /> Escala Ordinária
@@ -351,7 +349,7 @@ export default function VerificadorEscalas() {
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-green-700 flex items-center gap-2 text-lg">
               <FileText className="h-5 w-5" /> Operação PMF
@@ -365,7 +363,7 @@ export default function VerificadorEscalas() {
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-purple-700 flex items-center gap-2 text-lg">
               <FileText className="h-5 w-5" /> Operação Escola Segura
@@ -381,7 +379,7 @@ export default function VerificadorEscalas() {
       </div>
         
       <div className="mx-auto max-w-2xl mb-8">
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-amber-700 flex items-center gap-2 text-lg">
               <AlertCircle className="h-5 w-5" /> Verificação
@@ -424,7 +422,7 @@ export default function VerificadorEscalas() {
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center">
               <ClipboardList className="h-6 w-6 mr-2 text-blue-600" />
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 text-transparent bg-clip-text">
+              <h2 className="text-2xl font-bold">
                 Resultado da Verificação de Conflitos
               </h2>
             </div>
@@ -449,10 +447,10 @@ export default function VerificadorEscalas() {
             </button>
           </div>
           
-          <Alert variant="destructive" className="bg-gradient-to-r from-red-50 to-red-100 border-red-200 mb-4 shadow-md">
-            <AlertCircle className="h-5 w-5 text-red-600" />
-            <AlertTitle className="text-red-800 font-bold text-lg">Atenção! Conflitos encontrados</AlertTitle>
-            <AlertDescription className="text-red-700">
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Atenção! Conflitos encontrados</AlertTitle>
+            <AlertDescription>
               Foram encontrados <span className="font-bold">{conflitos.length}</span> conflitos entre a escala ordinária e as operações PMF/Escola Segura.
               <span className="block mt-1">Militares não podem estar escalados em dois serviços no mesmo dia.</span>
             </AlertDescription>
@@ -464,9 +462,9 @@ export default function VerificadorEscalas() {
               placeholder="Filtrar por nome do militar..."
               value={filtroMilitar}
               onChange={(e) => setFiltroMilitar(e.target.value)}
-              className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-12 bg-gradient-to-r from-blue-50 to-white text-blue-800 font-medium shadow-sm"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
             />
-            <div className="absolute left-4 top-3.5 text-blue-500">
+            <div className="absolute left-3 top-2.5 text-gray-400">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -474,98 +472,52 @@ export default function VerificadorEscalas() {
           </div>
           
           <div className="rounded-lg border overflow-hidden">
-            <div className="max-h-[350px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50">
+            <div className="max-h-[350px] overflow-y-auto">
               <Table>
-                <TableHeader className="bg-gradient-to-r from-blue-50 to-blue-100 sticky top-0 z-10">
+                <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[80px] text-center font-bold text-blue-800">Dia</TableHead>
-                    <TableHead className="font-bold text-blue-800">Militar</TableHead>
-                    <TableHead className="w-[180px] font-bold text-blue-800">Guarnição</TableHead>
-                    <TableHead className="w-[120px] text-center font-bold text-blue-800">Operação</TableHead>
+                    <TableHead className="w-[80px] text-center">Dia</TableHead>
+                    <TableHead>Militar</TableHead>
+                    <TableHead className="w-[180px]">Guarnição</TableHead>
+                    <TableHead className="w-[120px] text-center">Operação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {conflitrosFiltrados.map((conflito, index) => (
-                    <TableRow key={index} className="hover:bg-slate-50">
-                      <TableCell className="text-center font-medium">
-                        <span className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 border-2 border-blue-300 text-white font-bold shadow-lg relative overflow-hidden transform hover:scale-110 transition-all duration-300" style={{boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -4px rgba(59, 130, 246, 0.3)"}}>
-                          <span className="absolute inset-0 bg-white opacity-20 animate-pulse-slow"></span>
-                          <span className="relative z-10 flex flex-col leading-none">
-                            <span className="text-lg">{conflito.dia}</span>
-                            <span className="text-[10px] mt-[-2px] opacity-80">ABR</span>
-                          </span>
-                        </span>
-                      </TableCell>
+                    <TableRow key={index}>
+                      <TableCell className="text-center font-medium">{conflito.dia}</TableCell>
                       <TableCell>
-                        <div className="font-medium text-slate-700">
-                          {conflito.militar.split(' ').slice(0, 2).join(' ')}
-                          <span className="font-normal text-slate-500 ml-1">
-                            {conflito.militar.split(' ').slice(2).join(' ')}
-                          </span>
+                        <div className="font-medium text-gray-900">
+                          {conflito.militar}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-start">
-                          <div className={`relative inline-flex items-center px-3 py-1.5 rounded-full shadow-md font-bold ${
+                          <Badge 
+                            variant="outline" 
+                            className={
                               conflito.guarnicaoOrdinaria === "ALFA" 
-                                ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white" 
+                                ? "bg-amber-100 text-amber-800 border-amber-300" 
                                 : conflito.guarnicaoOrdinaria === "BRAVO" 
-                                  ? "bg-gradient-to-r from-red-500 to-red-600 text-white" 
-                                  : conflito.guarnicaoOrdinaria === "CHARLIE" 
-                                    ? "bg-gradient-to-r from-indigo-500 to-indigo-600 text-white"
-                                    : "bg-gradient-to-r from-gray-500 to-gray-600 text-white"
-                            } overflow-hidden`} style={{
-                              boxShadow: conflito.guarnicaoOrdinaria === "ALFA" 
-                                ? "0 4px 6px -1px rgba(245, 158, 11, 0.3), 0 2px 4px -2px rgba(245, 158, 11, 0.3)" 
-                                : conflito.guarnicaoOrdinaria === "BRAVO"
-                                  ? "0 4px 6px -1px rgba(239, 68, 68, 0.3), 0 2px 4px -2px rgba(239, 68, 68, 0.3)" 
-                                  : "0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -2px rgba(79, 70, 229, 0.3)"
-                            }}>
-                              <span className="absolute inset-0 bg-white/20 rounded-full"></span>
-                              {conflito.guarnicaoOrdinaria === "ALFA" && (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1.5">
-                                  <path fillRule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" clipRule="evenodd" />
-                                </svg>
-                              )}
-                              {conflito.guarnicaoOrdinaria === "BRAVO" && (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1.5">
-                                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-2.625 6c-.54 0-.828.419-.936.634a1.96 1.96 0 00-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634zm4.314.634c.108-.215.395-.634.936-.634.54 0 .828.419.936.634.13.26.189.568.189.866 0 .298-.059.605-.189.866-.108.215-.395.634-.936.634-.54 0-.828-.419-.936-.634a1.96 1.96 0 01-.189-.866c0-.298.059-.605.189-.866zm-4.34 7.964a.75.75 0 01-1.061-1.06 5.236 5.236 0 013.73-1.538 5.236 5.236 0 013.695 1.538.75.75 0 11-1.061 1.06 3.736 3.736 0 00-2.639-1.098 3.736 3.736 0 00-2.664 1.098z" clipRule="evenodd" />
-                                </svg>
-                              )}
-                              {conflito.guarnicaoOrdinaria === "CHARLIE" && (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1.5">
-                                  <path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clipRule="evenodd" />
-                                </svg>
-                              )}
-                              {conflito.guarnicaoOrdinaria}
-                            </div>
+                                  ? "bg-red-100 text-red-800 border-red-300" 
+                                  : "bg-indigo-100 text-indigo-800 border-indigo-300"
+                            }
+                          >
+                            {conflito.guarnicaoOrdinaria}
+                          </Badge>
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <div className={`inline-flex items-center px-3 py-1.5 rounded-full shadow-md font-medium ${
-                          conflito.operacao === "PMF" 
-                            ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white" 
-                            : "bg-gradient-to-r from-purple-500 to-purple-600 text-white"
-                        } relative overflow-hidden shine-effect`} style={{
-                          boxShadow: conflito.operacao === "PMF" 
-                            ? "0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -2px rgba(59, 130, 246, 0.3)" 
-                            : "0 4px 6px -1px rgba(124, 58, 237, 0.3), 0 2px 4px -2px rgba(124, 58, 237, 0.3)"
-                        }}>
-                          {conflito.operacao === "PMF" ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1.5">
-                              <path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z" />
-                              <path fillRule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clipRule="evenodd" />
-                              <path d="M12 7.875a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" />
-                            </svg>
-                          ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-1.5">
-                              <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
-                              <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
-                              <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
-                            </svg>
-                          )}
-                          {conflito.operacao === "PMF" ? "PMF" : "E.SEGURA"}
-                        </div>
+                        <Badge 
+                          variant="outline"
+                          className={
+                            conflito.operacao === "PMF" 
+                              ? "bg-blue-100 text-blue-800 border-blue-300" 
+                              : "bg-purple-100 text-purple-800 border-purple-300"
+                          }
+                        >
+                          {conflito.operacao}
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -574,37 +526,15 @@ export default function VerificadorEscalas() {
             </div>
           </div>
           
-          <div className="mt-3 flex justify-center text-center">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-2 py-2 rounded-full text-white shadow-md relative overflow-hidden shine-effect animate-float">
-              <div className="flex items-center px-3 py-1 bg-white/10 rounded-full backdrop-blur-sm">
-                <div className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center mr-3 shadow-inner border border-blue-500">
-                  <span className="text-white font-bold">{conflitos.length}</span>
-                </div>
-                <span className="font-bold mr-1">Conflitos encontrados</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 ml-1 text-yellow-300">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-4 bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-lg border border-amber-200 shadow-md">
-            <h3 className="text-amber-800 font-bold mb-2 flex items-center">
-              <AlertCircle className="h-5 w-5 mr-2 text-amber-600" />
+          <div className="mt-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
+            <h3 className="text-amber-800 font-medium mb-2 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2 text-amber-600" />
               Recomendação
             </h3>
-            <p className="text-amber-700">
+            <p className="text-amber-700 text-sm">
               Recomenda-se remover estes militares das escalas de operações especiais nos dias em que 
               já estão escalados em seu serviço ordinário, conforme indicado acima.
             </p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
-                PMF
-              </Badge>
-              <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">
-                E.SEGURA
-              </Badge>
-            </div>
           </div>
         </div>
       )}
@@ -615,7 +545,7 @@ export default function VerificadorEscalas() {
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center">
               <CheckCircle className="h-6 w-6 mr-2 text-green-600" />
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-600 text-transparent bg-clip-text">
+              <h2 className="text-2xl font-bold text-green-700">
                 Verificação Concluída
               </h2>
             </div>
@@ -641,22 +571,13 @@ export default function VerificadorEscalas() {
           </div>
           
           <div className="py-8 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 rounded-full mx-auto flex items-center justify-center mb-4 shadow-md border border-green-200">
+            <div className="w-20 h-20 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
               <CheckCircle className="h-10 w-10 text-green-600" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">Nenhum conflito encontrado</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Nenhum conflito encontrado</h3>
             <p className="text-gray-600 max-w-lg mx-auto">
               Não foram identificados conflitos entre a escala ordinária da 20ª CIPM e as operações PMF/Escola Segura.
               Todos os militares estão escalados corretamente sem sobreposição de serviços.
-              
-              <div className="mt-4 flex justify-center gap-3">
-                <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 px-3 py-1">
-                  PMF
-                </Badge>
-                <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300 px-3 py-1">
-                  E.SEGURA
-                </Badge>
-              </div>
             </p>
           </div>
         </div>
