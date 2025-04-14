@@ -11,6 +11,7 @@ import Relatorios from "@/pages/relatorios";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
+import ConflictBadge from "@/components/calendar/ConflictBadge";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
