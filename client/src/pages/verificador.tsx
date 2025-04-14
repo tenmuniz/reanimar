@@ -58,7 +58,7 @@ export default function VerificadorInconsistencias() {
   });
   
   // Serviço ordinário (mock baseado na escala fornecida)
-  const servicoOrdinario = {
+  const servicoOrdinario: Record<string, Record<string, string[]>> = {
     "1": { "CHARLIE": ["Escala 1º de Abril"] },
     "2": { "CHARLIE": ["Escala 2 de Abril"] },
     "3": { "BRAVO": ["Escala 3 de Abril"] },
