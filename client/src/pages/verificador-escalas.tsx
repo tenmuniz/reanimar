@@ -352,60 +352,104 @@ export default function VerificadorEscalas() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-blue-700 flex items-center gap-2 text-lg">
-              <Calendar className="h-5 w-5" /> Escala Ordinária
+        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
+          <div className="absolute -top-20 -left-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <CardHeader className="pb-2 relative">
+            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-2 rounded-lg shadow-md">
+                <Calendar className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">
+                Escala Ordinária
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 text-sm">
+          <CardContent className="relative">
+            <p className="text-blue-100 text-sm">
               Baseada no Quadro de Distribuição de GU para Abril 2025 da 20ª CIPM.
-              Inclui militares das guarnições ALFA, BRAVO, CHARLIE e do Expediente.
+              <span className="block mt-1 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-md border border-white/20 shadow-md">
+                <span className="text-xs font-medium text-white">Guarnições: </span>
+                <span className="ml-1 bg-amber-500/80 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">ALFA</span>
+                <span className="ml-1 bg-red-500/80 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">BRAVO</span>
+                <span className="ml-1 bg-indigo-500/80 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">CHARLIE</span>
+              </span>
             </p>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-green-700 flex items-center gap-2 text-lg">
-              <FileText className="h-5 w-5" /> Operação PMF
+        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
+          <div className="absolute -top-20 -left-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <CardHeader className="pb-2 relative">
+            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-2 rounded-lg shadow-md">
+                <FileText className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-white">
+                Operação PMF
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 text-sm">
+          <CardContent className="relative">
+            <p className="text-blue-100 text-sm">
               Escala de Operação Polícia Mais Forte (PMF), com dados registrados no sistema.
-              Permite até 3 militares por dia.
+              <span className="block mt-1 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-md inline-flex items-center border border-white/20">
+                <span className="text-xs font-medium text-white">Permite até </span>
+                <span className="mx-1 inline-flex items-center justify-center h-5 w-5 bg-blue-600 rounded-full text-xs font-bold text-white border border-blue-400 shadow-inner">3</span>
+                <span className="text-xs font-medium text-white"> militares por dia</span>
+              </span>
             </p>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-purple-700 flex items-center gap-2 text-lg">
-              <FileText className="h-5 w-5" /> Operação Escola Segura
+        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
+          <div className="absolute -top-20 -left-20 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-purple-500/10 rounded-full blur-3xl"></div>
+          <CardHeader className="pb-2 relative">
+            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
+              <div className="bg-gradient-to-br from-purple-500 to-purple-700 p-2 rounded-lg shadow-md">
+                <GraduationCap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-white">
+                Operação Escola Segura
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 text-sm">
+          <CardContent className="relative">
+            <p className="text-purple-100 text-sm">
               Escala de Operação Escola Segura, com dados registrados no sistema.
-              Permite até 2 militares por dia.
+              <span className="block mt-1 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-md inline-flex items-center border border-white/20">
+                <span className="text-xs font-medium text-white">Permite até </span>
+                <span className="mx-1 inline-flex items-center justify-center h-5 w-5 bg-purple-600 rounded-full text-xs font-bold text-white border border-purple-400 shadow-inner">2</span>
+                <span className="text-xs font-medium text-white"> militares por dia</span>
+              </span>
             </p>
           </CardContent>
         </Card>
       </div>
         
       <div className="mx-auto max-w-2xl mb-8">
-        <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-amber-700 flex items-center gap-2 text-lg">
-              <AlertCircle className="h-5 w-5" /> Verificação
+        <Card className="bg-white/10 backdrop-blur-md border border-white/20 shadow-xl overflow-hidden relative">
+          <div className="absolute -top-20 -left-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-amber-500/10 rounded-full blur-3xl"></div>
+          <CardHeader className="pb-2 relative">
+            <CardTitle className="text-white flex items-center gap-2 text-lg font-bold">
+              <div className="bg-gradient-to-br from-amber-500 to-amber-700 p-2 rounded-lg shadow-md">
+                <AlertCircle className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-white">
+                Verificação de Inconsistências
+              </span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 text-sm">
+          <CardContent className="relative">
+            <p className="text-amber-100 text-sm leading-relaxed">
               O sistema verifica dia a dia os conflitos, identificando militares escalados 
               em operações (PMF ou Escola Segura) que também estão de serviço na escala ordinária no mesmo dia.
+              <span className="block mt-2 text-white/80 text-xs bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 rounded-md">
+                Militares não podem ser escalados em operações extras no mesmo dia em que estão de serviço ordinário.
+              </span>
             </p>
           </CardContent>
         </Card>
