@@ -19,11 +19,27 @@ export default function MonthSelector({
   const year = currentDate.getFullYear();
 
   // Dia atual
-  const currentDay = new Date().getDate();
+  const today = new Date();
+  const isCurrentMonth = today.getMonth() === currentDate.getMonth() && 
+                         today.getFullYear() === currentDate.getFullYear();
+  
+  // Se for o mês atual, mostra o progresso real, senão mostra 0% para meses futuros e 100% para meses passados
+  const currentDay = today.getDate();
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
   
-  // Calcular progresso do mês (para a barra de progresso)
-  const progressPercent = Math.round((currentDay / daysInMonth) * 100);
+  // Calcular progresso do mês com base na relação entre o mês selecionado e o mês atual
+  let progressPercent = 0;
+  
+  if (isCurrentMonth) {
+    // Para o mês atual, mostra o progresso baseado no dia atual
+    progressPercent = Math.round((currentDay / daysInMonth) * 100);
+  } else if (currentDate < today) {
+    // Para meses passados, progresso é 100%
+    progressPercent = 100;
+  } else {
+    // Para meses futuros, progresso é 0%
+    progressPercent = 0;
+  }
   
   // Determinar as cores com base na página atual
   const [location] = useLocation();
@@ -87,7 +103,9 @@ export default function MonthSelector({
               </div>
               <div className="flex items-center space-x-1.5 bg-white/10 rounded-full px-2 py-0.5">
                 <Clock className="h-3 w-3 text-white/80" />
-                <span className="text-[10px] font-medium text-white/90">Dia {currentDay}/{daysInMonth}</span>
+                <span className="text-[10px] font-medium text-white/90">
+                  {isCurrentMonth ? `Dia ${currentDay}/${daysInMonth}` : `${monthName} ${year}`}
+                </span>
               </div>
             </div>
             
