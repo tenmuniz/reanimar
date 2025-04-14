@@ -343,7 +343,7 @@ export default function CalendarCard({
           </div>
           <div>
             <div className="font-bold text-lg leading-none capitalize mb-0.5 drop-shadow-md">{weekday}</div>
-            <div className="text-xs opacity-90">{day}/{month}/{year}</div>
+            <div className="text-xs opacity-90">{day}/04/{year}</div>
           </div>
         </div>
         
