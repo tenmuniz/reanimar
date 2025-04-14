@@ -320,15 +320,47 @@ export default function VerificadorEscalas() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col items-center justify-center mb-10 text-center">
-        <h1 className="text-3xl font-bold mb-2">Verificador de Conflitos de Escalas</h1>
-        <p className="text-gray-600 mb-6 max-w-2xl">
-          Esta ferramenta verifica automaticamente se há militares escalados na Operação PMF que também estão de serviço na escala ordinária da 20ª CIPM no mesmo dia.
-        </p>
+      <div className="relative mb-12 text-center">
+        {/* Efeito de gradiente no fundo */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-blue-600/10 to-blue-500/5 rounded-2xl transform -skew-y-1"></div>
         
+        {/* Cabeçalho principal com destaque */}
+        <div className="relative z-10 py-10 px-6">
+          <div className="inline-block mb-4">
+            <span className="relative inline-flex items-center justify-center">
+              <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 blur-sm opacity-70"></span>
+              <h1 className="relative text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-blue-50 to-blue-200 drop-shadow-sm px-6 py-2">
+                Verificador de Conflitos de Escalas
+              </h1>
+            </span>
+          </div>
+          
+          {/* Linha decorativa */}
+          <div className="w-24 h-1 mx-auto my-4 bg-gradient-to-r from-blue-400 via-blue-600 to-blue-400 rounded-full"></div>
+          
+          {/* Descrição com ícones */}
+          <div className="flex items-center justify-center mb-4">
+            <div className="max-w-2xl px-6 py-4 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl border border-blue-100">
+              <p className="text-gray-700 flex items-start">
+                <AlertCircle className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                <span>
+                  Esta ferramenta <span className="font-semibold text-blue-700">verifica automaticamente</span> se há militares escalados nas operações especiais 
+                  que também estão de serviço na <span className="font-semibold text-blue-700">escala ordinária</span> da 20ª CIPM no mesmo dia.
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Indicador de carregamento */}
         {isVerificando && (
-          <div className="flex items-center justify-center space-x-2 bg-blue-50 px-6 py-3 rounded-lg border border-blue-200">
-            <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 
+                      flex items-center justify-center space-x-2 bg-blue-50 px-6 py-3 rounded-lg 
+                      border border-blue-200 shadow-lg animate-pulse">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-blue-500 blur-sm opacity-20 animate-ping"></div>
+              <Loader2 className="h-5 w-5 text-blue-600 animate-spin relative z-10" />
+            </div>
             <span className="text-blue-700 font-medium">Verificando conflitos...</span>
           </div>
         )}
