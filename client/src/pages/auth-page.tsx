@@ -62,7 +62,9 @@ export default function AuthPage() {
     <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a]">      
       {/* Container flex para alinhar ambos os lados */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full h-[600px] flex flex-col">
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/30 px-8 py-6 max-w-md mx-auto w-full h-[600px] flex flex-col relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
           <div className="mb-8 flex flex-col items-center">
             <img src={brasaoCipm} alt="Brasão 20ª CIPM" className="w-20 h-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-800 uppercase text-center">
@@ -140,12 +142,12 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md transition-all duration-200 font-bold py-3 rounded-lg mt-24 flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 font-bold py-3 rounded-lg mt-24 flex items-center justify-center transform hover:scale-[1.02]"
                 disabled={loginMutation.isPending}
               >
-                <LockKeyhole className="h-5 w-5 mr-2" />
-                {loginMutation.isPending ? "Autenticando..." : "ENTRAR"}
-                {!loginMutation.isPending && <ChevronsRight className="h-5 w-5 ml-2" />}
+                <LockKeyhole className="h-5 w-5 mr-2 drop-shadow-sm" />
+                {loginMutation.isPending ? "Autenticando..." : "ENTRAR NO SISTEMA"}
+                {!loginMutation.isPending && <ChevronsRight className="h-5 w-5 ml-2 animate-pulse" />}
               </Button>
               
             </form>
@@ -154,10 +156,15 @@ export default function AuthPage() {
       </div>
 
       {/* Lado direito - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl items-center justify-center p-6 md:p-12 relative">
+      <div className="hidden md:flex md:w-1/2 bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl items-center justify-center p-6 md:p-12 relative overflow-hidden">
+        
+        {/* Elementos decorativos */}
+        <div className="absolute -top-20 -right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/3 w-40 h-40 bg-green-500/10 rounded-full blur-3xl"></div>
         
         {/* Estrutura flexível para alinhar com a caixa de login */}
-        <div className="flex flex-col justify-between h-[600px] relative z-10 w-full max-w-md mx-auto">
+        <div className="flex flex-col justify-between h-[600px] relative z-10 w-full max-w-md mx-auto backdrop-blur-sm rounded-3xl border border-white/5 p-8">
           
           {/* TOPO: Brasão */}
           <div className="flex justify-center">
@@ -169,9 +176,12 @@ export default function AuthPage() {
           </div>
           
           {/* MEIO: Texto */}
-          <div className="text-center mt-4">
-            <h2 className="text-white text-2xl font-bold uppercase">Sistema de Gestão de Extras</h2>
-            <p className="text-white/90 text-sm mt-2 max-w-md mx-auto">
+          <div className="text-center mt-4 bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-2xl">
+            <h2 className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-400 text-2xl font-bold uppercase">
+              Sistema de Gestão de Extras
+            </h2>
+            <div className="h-1 w-24 mx-auto bg-gradient-to-r from-blue-400 to-blue-600 rounded-full my-2"></div>
+            <p className="text-white/90 text-sm mt-4 max-w-md mx-auto leading-relaxed">
               Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas extraordinárias, 
               desenvolvida para maximizar a eficiência operacional e transparência.
             </p>
@@ -179,15 +189,19 @@ export default function AuthPage() {
           
           {/* BASE: Botões alinhados com base da caixa de login */}
           <div className="grid grid-cols-2 gap-4 mb-2">
-            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-4 rounded-2xl text-white flex flex-col items-center hover:bg-blue-600 transition-all duration-200">
-              <ShieldAlert className="h-6 w-6 mb-2 text-blue-200" />
+            <div className="bg-gradient-to-br from-blue-600/80 to-blue-800/80 backdrop-blur-md border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 p-4 rounded-2xl text-white flex flex-col items-center hover:scale-[1.03] transition-all duration-300">
+              <div className="bg-white/20 p-2 rounded-full mb-3">
+                <ShieldAlert className="h-6 w-6 text-white drop-shadow-md" />
+              </div>
               <h3 className="font-medium">Polícia Mais Forte</h3>
               <p className="text-xs text-blue-200 mt-1">Gestão de extras PMF</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-4 rounded-2xl text-white flex flex-col items-center hover:bg-blue-600 transition-all duration-200">
-              <BookOpen className="h-6 w-6 mb-2 text-blue-200" />
+            <div className="bg-gradient-to-br from-purple-600/80 to-purple-800/80 backdrop-blur-md border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 p-4 rounded-2xl text-white flex flex-col items-center hover:scale-[1.03] transition-all duration-300">
+              <div className="bg-white/20 p-2 rounded-full mb-3">
+                <BookOpen className="h-6 w-6 text-white drop-shadow-md" />
+              </div>
               <h3 className="font-medium">Escola Segura</h3>
-              <p className="text-xs text-blue-200 mt-1">Proteção escolar</p>
+              <p className="text-xs text-purple-200 mt-1">Proteção escolar</p>
             </div>
           </div>
         </div>

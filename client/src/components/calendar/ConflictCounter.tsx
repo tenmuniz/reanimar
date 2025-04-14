@@ -261,8 +261,9 @@ export default function ConflictCounter() {
             </div>
             
             {filteredInconsistencias().length === 0 ? (
-              <div className="p-4 text-center text-amber-200">
-                Nenhuma inconsistência encontrada com o termo &quot;{searchTerm}&quot;
+              <div className="p-4 text-center bg-white/5 backdrop-blur-md rounded-lg my-2">
+                <div className="text-blue-200 font-medium">Nenhuma inconsistência encontrada</div>
+                <div className="text-xs text-white/70 mt-1">Sua busca por &quot;{searchTerm}&quot; não retornou resultados</div>
               </div>
             ) : (
               filteredInconsistencias().map((inconsistencia, index) => {
@@ -273,9 +274,9 @@ export default function ConflictCounter() {
                 
                 // Cor do tipo de inconsistência
                 const tipoClass = 
-                  inconsistencia.operacao === "PMF" ? "bg-green-700" :
-                  inconsistencia.operacao === "ESCOLA SEGURA" ? "bg-blue-700" :
-                  "bg-red-700";
+                  inconsistencia.operacao === "PMF" ? "bg-gradient-to-r from-green-600 to-green-700 border border-green-500" :
+                  inconsistencia.operacao === "ESCOLA SEGURA" ? "bg-gradient-to-r from-blue-600 to-blue-700 border border-blue-500" :
+                  "bg-gradient-to-r from-red-600 to-red-700 border border-red-500";
                 
                 return (
                   <div 
@@ -291,7 +292,7 @@ export default function ConflictCounter() {
                       {inconsistencia.militar}
                     </div>
                     <div className="w-[25%]">
-                      <span className="inline-block bg-amber-700 px-2 py-0.5 rounded text-xs">
+                      <span className="inline-block bg-white/10 backdrop-blur-md border border-white/10 shadow-md px-2 py-0.5 rounded text-xs">
                         {inconsistencia.guarnicaoOrdinaria}
                       </span>
                     </div>
@@ -307,18 +308,18 @@ export default function ConflictCounter() {
           </div>
           
           {/* Legenda e informações */}
-          <div className="bg-amber-800/40 p-3 rounded-lg text-xs">
+          <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-3 rounded-lg text-xs">
             <div className="flex flex-wrap items-center justify-around mb-2 gap-2">
-              <div className="font-medium text-amber-200 flex items-center">
-                <span className="inline-block h-3 w-3 bg-green-700 rounded-full mr-1"></span>
+              <div className="font-medium text-white flex items-center">
+                <span className="inline-block h-3 w-3 bg-gradient-to-r from-green-600 to-green-700 rounded-full mr-1 border border-green-500"></span>
                 <span>PMF no dia de serviço ordinário</span>
               </div>
-              <div className="font-medium text-amber-200 flex items-center">
-                <span className="inline-block h-3 w-3 bg-blue-700 rounded-full mr-1"></span>
+              <div className="font-medium text-white flex items-center">
+                <span className="inline-block h-3 w-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full mr-1 border border-blue-500"></span>
                 <span>Escola Segura no dia de serviço ordinário</span>
               </div>
-              <div className="font-medium text-amber-200 flex items-center">
-                <span className="inline-block h-3 w-3 bg-red-700 rounded-full mr-1"></span>
+              <div className="font-medium text-white flex items-center">
+                <span className="inline-block h-3 w-3 bg-gradient-to-r from-red-600 to-red-700 rounded-full mr-1 border border-red-500"></span>
                 <span>PMF e Escola Segura no mesmo dia</span>
               </div>
             </div>
