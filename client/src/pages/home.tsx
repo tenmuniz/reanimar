@@ -11,8 +11,6 @@ import ResumoGuarnicao from "@/components/calendar/ResumoGuarnicao";
 import VerificadorInconsistencias from "@/components/calendar/VerificadorInconsistencias";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
-import brasaoPMPA from "@/assets/brasao-pmpa-novo.png";
-import brasao20CIPM from "@/assets/brasao-20cipm.png";
 
 
 // API endpoint for officers
@@ -246,10 +244,7 @@ export default function Home() {
       <header className="bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a] py-8 mb-6 shadow-xl relative overflow-hidden rounded-3xl">
         {/* Elementos decorativos de fundo aprimorados */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          {/* Brasão da 20ª CIPM em marca d'água */}
-          <div className="absolute right-0 top-0 bottom-0 w-full h-full z-0 opacity-20 flex items-center justify-center pr-0">
-            <img src={brasao20CIPM} alt="" className="h-4/5 max-h-72 w-auto object-contain" />
-          </div>
+          {/* Espaço reservado para elementos decorativos futuros */}
           
           {/* Cores institucionais mais vibrantes em círculos luminosos */}
           <div className="absolute -top-10 -left-10 w-80 h-80 bg-gradient-to-br from-blue-600 to-blue-400 opacity-10 rounded-full filter blur-3xl"></div>
