@@ -96,7 +96,7 @@ export default function ConflictCounter() {
       
       // Verificar militares escalados em PMF
       if (pmfData[dayStr]) {
-        const militaresPMF = pmfData[dayStr].filter(m => m !== null) as string[];
+        const militaresPMF = pmfData[dayStr].filter((m: string | null) => m !== null) as string[];
         
         militaresPMF.forEach(militar => {
           // Obter a guarnição ordinária do militar nesse dia
@@ -126,7 +126,7 @@ export default function ConflictCounter() {
       
       // Verificar militares escalados em Escola Segura (que não estão em PMF)
       if (escolaData[dayStr]) {
-        const militaresEscola = escolaData[dayStr].filter(m => m !== null) as string[];
+        const militaresEscola = escolaData[dayStr].filter((m: string | null) => m !== null) as string[];
         
         militaresEscola.forEach(militar => {
           // Ignorar militares já verificados na PMF (para evitar duplicação)
@@ -187,10 +187,10 @@ export default function ConflictCounter() {
     <>
       <div 
         onClick={() => setOpen(true)}
-        className="relative flex items-center px-3 py-1.5 bg-red-50 rounded-full border border-red-200 cursor-pointer hover:bg-red-100 transition-colors duration-200"
+        className="relative flex items-center px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl rounded-full cursor-pointer hover:bg-white/20 transition-all duration-200"
       >
-        <AlertCircle className="h-4 w-4 text-red-500 mr-1.5 animate-pulse" />
-        <span className="text-xs font-medium text-red-700">
+        <AlertCircle className="h-4 w-4 text-red-400 mr-1.5 animate-pulse" />
+        <span className="text-xs font-medium text-white">
           {inconsistencias.length} conflito{inconsistencias.length !== 1 ? 's' : ''}
         </span>
         
@@ -205,7 +205,7 @@ export default function ConflictCounter() {
       </div>
       
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-amber-900 to-amber-800 text-white border-0 shadow-2xl">
+        <DialogContent className="sm:max-w-[700px] bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center text-2xl font-bold text-center text-white mb-4">
               <AlertCircle className="h-6 w-6 mr-2 text-amber-300" />
@@ -217,23 +217,23 @@ export default function ConflictCounter() {
           
           {/* Estatísticas de Inconsistências */}
           <div className="grid grid-cols-4 gap-2 mb-6">
-            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-amber-200 text-xs font-medium mb-1">Total</span>
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-3 rounded-lg flex flex-col items-center">
+              <span className="text-blue-200 text-xs font-medium mb-1">Total</span>
               <span className="text-2xl font-bold text-white">{contagens.total}</span>
             </div>
             
-            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-amber-200 text-xs font-medium mb-1">PMF</span>
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-3 rounded-lg flex flex-col items-center">
+              <span className="text-green-200 text-xs font-medium mb-1">PMF</span>
               <span className="text-2xl font-bold text-white">{contagens.pmf}</span>
             </div>
             
-            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-amber-200 text-xs font-medium mb-1">E. Segura</span>
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-3 rounded-lg flex flex-col items-center">
+              <span className="text-purple-200 text-xs font-medium mb-1">E. Segura</span>
               <span className="text-2xl font-bold text-white">{contagens.escolaSegura}</span>
             </div>
             
-            <div className="bg-amber-700/70 p-3 rounded-lg shadow-inner flex flex-col items-center">
-              <span className="text-amber-200 text-xs font-medium mb-1">Duplicadas</span>
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-3 rounded-lg flex flex-col items-center">
+              <span className="text-red-200 text-xs font-medium mb-1">Duplicadas</span>
               <span className="text-2xl font-bold text-white">{contagens.ambas}</span>
             </div>
           </div>
@@ -241,19 +241,19 @@ export default function ConflictCounter() {
           {/* Campo de busca */}
           <div className="mb-4">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-amber-300" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-blue-300" />
               <Input
                 placeholder="Buscar militar ou guarnição..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 bg-amber-700/30 border-amber-600 text-white placeholder:text-amber-300"
+                className="pl-8 bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white placeholder:text-blue-300"
               />
             </div>
           </div>
           
           {/* Lista de inconsistências */}
-          <div className="bg-amber-800/40 rounded-lg p-2 mb-4 max-h-[350px] overflow-auto">
-            <div className="flex font-bold text-sm text-amber-100 px-2 py-1 mb-1 border-b border-amber-700">
+          <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl rounded-lg p-2 mb-4 max-h-[350px] overflow-auto">
+            <div className="flex font-bold text-sm text-blue-100 px-2 py-1 mb-1 border-b border-white/20">
               <div className="w-[15%]">Dia</div>
               <div className="w-[35%]">Militar</div>
               <div className="w-[25%]">Serviço Ordinário</div>
@@ -268,8 +268,8 @@ export default function ConflictCounter() {
               filteredInconsistencias().map((inconsistencia, index) => {
                 // Classe do background com base na paridade
                 const bgClass = index % 2 === 0 
-                  ? 'bg-amber-800/40' 
-                  : 'bg-amber-800/20';
+                  ? 'bg-white/5 backdrop-blur-md' 
+                  : 'bg-white/10 backdrop-blur-md';
                 
                 // Cor do tipo de inconsistência
                 const tipoClass = 
@@ -283,7 +283,7 @@ export default function ConflictCounter() {
                     className={`flex items-center text-sm px-2 py-2 rounded mb-1 ${bgClass}`}
                   >
                     <div className="w-[15%] flex items-center justify-center">
-                      <span className="inline-flex items-center justify-center h-6 w-6 bg-amber-700 rounded-full font-medium">
+                      <span className="inline-flex items-center justify-center h-6 w-6 bg-blue-600 border border-blue-300 shadow-inner rounded-full font-medium text-white">
                         {inconsistencia.dia}
                       </span>
                     </div>
