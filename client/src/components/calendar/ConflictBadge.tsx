@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { AlertCircle } from 'lucide-react';
 import { CombinedSchedules } from '@/lib/types';
 
 interface ConflictBadgeProps {
@@ -170,14 +171,61 @@ export default function ConflictBadge({ className = "", count }: ConflictBadgePr
     }
   }, [count, conflictsCount]);
 
+  // Tooltip para exibir a mensagem de alerta estilizada
+  const [showTooltip, setShowTooltip] = useState(false);
+
   return (
-    <div className={`absolute -top-2 -right-2 ${className}`}>
+    <div 
+      className={`absolute -top-2 -right-2 ${className}`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
       <div className="relative">
         <div className={`absolute inset-0 bg-red-400 rounded-full blur-sm ${isBlinking ? 'animate-pulse' : ''}`}></div>
         <span className={`relative flex items-center justify-center w-6 h-6 bg-gradient-to-br from-red-600 to-red-700 text-white text-xs font-bold rounded-full shadow-lg border border-red-400 ${isBlinking ? 'animate-bounce' : ''}`}>
           {conflictsCount}
         </span>
       </div>
+      
+      {/* Tooltip de alerta sofisticado */}
+      {showTooltip && conflictsCount > 0 && (
+        <div className="absolute right-0 top-8 w-72 z-50 transform translate-x-1/3 pointer-events-none">
+          <div className="bg-gradient-to-br from-red-600 to-red-800 rounded-lg shadow-xl border border-red-400 p-4 text-white">
+            <div className="absolute -top-2 -left-2">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-full">
+                <div className="absolute inset-0 bg-red-500 rounded-full blur-md animate-pulse"></div>
+                <span className="relative flex items-center justify-center bg-gradient-to-br from-red-600 to-red-800 w-7 h-7 rounded-full border border-red-400">
+                  <AlertCircle className="h-4 w-4 text-white" />
+                </span>
+              </div>
+            </div>
+            
+            <h3 className="text-center mb-2 font-bold text-lg bg-gradient-to-r from-amber-200 to-red-100 bg-clip-text text-transparent">
+              ALERTA DE CONFLITOS
+            </h3>
+            
+            <div className="flex items-center gap-2 mb-2 bg-white/10 backdrop-blur-md p-2 rounded-md border border-white/20">
+              <div className="bg-red-500/80 text-white text-xl font-bold rounded-md w-10 h-10 flex items-center justify-center shadow-inner border border-red-400">
+                {conflictsCount}
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Conflitos detectados nas escalas</p>
+                <p className="text-xs opacity-90">Verificação de serviço ordinário</p>
+              </div>
+            </div>
+            
+            <p className="text-sm bg-white/10 backdrop-blur-md p-2 rounded-md border border-white/20 mb-1">
+              Militares não podem estar escalados em operações especiais nos mesmos dias em que estão de serviço ordinário.
+            </p>
+            
+            <div className="flex justify-center mt-2">
+              <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs border border-white/30 animate-pulse">
+                Clique no botão para verificar detalhes
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
