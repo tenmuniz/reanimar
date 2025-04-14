@@ -41,9 +41,9 @@ function NavBar() {
     <header className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl sticky top-0 z-50 w-full transition-all duration-300">
       <div className="container mx-auto">
         {/* Barra superior com logomark e informações de usuário */}
-        <div className="flex items-center justify-between py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between py-3 border-b border-white/10">
           <div className="flex items-center space-x-3">
-            <div className="p-0.5 rounded-xl shadow-md relative flex items-center justify-center">
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-0.5 rounded-xl relative flex items-center justify-center">
               <img src={brasaoCipm} alt="Brasão da 20ª CIPM" className="h-10 w-auto rounded-xl" />
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -51,13 +51,13 @@ function NavBar() {
               </span>
             </div>
             <div>
-              <h1 className="text-2xl font-extrabold text-gray-800 leading-none">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+              <h1 className="text-2xl font-extrabold leading-none">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-white">
                   EXTRAORDINÁRIO
                 </span>
               </h1>
               <div className="flex items-center">
-                <span className="text-xs font-medium text-gray-500">Sistema de Gestão - 20ªCIPM</span>
+                <span className="text-xs font-medium text-blue-200">Sistema de Gestão - 20ªCIPM</span>
               </div>
             </div>
           </div>
@@ -67,9 +67,9 @@ function NavBar() {
             <ConflictCounter />
             
             {/* Data atual */}
-            <div className="hidden lg:flex items-center bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-200">
-              <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-              <span className="text-sm text-gray-700 font-medium">
+            <div className="hidden lg:flex items-center bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl rounded-lg px-3 py-1.5">
+              <Calendar className="h-4 w-4 text-blue-200 mr-2" />
+              <span className="text-sm text-white font-medium">
                 {new Date().toLocaleDateString('pt-BR', {weekday: 'short', day: 'numeric', month: 'long', year: 'numeric'})}
               </span>
             </div>
@@ -77,12 +77,12 @@ function NavBar() {
             {/* Informações do usuário e botão de logout */}
             <div className="flex items-center gap-3">
               <div className="hidden md:block">
-                <div className="text-sm font-medium text-gray-700">{user?.name}</div>
-                <div className="text-xs text-gray-500">{user?.role || 'Usuário'}</div>
+                <div className="text-sm font-medium text-white">{user?.name}</div>
+                <div className="text-xs text-blue-200">{user?.role || 'Usuário'}</div>
               </div>
               <button 
                 onClick={() => logoutMutation.mutate()}
-                className="flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg border border-red-200 transition-colors"
+                className="flex items-center gap-1 bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all duration-200"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="text-sm font-medium">Sair</span>
@@ -97,8 +97,8 @@ function NavBar() {
             <Link href="/">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/" 
-                  ? "bg-gradient-to-r from-blue-500/10 to-blue-600/20 text-blue-700 border border-blue-200 shadow-lg shadow-blue-200/30" 
-                  : "text-gray-700 hover:bg-gray-50 hover:shadow-md"
+                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
+                  : "text-white hover:bg-white/5 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/" 
@@ -114,8 +114,8 @@ function NavBar() {
             <Link href="/escola-segura">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/escola-segura" 
-                  ? "bg-gradient-to-r from-purple-500/10 to-purple-600/20 text-purple-700 border border-purple-200 shadow-lg shadow-purple-200/30" 
-                  : "text-gray-700 hover:bg-gray-50 hover:shadow-md"
+                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
+                  : "text-white hover:bg-white/5 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/escola-segura" 
@@ -131,8 +131,8 @@ function NavBar() {
             <Link href="/verificador-escalas">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/verificador-escalas" 
-                  ? "bg-gradient-to-r from-amber-500/10 to-amber-600/20 text-amber-700 border border-amber-200 shadow-lg shadow-amber-200/30" 
-                  : "text-gray-700 hover:bg-gray-50 hover:shadow-md"
+                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
+                  : "text-white hover:bg-white/5 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/verificador-escalas" 
@@ -156,8 +156,8 @@ function NavBar() {
             <Link href="/relatorios">
               <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
                 location === "/relatorios" 
-                  ? "bg-gradient-to-r from-green-500/10 to-green-600/20 text-green-700 border border-green-200 shadow-lg shadow-green-200/30" 
-                  : "text-gray-700 hover:bg-green-50/60 hover:shadow-md hover:border hover:border-green-100"
+                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
+                  : "text-white hover:bg-white/5 hover:shadow-md"
               }`}>
                 <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
                   location === "/relatorios" 
