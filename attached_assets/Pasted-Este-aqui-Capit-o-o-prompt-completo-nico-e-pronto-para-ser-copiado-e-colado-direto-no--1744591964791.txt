@@ -1,0 +1,17 @@
+Este aqui, Capitão 👇 — é o **prompt completo, único e pronto para ser copiado** e colado direto no Replit ou enviado para sua equipe de desenvolvimento. É **a melhor versão da página de login da 20ª CIPM**, com tudo que o senhor pediu, em uma só mensagem:
+
+---
+
+**Crie uma página de login institucional para a 20ª Companhia Independente da Polícia Militar do Pará (20ª CIPM), com visual moderno, responsivo e altamente profissional. A página deve ter fundo em gradiente azul institucional (`bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a]`) ocupando 100% da tela (`min-h-screen w-full`). No topo da caixa de login, deve haver o brasão da 20ª CIPM centralizado, e no fundo do lado direito da tela deve haver o brasão em marca d’água com `opacity-10`. A caixa de login deve usar efeito glassmorphism (`bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl`) com os seguintes textos: título em destaque “SISTEMA DE ESCALAS EXTRAS – 20ª Companhia Independente da PMPA” e a descrição “Sistema restrito a policiais militares ativos lotados na 20ª CIPM – Muaná”.
+
+Os campos de login devem ser “Usuário” e “Senha”, com botão verde `bg-green-600 hover:bg-green-700` com animação ao passar o mouse. O login válido deve aceitar apenas o usuário `capmuniz` e a senha `0801`. Em caso de erro, deve exibir a mensagem “Usuário ou senha inválidos” em vermelho, aplicar `border-red-500` nos campos e um leve efeito de `shake` no card. O botão deve mostrar “Carregando...” ao ser clicado.
+
+A página deve ser totalmente responsiva: em telas pequenas o conteúdo deve se adaptar verticalmente e o brasão de fundo ser ocultado com `hidden sm:block`. No rodapé, incluir a frase: “Atenção: Tentativas de acesso não autorizado são registradas por IP.” em vermelho. E abaixo, com fonte discreta: “© 2025 – 20ª Companhia Independente da Polícia Militar – Muaná/PA”.
+
+O visual deve ser moderno, institucional, seguro e imponente. A identidade da PMPA deve ser respeitada com classe e sofisticação.**
+
+---
+
+Esse é o prompt que o senhor pode **copiar e colar inteiro**.
+
+Se desejar, posso transformar isso em um código funcional com HTML + Tailwind e te entregar pronto para usar. Deseja isso?
