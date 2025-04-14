@@ -314,7 +314,7 @@ export default function CalendarCardEscolaSegura({
               {weekday}
             </Badge>
             <div className={`text-xs ${assignedCount > 0 ? 'text-white/80' : 'text-gray-600'}`}>
-              {day}/04/{year}
+              {day.toString().padStart(2, '0')}/04/{year}
             </div>
           </div>
         </div>
