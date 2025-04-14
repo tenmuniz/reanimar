@@ -180,31 +180,82 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* Hero/Informações (direita) */}
-        <div className="hidden md:flex md:w-1/2 items-center justify-center p-8 relative">
-          {/* Brasão de fundo (marca d'água) */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-            <img src={brasaoPmpa} alt="Brasão PMPA" className="w-96 h-auto" />
+        {/* Hero/Informações (direita) - Design melhorado */}
+        <div className="hidden md:flex md:w-1/2 items-center justify-center p-8 relative overflow-hidden">
+          {/* Elementos decorativos de fundo */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-10 -left-10 w-80 h-80 bg-blue-500/5 rounded-full filter blur-3xl"></div>
+            <div className="absolute -bottom-40 -right-20 w-96 h-96 bg-blue-600/5 rounded-full filter blur-3xl"></div>
+            
+            {/* Grade de pontos decorativa */}
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiPjxwYXRoIGQ9Ik0wIDIwaDQwTTIwIDBoMHY0MCIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
+            
+            {/* Brasão de fundo (marca d'água) - centralizado e melhorado */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img src={brasaoPmpa} alt="Brasão PMPA" className="w-96 h-auto opacity-5" />
+            </div>
           </div>
           
-          <div className="relative z-10 text-center max-w-md">
-            <h2 className="text-3xl font-bold text-white mb-4 uppercase">
-              Sistema de Gestão de Extras
-            </h2>
-            <p className="text-white text-opacity-90 mb-8">
+          <div className="relative z-10 text-center max-w-lg px-6">
+            {/* Título principal com design mais atraente */}
+            <div className="mb-10">
+              <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-100 drop-shadow-[0_2px_2px_rgba(0,100,255,0.3)] tracking-tight">
+                SISTEMA DE GESTÃO DE EXTRAS
+              </h2>
+              <div className="h-1 w-32 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto mt-4"></div>
+            </div>
+            
+            {/* Descrição com tipografia aprimorada */}
+            <p className="text-blue-100 mb-10 leading-relaxed text-center max-w-md mx-auto text-lg">
               Plataforma oficial da 20ª CIPM para gerenciamento e controle de escalas
               extraordinárias, desenvolvida para maximizar a eficiência operacional e
               transparência.
             </p>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white bg-opacity-10 p-5 rounded-lg border border-white border-opacity-20 shadow-lg">
-                <h3 className="text-white font-semibold text-lg mb-2">Polícia Mais Forte</h3>
-                <p className="text-white text-opacity-80 text-sm">Gestão de extras PMF</p>
+            {/* Cards de operações redesenhados com efeitos visuais */}
+            <div className="grid grid-cols-2 gap-8 mb-6">
+              {/* CARD 1: POLÍCIA MAIS FORTE */}
+              <div className="relative group">
+                <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-blue-500 to-blue-400 opacity-30 
+                  blur group-hover:opacity-50 transition duration-200 group-hover:duration-100"></div>
+                <div className="relative flex flex-col h-full overflow-hidden rounded-lg p-5
+                  bg-blue-700 shadow-xl border border-blue-600/20">
+                  {/* Indicador de tipo de operação */}
+                  <div className="flex justify-end mb-2">
+                    <div className="bg-blue-800 rounded-full h-6 w-6 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">3</span>
+                    </div>
+                  </div>
+                  
+                  {/* Título e subtítulo */}
+                  <h3 className="text-xl font-bold text-white mb-1">Polícia Mais Forte</h3>
+                  <p className="text-blue-200 text-sm mb-2">Gestão de extras PMF</p>
+                  
+                  {/* Linha decorativa */}
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent my-2"></div>
+                </div>
               </div>
-              <div className="bg-white bg-opacity-10 p-5 rounded-lg border border-white border-opacity-20 shadow-lg">
-                <h3 className="text-white font-semibold text-lg mb-2">Escola Segura</h3>
-                <p className="text-white text-opacity-80 text-sm">Proteção escolar</p>
+              
+              {/* CARD 2: ESCOLA SEGURA */}
+              <div className="relative group">
+                <div className="absolute -inset-0.5 rounded-lg bg-gradient-to-r from-purple-500 to-purple-400 opacity-30 
+                  blur group-hover:opacity-50 transition duration-200 group-hover:duration-100"></div>
+                <div className="relative flex flex-col h-full overflow-hidden rounded-lg p-5
+                  bg-purple-700 shadow-xl border border-purple-600/20">
+                  {/* Indicador de tipo de operação */}
+                  <div className="flex justify-end mb-2">
+                    <div className="bg-purple-800 rounded-full h-6 w-6 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">2</span>
+                    </div>
+                  </div>
+                  
+                  {/* Título e subtítulo */}
+                  <h3 className="text-xl font-bold text-white mb-1">Escola Segura</h3>
+                  <p className="text-purple-200 text-sm mb-2">Proteção escolar</p>
+                  
+                  {/* Linha decorativa */}
+                  <div className="w-full h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent my-2"></div>
+                </div>
               </div>
             </div>
           </div>
