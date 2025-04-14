@@ -95,55 +95,50 @@ function NavBar() {
         <nav className="flex items-center justify-between py-2">
           <div className="flex items-center space-x-1">
             <Link href="/">
-              <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-                location === "/" 
-                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
-                  : "text-white hover:bg-white/5 hover:shadow-md"
-              }`}>
-                <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
-                  location === "/" 
-                    ? "bg-gradient-to-br from-blue-500 to-blue-700 shadow-md shadow-blue-400/30" 
-                    : "bg-gray-100 group-hover:bg-blue-500 group-hover:shadow-md"
-                }`}>
-                  <Shield className={`h-4 w-4 ${location === "/" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
+              <a className="group flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
+                          bg-gradient-to-br from-[#3b82f6] to-[#2563eb] text-white shadow-lg shadow-blue-500/30 
+                          scale-100 hover:scale-[1.02] active:scale-[0.98] 
+                          border border-blue-400/30 backdrop-blur-sm">
+                <div className="mr-2 p-1.5 rounded-lg bg-blue-400/30 backdrop-blur-md">
+                  <Shield className="h-4 w-4 text-white drop-shadow-md" />
                 </div>
-                <span className={`text-sm font-medium ${location === "/" ? "font-semibold" : ""}`}>Polícia Mais Forte</span>
+                <span className="text-sm font-medium drop-shadow-md">Polícia Mais Forte</span>
+                {location === "/" && (
+                  <span className="ml-2 px-1.5 py-0.5 bg-white/20 backdrop-blur-lg rounded-full text-xs font-medium border border-white/30 shadow-inner">
+                    Ativo
+                  </span>
+                )}
               </a>
             </Link>
             
             <Link href="/escola-segura">
-              <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-                location === "/escola-segura" 
-                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
-                  : "text-white hover:bg-white/5 hover:shadow-md"
-              }`}>
-                <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
-                  location === "/escola-segura" 
-                    ? "bg-gradient-to-br from-purple-500 to-purple-700 shadow-md shadow-purple-400/30" 
-                    : "bg-gray-100 group-hover:bg-purple-500 group-hover:shadow-md"
-                }`}>
-                  <BookOpen className={`h-4 w-4 ${location === "/escola-segura" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
+              <a className="group flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
+                          bg-gradient-to-br from-[#9333ea] to-[#7e22ce] text-white shadow-lg shadow-purple-500/30 
+                          scale-100 hover:scale-[1.02] active:scale-[0.98] 
+                          border border-purple-400/30 backdrop-blur-sm">
+                <div className="mr-2 p-1.5 rounded-lg bg-purple-400/30 backdrop-blur-md">
+                  <BookOpen className="h-4 w-4 text-white drop-shadow-md" />
                 </div>
-                <span className={`text-sm font-medium ${location === "/escola-segura" ? "font-semibold" : ""}`}>Escola Segura</span>
+                <span className="text-sm font-medium drop-shadow-md">Escola Segura</span>
+                {location === "/escola-segura" && (
+                  <span className="ml-2 px-1.5 py-0.5 bg-white/20 backdrop-blur-lg rounded-full text-xs font-medium border border-white/30 shadow-inner">
+                    Ativo
+                  </span>
+                )}
               </a>
             </Link>
             
             <Link href="/verificador-escalas">
-              <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-                location === "/verificador-escalas" 
-                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
-                  : "text-white hover:bg-white/5 hover:shadow-md"
-              }`}>
-                <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
-                  location === "/verificador-escalas" 
-                    ? "bg-gradient-to-br from-amber-500 to-amber-600 shadow-md shadow-amber-400/30" 
-                    : "bg-gray-100 group-hover:bg-amber-500 group-hover:shadow-md"
-                }`}>
-                  <AlertCircle className={`h-4 w-4 ${location === "/verificador-escalas" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
+              <a className="group flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
+                          bg-gradient-to-br from-[#f59e0b] to-[#d97706] text-white shadow-lg shadow-amber-500/30 
+                          scale-100 hover:scale-[1.02] active:scale-[0.98] 
+                          border border-amber-400/30 backdrop-blur-sm">
+                <div className="mr-2 p-1.5 rounded-lg bg-amber-400/30 backdrop-blur-md">
+                  <AlertCircle className="h-4 w-4 text-white drop-shadow-md" />
                 </div>
-                <span className={`text-sm font-medium ${location === "/verificador-escalas" ? "font-semibold" : ""}`}>Verificador</span>
+                <span className="text-sm font-medium drop-shadow-md">Verificador</span>
                 {location === "/verificador-escalas" && (
-                  <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs shadow-sm font-medium border border-amber-200">
+                  <span className="ml-2 px-1.5 py-0.5 bg-white/20 backdrop-blur-lg rounded-full text-xs font-medium border border-white/30 shadow-inner">
                     Ativo
                   </span>
                 )}
@@ -154,19 +149,19 @@ function NavBar() {
           {/* Links adicionais */}
           <div className="flex items-center space-x-1">
             <Link href="/relatorios">
-              <a className={`group flex items-center px-4 py-2 rounded-lg transition-all duration-200 ${
-                location === "/relatorios" 
-                  ? "bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl text-white" 
-                  : "text-white hover:bg-white/5 hover:shadow-md"
-              }`}>
-                <div className={`mr-2 rounded-lg p-1.5 transition-colors duration-200 ${
-                  location === "/relatorios" 
-                    ? "bg-gradient-to-br from-green-500 to-green-700 shadow-md shadow-green-400/30" 
-                    : "bg-gray-100 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-green-600 group-hover:shadow-md group-hover:shadow-green-400/20"
-                }`}>
-                  <BarChart4 className={`h-4 w-4 ${location === "/relatorios" ? "text-white" : "text-gray-500 group-hover:text-white"}`} />
+              <a className="group flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
+                          bg-gradient-to-br from-[#10b981] to-[#059669] text-white shadow-lg shadow-green-500/30 
+                          scale-100 hover:scale-[1.02] active:scale-[0.98] 
+                          border border-green-400/30 backdrop-blur-sm">
+                <div className="mr-2 p-1.5 rounded-lg bg-green-400/30 backdrop-blur-md">
+                  <BarChart4 className="h-4 w-4 text-white drop-shadow-md" />
                 </div>
-                <span className={`text-sm font-medium ${location === "/relatorios" ? "font-semibold" : ""}`}>Relatórios</span>
+                <span className="text-sm font-medium drop-shadow-md">Relatórios</span>
+                {location === "/relatorios" && (
+                  <span className="ml-2 px-1.5 py-0.5 bg-white/20 backdrop-blur-lg rounded-full text-xs font-medium border border-white/30 shadow-inner">
+                    Ativo
+                  </span>
+                )}
               </a>
             </Link>
           </div>
