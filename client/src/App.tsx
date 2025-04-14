@@ -2,13 +2,13 @@ import { Switch, Route, useLocation, Link } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, UserSquare, Clock, Database, Cloud, CheckCircle, LogOut } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, Award, AlertCircle, BarChart4, Bell, ChevronRight, User, Activity, Users, Clock, Database, Cloud, CheckCircle, LogOut } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
-import Guarnicoes from "@/pages/guarnicoes";
+
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
@@ -164,23 +164,6 @@ function NavBar() {
                   </span>
                 )}
                 <ConflictBadge className="z-10" />
-              </a>
-            </Link>
-
-            <Link href="/guarnicoes">
-              <a className="group relative flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
-                          bg-gradient-to-br from-[#0369a1] to-[#0c4a6e] text-white shadow-lg shadow-sky-500/30 
-                          scale-100 hover:scale-[1.02] active:scale-[0.98] 
-                          border border-sky-400/30 backdrop-blur-sm">
-                <div className="mr-2 p-1.5 rounded-lg bg-sky-400/30 backdrop-blur-md">
-                  <UserSquare className="h-4 w-4 text-white drop-shadow-md" />
-                </div>
-                <span className="text-sm font-medium drop-shadow-md">Guarnições</span>
-                {location === "/guarnicoes" && (
-                  <span className="ml-2 px-1.5 py-0.5 bg-white/20 backdrop-blur-lg rounded-full text-xs font-medium border border-white/30 shadow-inner">
-                    Ativo
-                  </span>
-                )}
               </a>
             </Link>
           </div>
@@ -348,7 +331,7 @@ function Router() {
           <ProtectedRoute path="/" component={Home} />
           <ProtectedRoute path="/escola-segura" component={EscolaSegura} />
           <ProtectedRoute path="/verificador-escalas" component={VerificadorEscalas} />
-          <ProtectedRoute path="/guarnicoes" component={Guarnicoes} />
+
           <ProtectedRoute path="/relatorios" component={Relatorios} />
           <Route path="/auth" component={AuthPage} />
           <Route component={NotFound} />
