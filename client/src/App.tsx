@@ -148,7 +148,7 @@ function NavBar() {
             </Link>
             
             <Link href="/verificador-escalas">
-              <a className="group flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
+              <a className="group relative flex items-center px-4 py-2 rounded-xl transition-all duration-300 ease-in-out 
                           bg-gradient-to-br from-[#f59e0b] to-[#d97706] text-white shadow-lg shadow-amber-500/30 
                           scale-100 hover:scale-[1.02] active:scale-[0.98] 
                           border border-amber-400/30 backdrop-blur-sm">
@@ -161,6 +161,7 @@ function NavBar() {
                     Ativo
                   </span>
                 )}
+                <ConflictBadge className="z-10" />
               </a>
             </Link>
           </div>
