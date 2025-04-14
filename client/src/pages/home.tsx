@@ -322,231 +322,87 @@ export default function Home() {
       {/* SEÇÃO REDESENHADA: Dois cards principais de operações */}
       <div className="mb-10 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* CARD 1: POLÍCIA MAIS FORTE - Estilo Sofisticado e Detalhista */}
-          <div className="relative group">
-            {/* Efeito de hover em grupo */}
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-400 opacity-30 blur-xl 
-              group-hover:opacity-60 transition duration-500 group-hover:duration-200 animate-pulse-slow"></div>
-              
-            {/* Container principal com efeito de vidro premium */}
-            <div className="relative h-full flex flex-col overflow-hidden rounded-2xl p-0.5
-              bg-gradient-to-r from-blue-600 to-blue-400 shadow-xl">
-              
-              {/* Interior com glassmorphism */}
-              <div className="h-full flex flex-col bg-gradient-to-br from-blue-900/95 via-blue-800/95 to-blue-900/95 
-                backdrop-blur-md rounded-[13px] p-5 overflow-hidden">
-                
-                {/* Elementos decorativos de fundo */}
-                <div className="absolute inset-0 rounded-[13px] overflow-hidden">
-                  {/* Círculos decorativos */}
-                  <div className="absolute top-0 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl"></div>
-                  <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-blue-400/10 rounded-full blur-2xl"></div>
-                  
-                  {/* Efeito de grade de fundo */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 via-blue-800/95 to-blue-900/95 
-                    opacity-90 mix-blend-overlay"></div>
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiPjxwYXRoIGQ9Ik0wIDIwaDQwTTIwIDBoMHY0MCIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
-                  
-                  {/* Brilho superior */}
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent"></div>
+          {/* CARD 1: POLÍCIA MAIS FORTE - Estilo Limpo baseado na imagem */}
+          <div className="bg-blue-700 rounded-lg shadow-lg overflow-hidden">
+            <div className="p-6">
+              {/* Cabeçalho com título e número */}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Polícia Mais Forte</h3>
+                  <p className="text-sm text-blue-200">Operação PMF - GCJO</p>
                 </div>
-                
-                {/* Ícone com efeito 3D e destaque */}
-                <div className="relative z-10 mb-2 -mt-1 flex justify-between items-start">
-                  <div className="flex items-center">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full 
-                      shadow-[0_0_15px_rgba(59,130,246,0.5)] relative
-                      bg-gradient-to-br from-blue-600 to-blue-900 p-0.5">
-                      {/* Interior do círculo */}
-                      <div className="absolute inset-[2px] rounded-full bg-gradient-to-br from-blue-700 to-blue-950"></div>
-                      
-                      {/* Ícone com efeito de reflexo */}
-                      <svg className="w-6 h-6 text-white relative z-10 drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]" 
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      
-                      {/* Efeito de brilho no círculo */}
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-b from-blue-400/30 to-transparent opacity-0 
-                        group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-                    
-                    <div className="ml-4">
-                      <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r 
-                        from-blue-200 to-white leading-tight tracking-tight">Polícia Mais Forte</h3>
-                      <p className="text-xs text-blue-200/80 font-medium">Operação PMF - GCJO</p>
-                    </div>
-                  </div>
-                  
-                  {/* Indicador numérico */}
-                  <div className="flex flex-col items-end">
-                    <div className="flex items-center justify-center min-w-[3rem] px-2 py-1 
-                      rounded-full bg-blue-800/60 backdrop-blur-sm border border-blue-400/20 shadow-inner">
-                      <span className="text-sm font-bold text-blue-200">3</span>
-                    </div>
-                    <span className="text-[10px] text-blue-300/70 mt-1">policiais/dia</span>
-                  </div>
-                </div>
-                
-                {/* Linha divisória estilizada */}
-                <div className="relative z-10 w-full h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent my-3"></div>
-                
-                {/* Conteúdo principal */}
-                <div className="relative z-10 flex-grow flex flex-col">
-                  {/* Descrição da operação */}
-                  <p className="text-sm text-blue-100/90 mb-6 leading-relaxed">
-                    Operações ostensivas de policiamento ordinário reforçado, patrulhamento 
-                    motorizado e saturação em pontos estratégicos com foco na prevenção criminal.
-                  </p>
-                  
-                  {/* Estatísticas em mini-cards */}
-                  <div className="grid grid-cols-2 gap-3 mb-6">
-                    <div className="bg-blue-800/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-blue-700/20">
-                      <div className="text-xl font-bold text-blue-100">{Object.keys(combinedSchedules?.pmf || {}).length}</div>
-                      <div className="text-xs text-blue-300/80">Dias programados</div>
-                    </div>
-                    <div className="bg-blue-800/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-blue-700/20">
-                      <div className="text-xl font-bold text-blue-100">90</div>
-                      <div className="text-xs text-blue-300/80">Vagas totais</div>
-                    </div>
-                  </div>
-                  
-                  {/* Botão com efeito de destaque */}
-                  <a href="/" 
-                    className="relative group/button mt-auto text-center py-2.5 rounded-xl font-medium text-sm text-white
-                      overflow-hidden transition-all duration-300 
-                      bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400
-                      border border-blue-400/20 hover:border-blue-400/40
-                      shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30">
-                    
-                    {/* Efeito de brilho no hover */}
-                    <div className="absolute inset-0 -translate-y-full group-hover/button:translate-y-0 
-                      bg-gradient-to-b from-white/20 to-transparent transition-transform duration-300"></div>
-                    
-                    <span className="relative z-10 inline-flex items-center">
-                      <span>Acessar Operação</span>
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                      </svg>
-                    </span>
-                  </a>
+                <div className="bg-blue-800 rounded-full h-8 w-8 flex items-center justify-center">
+                  <span className="text-white font-bold">3</span>
                 </div>
               </div>
+              
+              {/* Descrição */}
+              <p className="text-sm text-blue-100 mb-6">
+                Operações ostensivas de policiamento ordinário reforçado, patrulhamento 
+                motorizado e saturação em pontos estratégicos com foco na prevenção criminal.
+              </p>
+              
+              {/* Estatísticas */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <div className="text-2xl font-bold text-white">{Object.keys(combinedSchedules?.pmf || {}).length}</div>
+                  <div className="text-xs text-blue-200">Dias programados</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-white">90</div>
+                  <div className="text-xs text-blue-200">Vagas totais</div>
+                </div>
+              </div>
+              
+              {/* Botão */}
+              <a href="/" className="block text-center bg-blue-600 hover:bg-blue-500 text-white py-3 px-4 rounded-lg font-medium">
+                Acessar Operação 
+                <svg className="inline-block w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              </a>
             </div>
           </div>
           
-          {/* CARD 2: ESCOLA SEGURA - Estilo Elegante e Detalhista */}
-          <div className="relative group">
-            {/* Efeito de hover em grupo */}
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600 to-purple-400 opacity-30 blur-xl 
-              group-hover:opacity-60 transition duration-500 group-hover:duration-200 animate-pulse-slow"></div>
-              
-            {/* Container principal com efeito de vidro premium */}
-            <div className="relative h-full flex flex-col overflow-hidden rounded-2xl p-0.5
-              bg-gradient-to-r from-purple-600 to-purple-400 shadow-xl">
-              
-              {/* Interior com glassmorphism */}
-              <div className="h-full flex flex-col bg-gradient-to-br from-purple-900/95 via-purple-800/95 to-purple-900/95 
-                backdrop-blur-md rounded-[13px] p-5 overflow-hidden">
-                
-                {/* Elementos decorativos de fundo */}
-                <div className="absolute inset-0 rounded-[13px] overflow-hidden">
-                  {/* Círculos decorativos */}
-                  <div className="absolute top-0 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl"></div>
-                  <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-purple-400/10 rounded-full blur-2xl"></div>
-                  
-                  {/* Efeito de grade de fundo */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-900/95 via-purple-800/95 to-purple-900/95 
-                    opacity-90 mix-blend-overlay"></div>
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiPjxwYXRoIGQ9Ik0wIDIwaDQwTTIwIDBoMHY0MCIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
-                  
-                  {/* Brilho superior */}
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent"></div>
+          {/* CARD 2: ESCOLA SEGURA - Estilo Limpo baseado na imagem */}
+          <div className="bg-purple-700 rounded-lg shadow-lg overflow-hidden">
+            <div className="p-6">
+              {/* Cabeçalho com título e número */}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Escola Segura</h3>
+                  <p className="text-sm text-purple-200">Proteção ao ambiente escolar</p>
                 </div>
-                
-                {/* Ícone com efeito 3D e destaque */}
-                <div className="relative z-10 mb-2 -mt-1 flex justify-between items-start">
-                  <div className="flex items-center">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full 
-                      shadow-[0_0_15px_rgba(147,51,234,0.5)] relative
-                      bg-gradient-to-br from-purple-600 to-purple-900 p-0.5">
-                      {/* Interior do círculo */}
-                      <div className="absolute inset-[2px] rounded-full bg-gradient-to-br from-purple-700 to-purple-950"></div>
-                      
-                      {/* Ícone com efeito de reflexo */}
-                      <svg className="w-6 h-6 text-white relative z-10 drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]" 
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                      
-                      {/* Efeito de brilho no círculo */}
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-b from-purple-400/30 to-transparent opacity-0 
-                        group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-                    
-                    <div className="ml-4">
-                      <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r 
-                        from-purple-200 to-white leading-tight tracking-tight">Escola Segura</h3>
-                      <p className="text-xs text-purple-200/80 font-medium">Proteção ao ambiente escolar</p>
-                    </div>
-                  </div>
-                  
-                  {/* Indicador numérico */}
-                  <div className="flex flex-col items-end">
-                    <div className="flex items-center justify-center min-w-[3rem] px-2 py-1 
-                      rounded-full bg-purple-800/60 backdrop-blur-sm border border-purple-400/20 shadow-inner">
-                      <span className="text-sm font-bold text-purple-200">2</span>
-                    </div>
-                    <span className="text-[10px] text-purple-300/70 mt-1">policiais/dia</span>
-                  </div>
-                </div>
-                
-                {/* Linha divisória estilizada */}
-                <div className="relative z-10 w-full h-px bg-gradient-to-r from-transparent via-purple-400/50 to-transparent my-3"></div>
-                
-                {/* Conteúdo principal */}
-                <div className="relative z-10 flex-grow flex flex-col">
-                  {/* Descrição da operação */}
-                  <p className="text-sm text-purple-100/90 mb-6 leading-relaxed">
-                    Operações preventivas focadas no patrulhamento escolar, proteção de estudantes e prevenção 
-                    à violência no ambiente educacional com interação comunitária.
-                  </p>
-                  
-                  {/* Estatísticas em mini-cards */}
-                  <div className="grid grid-cols-2 gap-3 mb-6">
-                    <div className="bg-purple-800/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-purple-700/20">
-                      <div className="text-xl font-bold text-purple-100">{Object.keys(combinedSchedules?.escolaSegura || {}).length}</div>
-                      <div className="text-xs text-purple-300/80">Dias programados</div>
-                    </div>
-                    <div className="bg-purple-800/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-purple-700/20">
-                      <div className="text-xl font-bold text-purple-100">44</div>
-                      <div className="text-xs text-purple-300/80">Vagas totais</div>
-                    </div>
-                  </div>
-                  
-                  {/* Botão com efeito de destaque */}
-                  <a href="/escola-segura" 
-                    className="relative group/button mt-auto text-center py-2.5 rounded-xl font-medium text-sm text-white
-                      overflow-hidden transition-all duration-300 
-                      bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400
-                      border border-purple-400/20 hover:border-purple-400/40
-                      shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30">
-                    
-                    {/* Efeito de brilho no hover */}
-                    <div className="absolute inset-0 -translate-y-full group-hover/button:translate-y-0 
-                      bg-gradient-to-b from-white/20 to-transparent transition-transform duration-300"></div>
-                    
-                    <span className="relative z-10 inline-flex items-center">
-                      <span>Acessar Operação</span>
-                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                      </svg>
-                    </span>
-                  </a>
+                <div className="bg-purple-800 rounded-full h-8 w-8 flex items-center justify-center">
+                  <span className="text-white font-bold">2</span>
                 </div>
               </div>
+              
+              {/* Descrição */}
+              <p className="text-sm text-purple-100 mb-6">
+                Operações preventivas focadas no patrulhamento escolar, proteção de estudantes e prevenção 
+                à violência no ambiente educacional com interação comunitária.
+              </p>
+              
+              {/* Estatísticas */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <div className="text-2xl font-bold text-white">{Object.keys(combinedSchedules?.escolaSegura || {}).length}</div>
+                  <div className="text-xs text-purple-200">Dias programados</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-white">44</div>
+                  <div className="text-xs text-purple-200">Vagas totais</div>
+                </div>
+              </div>
+              
+              {/* Botão */}
+              <a href="/escola-segura" className="block text-center bg-purple-600 hover:bg-purple-500 text-white py-3 px-4 rounded-lg font-medium">
+                Acessar Operação
+                <svg className="inline-block w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              </a>
             </div>
           </div>
         </div>
