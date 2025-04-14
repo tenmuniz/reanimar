@@ -195,7 +195,7 @@ export default function OfficerSelect({
           >
             <SelectItem 
               value={PLACEHOLDER_VALUE}
-              className="bg-slate-100 mb-2 rounded-md font-medium text-slate-500 flex items-center justify-center py-2"
+              className="bg-slate-100 mb-2 rounded-md font-medium text-gray-700 flex items-center justify-center py-2"
             >
               Selecione um policial
             </SelectItem>
