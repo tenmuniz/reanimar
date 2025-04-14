@@ -16,6 +16,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import ConflictBadge from "@/components/calendar/ConflictBadge";
 import { toast } from "@/hooks/use-toast";
 import {
   Tabs,
