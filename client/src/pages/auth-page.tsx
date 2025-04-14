@@ -123,7 +123,7 @@ export default function AuthPage() {
                         <Input
                           {...field}
                           placeholder="Digite seu usuário"
-                          className={`${loginForm.formState.errors.cpf ? 'border-red-500' : 'border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
+                          className={`${loginForm.formState.errors.cpf ? 'border-red-500' : 'border-gray-300'} focus:border-blue-500 focus:ring-blue-500 text-gray-900`}
                         />
                       </FormControl>
                       <FormMessage />
@@ -142,7 +142,7 @@ export default function AuthPage() {
                           {...field}
                           type="password"
                           placeholder="••••••••"
-                          className={`${loginForm.formState.errors.password ? 'border-red-500' : 'border-gray-300'} focus:border-blue-500 focus:ring-blue-500`}
+                          className={`${loginForm.formState.errors.password ? 'border-red-500' : 'border-gray-300'} focus:border-blue-500 focus:ring-blue-500 text-gray-900`}
                         />
                       </FormControl>
                       <FormMessage />
