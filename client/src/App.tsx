@@ -38,11 +38,7 @@ function NavBar() {
   }, [scrolled]);
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-      scrolled 
-        ? "bg-white/95 backdrop-blur-md shadow-md" 
-        : "bg-white/50 backdrop-blur-sm"
-    }`}>
+    <header className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl sticky top-0 z-50 w-full transition-all duration-300">
       <div className="container mx-auto">
         {/* Barra superior com logomark e informações de usuário */}
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
@@ -185,7 +181,7 @@ function Footer() {
   const isEscolaSegura = location === "/escola-segura";
   
   return (
-    <footer className="bg-[#0a2f6b] border-t border-blue-900/30 py-6">
+    <footer className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl py-6 mt-8">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
@@ -270,7 +266,7 @@ function Router() {
   }, []);
   
   return (
-    <div className="flex flex-col min-h-screen w-full bg-[#0a2f6b]">
+    <div className="flex flex-col min-h-screen w-full bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a]">
       {showSyncBanner && user && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-1.5 text-center text-sm font-medium relative overflow-hidden">
           <div className="absolute inset-0 bg-white/10 opacity-20">

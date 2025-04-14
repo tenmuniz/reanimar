@@ -99,7 +99,7 @@
   }
 
   html, body {
-    @apply font-sans antialiased bg-[#0a2f6b] text-foreground min-h-screen w-full;
+    @apply font-sans antialiased bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a] text-foreground min-h-screen w-full;
   }
 }
 

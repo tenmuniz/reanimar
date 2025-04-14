@@ -59,7 +59,7 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col md:flex-row bg-[#0a2f6b]">      
+    <div className="relative min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-[#0a2f6b] via-[#143d8a] to-[#1e3a8a]">      
       {/* Container flex para alinhar ambos os lados */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border-t-4 border-yellow-500 shadow-blue-500/20 px-8 py-6 max-w-md mx-auto w-full h-[600px] flex flex-col">
@@ -140,7 +140,7 @@ export default function AuthPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 rounded-lg shadow-xl hover:shadow-2xl border-b-4 border-green-800 hover:border-green-900 transform hover:-translate-y-1 active:translate-y-0 active:border-b-2 transition-all duration-200 flex items-center justify-center mt-24"
+                className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md transition-all duration-200 font-bold py-3 rounded-lg mt-24 flex items-center justify-center"
                 disabled={loginMutation.isPending}
               >
                 <LockKeyhole className="h-5 w-5 mr-2" />
@@ -154,7 +154,7 @@ export default function AuthPage() {
       </div>
 
       {/* Lado direito - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-[#0a2f6b] items-center justify-center p-6 md:p-12 relative">
+      <div className="hidden md:flex md:w-1/2 bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl items-center justify-center p-6 md:p-12 relative">
         
         {/* Estrutura flexível para alinhar com a caixa de login */}
         <div className="flex flex-col justify-between h-[600px] relative z-10 w-full max-w-md mx-auto">
@@ -179,12 +179,12 @@ export default function AuthPage() {
           
           {/* BASE: Botões alinhados com base da caixa de login */}
           <div className="grid grid-cols-2 gap-4 mb-2">
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg text-white flex flex-col items-center hover:bg-blue-600 transition-all">
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-4 rounded-2xl text-white flex flex-col items-center hover:bg-blue-600 transition-all duration-200">
               <ShieldAlert className="h-6 w-6 mb-2 text-blue-200" />
               <h3 className="font-medium">Polícia Mais Forte</h3>
               <p className="text-xs text-blue-200 mt-1">Gestão de extras PMF</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg text-white flex flex-col items-center hover:bg-blue-600 transition-all">
+            <div className="bg-white/10 backdrop-blur-md border border-white/10 shadow-2xl p-4 rounded-2xl text-white flex flex-col items-center hover:bg-blue-600 transition-all duration-200">
               <BookOpen className="h-6 w-6 mb-2 text-blue-200" />
               <h3 className="font-medium">Escola Segura</h3>
               <p className="text-xs text-blue-200 mt-1">Proteção escolar</p>
