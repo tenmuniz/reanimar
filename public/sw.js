@@ -1,112 +1,61 @@
-// Este é o Service Worker para o Sistema de Gestão de Extras - 20ª CIPM
-const CACHE_NAME = 'extras-cipm-v1';
+// Este é um service worker básico para funcionar como PWA
 
-// Arquivos para cache inicial
-const INITIAL_CACHE_URLS = [
+const cacheName = 'escala-pmf-v1';
+const filesToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icons/apple-touch-icon.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
-  '/favicon-police.svg'
+  '/favicon.ico',
+  '/favicon-police.svg',
+  '/logo192.png',
+  '/logo512.png',
+  '/apple-touch-icon.png'
 ];
 
-// Instalação do Service Worker
-self.addEventListener('install', (event) => {
+// Instalar e cache dos arquivos principais
+self.addEventListener('install', event => {
+  console.log('Service Worker sendo instalado');
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Cache aberto');
-        return cache.addAll(INITIAL_CACHE_URLS);
-      })
-      .then(() => {
-        // Força o service worker a tornar-se ativo
-        return self.skipWaiting();
+    caches.open(cacheName)
+      .then(cache => {
+        console.log('Cache dos arquivos principais');
+        return cache.addAll(filesToCache);
       })
   );
 });
 
-// Ativação do Service Worker
-self.addEventListener('activate', (event) => {
+// Ativar o service worker
+self.addEventListener('activate', event => {
+  console.log('Service Worker ativado');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            // Remover caches antigos
-            return caches.delete(cacheName);
+        cacheNames.map(name => {
+          if (name !== cacheName) {
+            console.log('Service Worker: limpando cache antigo');
+            return caches.delete(name);
           }
         })
       );
-    }).then(() => {
-      // Toma controle de clientes sem recarregar
-      return self.clients.claim();
     })
   );
 });
 
-// Intercepta requisições e verifica no cache primeiro
-self.addEventListener('fetch', (event) => {
-  // Ignorar requisições a APIs ou outras origens
-  if (
-    event.request.url.startsWith('chrome-extension://') ||
-    event.request.url.includes('/api/') ||
-    event.request.url.includes('/socket.io/')
-  ) {
-    return;
-  }
-
+// Interceptar requisições para servir do cache quando possível
+self.addEventListener('fetch', event => {
+  console.log('Service Worker: fetch', event.request.url);
   event.respondWith(
     caches.match(event.request)
-      .then((response) => {
+      .then(response => {
         // Cache hit - retorna a resposta do cache
         if (response) {
           return response;
         }
-
-        // Clonar a requisição
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest)
-          .then((response) => {
-            // Verificar se a resposta é válida
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clonar a resposta
-            const responseToCache = response.clone();
-
-            // Adicionar ao cache
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // Se falhar a requisição de rede e for uma requisição de página, tenta retornar a página offline
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
-            
-            // Se for uma imagem, pode retornar uma imagem de fallback
-            if (event.request.destination === 'image') {
-              return caches.match('/favicon-police.svg');
-            }
-            
-            // Se não encontrar no cache e não tiver conexão
-            return new Response('Sem conexão com a internet.');
-          });
+        // Não está no cache, vai buscar na rede
+        return fetch(event.request);
+      })
+      .catch(error => {
+        console.log('Falha ao recuperar o recurso:', error);
       })
   );
-});
-
-// Receber mensagem do cliente (útil para forçar atualizações)
-self.addEventListener('message', (event) => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
-  }
 });

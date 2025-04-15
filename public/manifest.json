@@ -1,6 +1,6 @@
 {
-  "name": "Escala PMF",
   "short_name": "Escala PMF",
+  "name": "Escala PMF - 20ª CIPM",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,24 +8,41 @@
       "type": "image/x-icon"
     },
     {
+      "src": "favicon-police.svg",
+      "sizes": "512x512 192x192 64x64 32x32 24x24 16x16",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     },
     {
       "src": "apple-touch-icon.png",
+      "type": "image/png",
       "sizes": "180x180",
-      "type": "image/png"
+      "purpose": "apple-touch-icon"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#0070EA",
+  "theme_color": "#0066cc",
   "background_color": "#ffffff",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "description": "Sistema de gerenciamento de escalas para Polícia Militar - 20ª CIPM",
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "type": "image/png",
+      "sizes": "1280x720"
+    }
+  ]
 }
