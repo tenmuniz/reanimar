@@ -8,7 +8,6 @@ import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
-
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
@@ -331,7 +330,6 @@ function Router() {
           <ProtectedRoute path="/" component={Home} />
           <ProtectedRoute path="/escola-segura" component={EscolaSegura} />
           <ProtectedRoute path="/verificador-escalas" component={VerificadorEscalas} />
-
           <ProtectedRoute path="/relatorios" component={Relatorios} />
           <Route path="/auth" component={AuthPage} />
           <Route component={NotFound} />

@@ -1,48 +1,50 @@
 {
-  "short_name": "Escala PMF",
-  "name": "Escala PMF - 20ª CIPM",
+  "name": "Sistema de Gestão de Extras - 20ª CIPM",
+  "short_name": "Extras CIPM",
+  "description": "Sistema oficial de gestão de escalas extraordinárias da 20ª CIPM - Muaná/Ponta de Pedras",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a2f6b",
+  "theme_color": "#0a2f6b",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "favicon-police.svg",
-      "sizes": "512x512 192x192 64x64 32x32 24x24 16x16",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "apple-touch-icon.png",
       "type": "image/png",
-      "sizes": "180x180",
-      "purpose": "apple-touch-icon"
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#0066cc",
-  "background_color": "#ffffff",
-  "orientation": "portrait",
-  "description": "Sistema de gerenciamento de escalas para Polícia Militar - 20ª CIPM",
-  "screenshots": [
+  "shortcuts": [
     {
-      "src": "screenshot1.png",
-      "type": "image/png",
-      "sizes": "1280x720"
+      "name": "Verificar Escalas",
+      "short_name": "Verificar",
+      "description": "Verificar conflitos entre escalas",
+      "url": "/verificador-escalas",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "short_name": "Relatórios",
+      "description": "Ver relatórios de escalas",
+      "url": "/relatorios",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

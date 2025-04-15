@@ -305,18 +305,13 @@ export default function CalendarCardEscolaSegura({
           <span className={`text-2xl font-bold mr-2 ${assignedCount > 0 ? 'text-white' : 'text-gray-800'}`}>
             {day}
           </span>
-          <div className="flex flex-col">
-            <Badge 
-              variant="outline" 
-              className={`${assignedCount > 0 ? 'bg-white/20 text-white border-white/30' : 'bg-slate-700/10 text-slate-800'} 
-                shadow-inner rounded-md px-2 text-xs font-medium transform translate-y-[-2px] mb-0.5`}
-            >
-              {weekday}
-            </Badge>
-            <div className={`text-xs ${assignedCount > 0 ? 'text-white/80' : 'text-gray-600'}`}>
-              {day.toString().padStart(2, '0')}/{(month + 1).toString().padStart(2, '0')}/{year}
-            </div>
-          </div>
+          <Badge 
+            variant="outline" 
+            className={`${assignedCount > 0 ? 'bg-white/20 text-white border-white/30' : 'bg-slate-700/10 text-slate-800'} 
+              shadow-inner rounded-md px-2 text-xs font-medium transform translate-y-[-2px]`}
+          >
+            {weekday}
+          </Badge>
         </div>
         
         {/* Status de preenchimento */}

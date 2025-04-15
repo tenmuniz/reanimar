@@ -17,9 +17,7 @@ const OFFICERS_ENDPOINT = "/api/officers";
 const STORAGE_KEY = "escolaSeguraSchedule";
 
 export default function EscolaSegura() {
-  // Definindo abril como mês atual (índice 3, já que em JavaScript os meses são 0-11)
-  const dataAbril2025 = new Date(2025, 3, 1);
-  const [currentDate, setCurrentDate] = useState(dataAbril2025);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [schedule, setSchedule] = useState<MonthSchedule>({});
   // Simplificamos para usar apenas Escola Segura
   const [combinedSchedules, setCombinedSchedules] = useState<CombinedSchedules>({
