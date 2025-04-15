@@ -1,21 +1,27 @@
-name: Deploy to Railway
+name: Deploy para Railway
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v3
-
-      - name: Install Railway CLI
-        run: npm i -g @railway/cli
-
-      - name: Deploy to Railway
-        run: railway up
+      
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+      
+      - name: Instalar Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Fazer deploy para Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up
