@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 
   // Try to serve the app on port 5000 first, then try alternative ports
   // this serves both the API and the client.
-  const ports = [5000, 5001, 5002, 5003, 5004, 5005];
+  const ports = [Number(process.env.PORT) || 5000];
   
   const startServer = (portIndex = 0) => {
     if (portIndex >= ports.length) {
