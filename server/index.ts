@@ -3,6 +3,9 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+app.get("/", (req, res) => {
+  res.send("🚔 Sistema da 20ª CIPM no ar via Railway!");
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
