@@ -3,8 +3,36 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import path from "path";
 import { setupAuth } from "./auth";
+import { WebSocketServer } from 'ws';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Criar servidor HTTP para o Express - será retornado no final da função
+  const httpServer = createServer(app);
+  
+  // Configurar WebSocket em um caminho seguro para Railway
+  const wss = new WebSocketServer({ 
+    server: httpServer, 
+    path: '/ws',
+    perMessageDeflate: {
+      zlibDeflateOptions: {
+        // Nível de compressão 
+        level: 6,
+        // Memória alocada para a compressão
+        memLevel: 8
+      }
+    }
+  });
+  
+  // Endpoint de health check para Railway
+  app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      env: process.env.NODE_ENV || 'development',
+      uptime: process.uptime()
+    });
+  });
+  
   // Configurar autenticação
   setupAuth(app);
 
@@ -135,9 +163,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-
-
-  const httpServer = createServer(app);
-
+  // Retornar o servidor HTTP
   return httpServer;
 }

@@ -5,10 +5,33 @@
     "buildCommand": "npm run build"
   },
   "deploy": {
+    "numReplicas": 1,
     "startCommand": "npm start",
-    "healthcheckPath": "/",
-    "healthcheckTimeout": 60,
+    "sleepApplication": false,
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 5
-  }
+    "restartPolicyMaxRetries": 10
+  },
+  "healthCheck": "/health",
+  "envs": [
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "key": "SESSION_SECRET",
+      "value": "TLOhXMfLcJVvFEZcUzlDxMhgBdcYLPYU"
+    },
+    {
+      "key": "COOKIE_SECURE",
+      "value": "true"
+    },
+    {
+      "key": "COOKIE_SAME_SITE",
+      "value": "none"
+    },
+    {
+      "key": "JWT_EXPIRES_IN",
+      "value": "7d"
+    }
+  ]
 }

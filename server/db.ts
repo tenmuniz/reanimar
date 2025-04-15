@@ -29,29 +29,48 @@ const poolConfig = {
 };
 
 // Criar pool e cliente drizzle
-let pool;
-let db;
+let pool: Pool;
+let db: any;
 
 try {
   // Tentar conectar com a URL definida
   pool = new Pool(poolConfig);
   db = drizzle(pool, { schema });
   
-  // Testar a conexão
-  pool.query('SELECT NOW()').then(() => {
-    console.log('Banco de dados PostgreSQL conectado com sucesso.');
-  }).catch(error => {
-    console.error('Erro ao testar conexão com o banco de dados:', error);
-  });
+  // Testar a conexão com retry
+  const testConnection = async (retries = 5, delay = 3000): Promise<void> => {
+    try {
+      await pool.query('SELECT NOW()');
+      console.log('Banco de dados PostgreSQL conectado com sucesso.');
+    } catch (error) {
+      console.error(`Erro ao testar conexão com o banco de dados (tentativas restantes: ${retries}):`, error);
+      
+      if (retries > 0) {
+        console.log(`Tentando reconectar em ${delay/1000} segundos...`);
+        setTimeout(() => testConnection(retries - 1, delay), delay);
+      } else {
+        console.error('Falha ao estabelecer conexão com o banco após várias tentativas.');
+      }
+    }
+  };
+  
+  // Iniciar teste de conexão
+  testConnection();
   
   // Configurar eventos para melhor gestão de conexão
-  pool.on('error', (err) => {
+  pool.on('error', (err: Error) => {
     console.error('Erro inesperado no pool de conexões:', err);
+    
+    // Em produção, tentamos recuperar da falha
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Tentando reconectar automaticamente...');
+      testConnection();
+    }
   });
   
   // Verificar banco periodicamente para manter conexão ativa
   setInterval(() => {
-    pool.query('SELECT 1').catch(err => {
+    pool.query('SELECT 1').catch((err: Error) => {
       console.log('Erro na verificação de conexão:', err);
     });
   }, 60000); // Verificar a cada minuto

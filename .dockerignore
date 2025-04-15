@@ -1,0 +1,44 @@
+# Dependências
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Arquivos de desenvolvimento
+.git
+.github
+.gitignore
+.vscode
+.editorconfig
+
+# Arquivos de build e temporários
+dist
+build
+tmp
+coverage
+.nyc_output
+*.log
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# Arquivos específicos do Docker
+Dockerfile
+.dockerignore
+
+# Arquivos específicos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de projeto não necessários para a execução
+*.md
+LICENSE
+test
+tests
+docs
+doc
+examples
+example
+demo
