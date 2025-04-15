@@ -56,37 +56,27 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Try to serve the app on port 5000 first, then try alternative ports
-  // this serves both the API and the client.
-  const ports = [5000, 5001, 5002, 5003, 5004, 5005];
+  // Use PORT environment variable for Railway deployment or fallback to port 5000
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
   
-  const startServer = (portIndex = 0) => {
-    if (portIndex >= ports.length) {
-      log(`Failed to bind to any available port. Exiting.`);
-      process.exit(1);
-      return;
+  server.listen({
+    port,
+    host: "0.0.0.0",
+    reusePort: true,
+  }, () => {
+    log(`Server is running on port ${port}`);
+    log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+  
+  // Adicionar tratamento para erros de servidor
+  server.on('error', (err: any) => {
+    log(`Server error: ${err.message}`);
+    if (err.code === 'EADDRINUSE') {
+      log(`Port ${port} is already in use. Please configure a different PORT in environment variables.`);
     }
-    
-    const port = ports[portIndex];
-    
-    server.once('error', (err: any) => {
-      if (err.code === 'EADDRINUSE') {
-        log(`Port ${port} is already in use, trying next port...`);
-        startServer(portIndex + 1);
-      } else {
-        log(`Error starting server: ${err.message}`);
-        process.exit(1);
-      }
-    });
-    
-    server.listen({
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    }, () => {
-      log(`Server is running on port ${port}`);
-    });
-  };
-  
-  startServer();
+    // Não encerrar o processo em produção para permitir que o Railway reinicie
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+  });
 })();

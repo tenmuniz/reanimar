@@ -1,7 +1,12 @@
 // Este é o Service Worker para o Sistema de Gestão de Extras - 20ª CIPM
-const CACHE_NAME = 'extras-cipm-v1';
+// Otimizado para deployment no Railway
+const CACHE_NAME = 'extras-cipm-v2';
 
-// Arquivos para cache inicial
+// Detectar ambiente de produção
+const isProduction = self.location.hostname !== 'localhost' && 
+                    !self.location.hostname.includes('replit.app');
+
+// Arquivos para cache inicial - adaptado para produção
 const INITIAL_CACHE_URLS = [
   '/',
   '/index.html',
@@ -9,7 +14,10 @@ const INITIAL_CACHE_URLS = [
   '/icons/apple-touch-icon.png',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-  '/favicon-police.svg'
+  '/favicon-police.svg',
+  // Arquivos específicos para produção
+  '/assets/index.css',  // Arquivo CSS vite em produção
+  '/assets/index.js'    // Arquivo JS vite em produção
 ];
 
 // Instalação do Service Worker

@@ -7,17 +7,25 @@ import { eq } from 'drizzle-orm';
 // Configurar o WebSocket para o NeonDB
 neonConfig.webSocketConstructor = ws;
 
-// Sempre utilizar a variável de ambiente para o banco de dados, com fallback para a URL fixa
+// Verificar DATABASE_URL
+if (!process.env.DATABASE_URL) {
+  console.warn('AVISO: Variável de ambiente DATABASE_URL não configurada!');
+  console.warn('No Railway, você deve adicionar esta variável nas configurações do projeto.');
+  console.warn('Para desenvolvimento local, preencha .env ou configure no painel do Railway.');
+}
+
+// Usar DATABASE_URL do Railway ou fallback para desenvolvimento
 const DATABASE_URL = process.env.DATABASE_URL || 
   'postgresql://neondb_owner:npg_TP1lKjG6pxqc@ep-bold-queen-a63l3hze.us-west-2.aws.neon.tech/neondb?sslmode=require';
 
-// Configuração para aumentar a resiliência da conexão
+// Configuração para aumentar a resiliência da conexão - otimizada para Railway
 const poolConfig = {
   connectionString: DATABASE_URL,
   max: 20, // máximo de conexões no pool
-  connectionTimeoutMillis: 5000, // timeout para obter conexão do pool
+  connectionTimeoutMillis: 10000, // timeout para obter conexão do pool - aumentado para Railway
   idleTimeoutMillis: 30000, // tempo máximo que uma conexão pode ficar ociosa
-  allowExitOnIdle: false // não fechar a pool quando ociosa
+  allowExitOnIdle: false, // não fechar a pool quando ociosa
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined // SSL flexível para Railway
 };
 
 // Criar pool e cliente drizzle

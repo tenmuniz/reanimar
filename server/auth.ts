@@ -37,15 +37,18 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Configurações de sessão aprimoradas para produção
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "20cipm-secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // Cookies seguros em produção
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 dia
+      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // Compatível com cross-site em produção
     },
+    // Não definir domínio para permitir que o Railway configure automaticamente
   };
 
   app.set("trust proxy", 1);
