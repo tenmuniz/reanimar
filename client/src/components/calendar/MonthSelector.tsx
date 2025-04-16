@@ -18,12 +18,38 @@ export default function MonthSelector({
   const monthName = currentDate.toLocaleString('pt-BR', { month: 'long' }).toUpperCase();
   const year = currentDate.getFullYear();
 
-  // Dia atual
-  const currentDay = new Date().getDate();
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  // Obter o mês e ano atualmente visualizados
+  const viewMonth = currentDate.getMonth();
+  const viewYear = currentDate.getFullYear();
   
-  // Calcular progresso do mês (para a barra de progresso)
-  const progressPercent = Math.round((currentDay / daysInMonth) * 100);
+  // Dia atual (para o mês atual) ou último dia (para meses passados) ou primeiro dia (para meses futuros)
+  const today = new Date();
+  const todayDay = today.getDate();
+  const todayMonth = today.getMonth();
+  const todayYear = today.getFullYear();
+  
+  // Total de dias no mês visualizado
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  
+  // Cálculo dinâmico do progresso baseado no mês que está sendo visualizado
+  let progressPercent = 0;
+  
+  if (viewYear < todayYear || (viewYear === todayYear && viewMonth < todayMonth)) {
+    // Mês já passou - progresso 100%
+    progressPercent = 100;
+  } else if (viewYear > todayYear || (viewYear === todayYear && viewMonth > todayMonth)) {
+    // Mês ainda não chegou - progresso 0%
+    progressPercent = 0;
+  } else {
+    // Mês atual - calcular progresso baseado no dia atual
+    progressPercent = Math.round((todayDay / daysInMonth) * 100);
+  }
+  
+  // Dia a mostrar (dia atual para mês atual, último dia para meses passados, ou 1 para meses futuros)
+  const currentDay = (viewYear === todayYear && viewMonth === todayMonth) ? 
+    todayDay : 
+    (viewYear < todayYear || (viewYear === todayYear && viewMonth < todayMonth)) ? 
+      daysInMonth : 1;
   
   // Determinar as cores com base na página atual
   const [location] = useLocation();
