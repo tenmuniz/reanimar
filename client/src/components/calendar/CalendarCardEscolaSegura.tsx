@@ -300,18 +300,23 @@ export default function CalendarCardEscolaSegura({
               ? 'bg-gradient-to-r from-amber-500 to-amber-600' 
               : 'bg-gradient-to-r from-slate-100 to-slate-200'}`}
       >
-        {/* Data e dia da semana */}
+        {/* Data e dia da semana - com mês correto (04 - Abril) */}
         <div className="flex items-end">
           <span className={`text-2xl font-bold mr-2 ${assignedCount > 0 ? 'text-white' : 'text-gray-800'}`}>
             {day}
           </span>
-          <Badge 
-            variant="outline" 
-            className={`${assignedCount > 0 ? 'bg-white/20 text-white border-white/30' : 'bg-slate-700/10 text-slate-800'} 
-              shadow-inner rounded-md px-2 text-xs font-medium transform translate-y-[-2px]`}
-          >
-            {weekday}
-          </Badge>
+          <div className="flex flex-col items-start">
+            <Badge 
+              variant="outline" 
+              className={`${assignedCount > 0 ? 'bg-white/20 text-white border-white/30' : 'bg-slate-700/10 text-slate-800'} 
+                shadow-inner rounded-md px-2 text-xs font-medium mb-0.5`}
+            >
+              {weekday}
+            </Badge>
+            <span className={`text-xs ${assignedCount > 0 ? 'text-white/80' : 'text-gray-500'}`}>
+              {day}/4/{year}
+            </span>
+          </div>
         </div>
         
         {/* Status de preenchimento */}

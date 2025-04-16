@@ -57,6 +57,7 @@ export function saveLocalStorageSchedule(key: string, data: Record<string, Recor
  */
 export function formatDateBR(date: Date): string {
   const day = date.getDate().toString().padStart(2, '0');
+  // JavaScript conta meses de 0-11, então precisamos adicionar 1 para exibição correta no formato DD/MM/YYYY
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
