@@ -58,24 +58,24 @@ export function setupAuth(app: Express) {
 
   // Usar CPF como campo de username para autenticação
   passport.use(
-    new LocalStrategy(
-      {
-        usernameField: "cpf",
-        passwordField: "password",
-      },
-      async (cpf, password, done) => {
-        try {
-          const user = await storage.getUserByCpf(cpf);
-          if (!user || !(await comparePasswords(password, user.password))) {
-            return done(null, false);
-          }
-          return done(null, user);
-        } catch (error) {
-          return done(error);
+  new LocalStrategy(
+    {
+      usernameField: "username",
+      passwordField: "password",
+    },
+    async (username, password, done) => {
+      try {
+        const user = await storage.getUserByUsername(username);
+        if (!user || !(await comparePasswords(password, user.password))) {
+          return done(null, false);
         }
+        return done(null, user);
+      } catch (error) {
+        return done(error);
       }
-    )
-  );
+    }
+  )
+);
 
   passport.serializeUser((user, done) => done(null, user.id));
   passport.deserializeUser(async (id: number, done) => {
