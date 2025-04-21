@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import path from "path";
-import { setupAuth } from "./auth";
 import { WebSocketServer } from 'ws';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -34,7 +33,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Configurar autenticação
-  setupAuth(app);
 
   // API routes for the application
   
