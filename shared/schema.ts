@@ -1,56 +1,26 @@
-import { pgTable, text, serial, integer, boolean, jsonb } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
+import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { InferModel } from "drizzle-orm";
 
+// Tabela de usuários (login)
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
-  cpf: text("cpf").notNull().unique(),
-  name: text("name").notNull(),
   password: text("password").notNull(),
-  role: text("role").default("user").notNull(),
+  name: text("name").notNull(),
+  cpf: text("cpf").notNull().unique(),
+  role: text("role").notNull(), // exemplo: 'admin', 'user'
 });
 
-export const officers = pgTable("officers", {
+// Tabela de policiais (escala)
+export const officers = pgTable("policiais", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  rank: text("rank").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Tabela de escalas atualizada para formato JSON
-export const schedules = pgTable("schedules", {
-  id: serial("id").primaryKey(),
-  operation: text("operation").notNull(),
-  year: integer("year").notNull(),
-  month: integer("month").notNull(),
-  data: jsonb("data").notNull(),
-});
+// Tipagem automática dos dados (opcional, usado no backend)
+export type User = InferModel<typeof users>;
+export type NewUser = InferModel<typeof users, "insert">;
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  cpf: true,
-  name: true,
-  password: true,
-  role: true,
-});
-
-export const insertOfficerSchema = createInsertSchema(officers).pick({
-  name: true,
-  rank: true,
-});
-
-export const insertScheduleSchema = createInsertSchema(schedules).pick({
-  operation: true,
-  year: true,
-  month: true,
-  data: true,
-});
-
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
-
-export type InsertOfficer = z.infer<typeof insertOfficerSchema>;
-export type Officer = typeof officers.$inferSelect;
-
-export type InsertSchedule = z.infer<typeof insertScheduleSchema>;
-export type Schedule = typeof schedules.$inferSelect;
+export type Officer = InferModel<typeof officers>;
+export type NewOfficer = InferModel<typeof officers, "insert">;
