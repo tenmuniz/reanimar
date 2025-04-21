@@ -327,13 +327,12 @@ function Router() {
       {user && <NavBar />}
       <main className="flex-grow container mx-auto px-4 py-6 text-white">
         <Switch>
-          <ProtectedRoute path="/" component={Home} />
-          <ProtectedRoute path="/escola-segura" component={EscolaSegura} />
-          <ProtectedRoute path="/verificador-escalas" component={VerificadorEscalas} />
-          <ProtectedRoute path="/relatorios" component={Relatorios} />
-          <Route path="/auth" component={AuthPage} />
-          <Route component={NotFound} />
-        </Switch>
+  <Route path="/" component={Home} />
+  <Route path="/escola-segura" component={EscolaSegura} />
+  <Route path="/verificador-escalas" component={VerificadorEscalas} />
+  <Route path="/relatorios" component={Relatorios} />
+  <Route component={NotFound} />
+</Switch>
       </main>
       {user && <Footer />}
       <ScrollToTop />
