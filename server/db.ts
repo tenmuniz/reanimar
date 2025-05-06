@@ -1,17 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Configuração do Supabase
-const supabaseUrl = 'https://uakdrtgabsxvuxilqepw.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2RydGdhYnN4dnV4aWxxZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY0OTA2MjcsImV4cCI6MjA2MjA2NjYyN30.FFxCUjxwtW5JfbQVLTn7pUPRUY22HFLzEHBd8-lfYI8';
+// Usar variáveis de ambiente para URLs e chaves do Supabase
+const supabaseUrl = process.env.SUPABASE_URL || "https://uakdrtgabsxvuxilqepw.supabase.co";
+const supabaseKey = process.env.SUPABASE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2RydGdhYnN4dnV4aWxxZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI2MzIwMDAsImV4cCI6MjAyNzk3NDQwMH0.FFxCUjovtw5JfbQvLTn7yUPRUYZ2HFLzEhdBd-1PYIB";
 
 // Log de conexão
-console.log('Inicializando conexão com o Supabase URL:', supabaseUrl);
+console.log(`Inicializando conexão com o Supabase URL: ${supabaseUrl}`);
+console.log(`Testando conexão com o Supabase...`);
 
 // Criar cliente Supabase
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Função para criar tabelas diretamente via API REST
-const createTablesViaRest = async () => {
+export const createTablesViaRest = async () => {
   console.log('Tentando criar tabelas via REST API...');
   
   try {
@@ -205,5 +206,3 @@ export const checkDatabase = async () => {
 
 // Executar verificação após 5 segundos
 setTimeout(checkDatabase, 5000);
-
-export { supabase };

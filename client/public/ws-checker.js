@@ -128,7 +128,6 @@
         
         console.log('Objeto WebSocket disponível como window._wsChecker');
         console.log('Você pode enviar uma mensagem com: window._wsChecker.send("sua mensagem")');
-        
       } catch (error) {
         console.error('%c❌ Erro ao criar conexão WebSocket', 'color: red; font-weight: bold');
         console.error('Detalhes:', error);
@@ -141,9 +140,9 @@
       console.log('%cSoluções para problemas com o servidor:', 'font-weight: bold');
       console.log('1. Certifique-se de que o servidor está rodando com "npm run dev"');
       console.log('2. Verifique erros nos logs do servidor, como conflitos de porta');
-      console.log('3. Execute "netstat -ano | findstr :5005" para verificar se a porta está em uso');
+      console.log('3. Execute "netstat -ano | findstr :5006" para verificar se a porta está em uso');
       console.log('4. Se a porta estiver em uso, finalize o processo com "taskkill /F /PID <PID>"');
-      console.log('5. Verifique se o firewall não está bloqueando a porta 5005');
+      console.log('5. Verifique se o firewall não está bloqueando a porta 5006');
     }
     
     // Sugestões para resolver problemas com WebSocket

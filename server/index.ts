@@ -73,8 +73,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Use PORT environment variable for Railway deployment or fallback to port 5000
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5007;
+  // Use PORT environment variable for Vercel deployment or fallback to port 5006
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5006;
   
   // Simplificando a configuração de escuta
   server.listen(port, () => {
@@ -88,7 +88,7 @@ app.use((req, res, next) => {
     if (err.code === 'EADDRINUSE') {
       log(`Port ${port} is already in use. Please configure a different PORT in environment variables.`);
     }
-    // Não encerrar o processo em produção para permitir que o Railway reinicie
+    // Não encerrar o processo em produção para permitir que o Vercel reinicie
     if (process.env.NODE_ENV !== 'production') {
       process.exit(1);
     }

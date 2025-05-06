@@ -1,12 +1,22 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-// Token aleatório gerado para identificação da sessão
-const generateToken = () => {
-  return Math.random().toString(36).substring(2, 15);
+// Função para gerar token aleatório
+const generateToken = () => Math.random().toString(36).substring(2, 15);
+
+// Determinar o host base para WebSocket (desenvolvimento vs produção)
+const getWebSocketUrl = () => {
+  // Em desenvolvimento, usar localhost
+  if (window.location.hostname === 'localhost') {
+    return `ws://localhost:5006/ws-api`;
+  }
+  
+  // Em produção (Vercel), usar o host atual mas com protocolo ws/wss
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${protocol}//${window.location.host}/ws-api`;
 };
 
 // Hook personalizado para gerenciar conexão WebSocket
-export function useWebSocket(url: string = 'ws://localhost:5007/ws-api') {
+export function useWebSocket(url: string = getWebSocketUrl()) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [messages, setMessages] = useState<any[]>([]);

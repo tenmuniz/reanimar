@@ -95,7 +95,7 @@ const WebSocketStatus = () => {
               <li>Se estiver usando HTTPS no cliente, o servidor também deve usar WSS</li>
             </ol>
           </div>
-          <div className="mt-3 flex justify-between">
+          <div className="mt-4 flex justify-end space-x-3">
             <button 
               onClick={handleReconnect}
               className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors flex items-center"
