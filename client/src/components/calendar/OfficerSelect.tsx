@@ -9,13 +9,16 @@ interface OfficerSelectProps {
   disabledOfficers: string[];
   limitReachedOfficers?: string[]; // Oficiais que atingiram o limite de 12 escalas
   onChange: (value: string | null) => void;
+  guarnicao?: string; // Propriedade para filtrar militares por guarnição (agora ignorada)
 }
 
 // Define a special placeholder constant
 const PLACEHOLDER_VALUE = "placeholder";
 
-// Função auxiliar para detectar a qual grupo um policial pertence com base no nome
-const getOfficerGroup = (officer: string): string => {
+// Função auxiliar para detectar a qual guarnição um policial pertence com base no nome ou outras características
+const getOfficerGuarnicao = (officer: string): string => {
+  if (!officer || typeof officer !== 'string') return "OUTROS";
+  
   if (officer.includes("QOPM") || officer.includes("MONTEIRO") || 
       officer.includes("VANILSON") || officer.includes("ANDRÉ") || 
       officer.includes("CUNHA") || officer.includes("CARAVELAS") || 
@@ -52,7 +55,13 @@ export default function OfficerSelect({
   disabledOfficers,
   limitReachedOfficers = [],
   onChange,
+  guarnicao = "TODOS", // Ignorado, sempre mostrará todos os militares
 }: OfficerSelectProps) {
+  // Garantir que todas as listas são arrays
+  const safeOfficers = Array.isArray(officers) ? officers : [];
+  const safeDisabledOfficers = Array.isArray(disabledOfficers) ? disabledOfficers : [];
+  const safeLimitReachedOfficers = Array.isArray(limitReachedOfficers) ? limitReachedOfficers : [];
+
   // VERIFICAÇÃO ADICIONAL DE SEGURANÇA: Garantir que nunca podemos selecionar alguém com limite atingido
   const handleChange = (value: string) => {
     // Se for o placeholder, só remove a seleção
@@ -62,7 +71,7 @@ export default function OfficerSelect({
     }
     
     // VERIFICAÇÃO CRUCIAL: Nunca permitir selecionar alguém com limite atingido
-    if (limitReachedOfficers.includes(value)) {
+    if (safeLimitReachedOfficers.includes(value)) {
       console.error(`🚫 TENTATIVA BLOQUEADA: Seleção de ${value} que já atingiu o limite de 12 serviços`);
       // Não realizar nenhuma ação - bloqueio total
       return;
@@ -72,7 +81,7 @@ export default function OfficerSelect({
     onChange(value);
   };
 
-  // Agrupando oficiais por categoria
+  // Agrupando oficiais por guarnição
   const groupedOfficers: Record<string, string[]> = {
     EXPEDIENTE: [],
     ALFA: [],
@@ -82,15 +91,19 @@ export default function OfficerSelect({
   };
 
   // Classificando cada policial em seu grupo
-  officers.forEach(officer => {
-    const group = getOfficerGroup(officer);
-    groupedOfficers[group].push(officer);
+  safeOfficers.forEach(officer => {
+    if (officer) {
+      const group = getOfficerGuarnicao(officer);
+      groupedOfficers[group].push(officer);
+    }
   });
 
   // Ordenando militares dentro de cada grupo por posto/graduação
   const sortByRank = (a: string, b: string): number => {
     const ranks = [
-      "CAP", "TEN", "SUB TEN", "1º SGT", "2º SGT", "3º SGT", "CB", "SD"
+      "CEL", "TEN CEL", "MAJ", "CAP", "1º TEN", "2º TEN", 
+      "ASP", "SUB TEN", "1º SGT", "2º SGT", "3º SGT", 
+      "CB", "SD"
     ];
     
     // Encontrar o posto/graduação de cada militar
@@ -110,38 +123,36 @@ export default function OfficerSelect({
   Object.keys(groupedOfficers).forEach(group => {
     groupedOfficers[group].sort(sortByRank);
   });
-
-  return (
-    <div className="officer-select">
-      <div className="mb-1">
-        <Label className="text-xs font-semibold text-slate-600">
-          Policial
-        </Label>
-      </div>
-      
-      {/* Exibição do policial selecionado com opção para mudar/remover */}
-      {selectedOfficer ? (
+  
+  // Criar interface de seleção apropriada baseada no estado atual
+  
+  // Se já temos um militar selecionado, mostrar apenas ele
+  if (selectedOfficer) {
+    return (
+      <div className="officer-select">
+        <div className="mb-1">
+          <Label className="text-xs font-semibold text-slate-600">
+            Policial {position + 1}
+          </Label>
+        </div>
+        
+        {/* Exibição do policial selecionado com opção para mudar/remover */}
         <div className="flex items-center">
-          <div className={`${limitReachedOfficers.includes(selectedOfficer) 
+          <div className={`${safeLimitReachedOfficers.includes(selectedOfficer) 
               ? 'bg-gradient-to-r from-red-50 to-orange-50 text-red-800 border-l-4 border-l-red-500 shadow-inner' 
               : 'bg-white text-gray-800 border-l-4 border-l-indigo-600 shadow-sm'} 
               rounded-lg px-4 py-2.5 text-sm flex-1 truncate relative overflow-hidden`}>
             {/* Efeito de brilho */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-70"></div>
             
-            {/* Barra lateral indicadora */}
-            {/* Barra lateral transformada em borda para evitar duplicação */}
-            
             <div className="relative flex items-center">
-              {/* Remover qualquer indicador de número */}
-              
-              {/* Nome do policial */}
-              <span className={`font-medium ${limitReachedOfficers.includes(selectedOfficer) ? 'line-through opacity-70' : ''}`}>
+              {/* Nome do policial com o posto/graduação destacado */}
+              <span className={`font-medium ${safeLimitReachedOfficers.includes(selectedOfficer) ? 'line-through opacity-70' : ''}`}>
                 {selectedOfficer}
               </span>
               
               {/* Badge de limite */}
-              {limitReachedOfficers.includes(selectedOfficer) && (
+              {safeLimitReachedOfficers.includes(selectedOfficer) && (
                 <span className="ml-2 bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold inline-flex items-center px-2 py-1 rounded-full shadow-sm animate-pulse">
                   <AlertTriangle className="h-3 w-3 mr-1" />
                   LIMITE ATINGIDO
@@ -165,68 +176,92 @@ export default function OfficerSelect({
             <X className="h-4 w-4 drop-shadow-sm" />
           </button>
         </div>
-      ) : (
-        <Select
-          value={selectedOfficer || PLACEHOLDER_VALUE}
-          onValueChange={handleChange}
+      </div>
+    );
+  }
+  
+  return (
+    <div className="officer-select">
+      <div className="mb-1">
+        <Label className="text-xs font-semibold text-slate-600">
+          Policial {position + 1}
+        </Label>
+      </div>
+      
+      <Select
+        value={selectedOfficer || PLACEHOLDER_VALUE}
+        onValueChange={handleChange}
+      >
+        <SelectTrigger 
+          className="w-full rounded-lg border-0 border-l-4 border-l-indigo-600 text-sm min-h-[46px] bg-white text-gray-800 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-4"
+          style={{
+            backgroundSize: '200% 100%',
+            backgroundPosition: '0 0',
+            transition: 'background-position 0.5s, box-shadow 0.3s',
+          }}
+          onMouseEnter={(e) => {
+            (e.target as HTMLElement).style.backgroundPosition = '100% 0';
+          }}
+          onMouseLeave={(e) => {
+            (e.target as HTMLElement).style.backgroundPosition = '0 0';
+          }}
         >
-          <SelectTrigger 
-            className="w-full rounded-lg border-0 border-l-4 border-l-indigo-600 text-sm min-h-[46px] bg-white text-gray-800 shadow-[0_2px_5px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.8)] hover:shadow-[0_3px_8px_rgba(59,130,246,0.15),inset_0_1px_1px_rgba(255,255,255,0.8)] transition-all duration-200 relative overflow-hidden pl-4"
-            style={{
-              backgroundSize: '200% 100%',
-              backgroundPosition: '0 0',
-              transition: 'background-position 0.5s, box-shadow 0.3s',
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.backgroundPosition = '100% 0';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.backgroundPosition = '0 0';
-            }}
+          <SelectValue placeholder="Selecione um policial" className="text-gray-700" />
+        </SelectTrigger>
+        <SelectContent 
+          className="max-h-[350px] overflow-y-auto w-[320px] bg-gradient-to-b from-slate-50 to-white border-0 shadow-lg rounded-lg p-1"
+        >
+          <SelectItem 
+            value={PLACEHOLDER_VALUE}
+            className="bg-slate-100 mb-2 rounded-md font-medium text-gray-700 flex items-center justify-center py-2"
           >
-            {/* Decoração lateral removida para evitar duplicação */}
-            
-            {/* Sem ícone decorativo */}
-            
-            <SelectValue placeholder="Selecione um policial" className="text-gray-700" />
-          </SelectTrigger>
-          <SelectContent 
-            className="max-h-[350px] overflow-y-auto w-[320px] bg-gradient-to-b from-slate-50 to-white border-0 shadow-lg rounded-lg p-1"
-          >
-            <SelectItem 
-              value={PLACEHOLDER_VALUE}
-              className="bg-slate-100 mb-2 rounded-md font-medium text-gray-700 flex items-center justify-center py-2"
-            >
-              Selecione um policial
-            </SelectItem>
-            
-            {/* AVISO DE LIMITE NO TOPO QUANDO HÁ MILITARES BLOQUEADOS */}
-            {limitReachedOfficers.length > 0 && (
-              <div className="px-4 py-3 bg-gradient-to-r from-red-50 to-yellow-50 my-2 text-sm rounded-lg shadow-inner border border-yellow-200">
-                <div className="flex items-start">
-                  <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0 animate-pulse" />
-                  <div>
-                    <p className="font-bold text-red-700 leading-tight">
-                      Alerta de Limite GCJO
-                    </p>
-                    <p className="text-yellow-800 text-xs mt-1">
-                      {limitReachedOfficers.length} {limitReachedOfficers.length === 1 ? 'militar atingiu' : 'militares atingiram'} o limite máximo de 12 escalas mensais. Estes militares estão bloqueados para novas escalas.
-                    </p>
-                  </div>
+            Selecione um policial
+          </SelectItem>
+          
+          {/* AVISO DE LIMITE NO TOPO QUANDO HÁ MILITARES BLOQUEADOS */}
+          {safeLimitReachedOfficers.length > 0 && (
+            <div className="px-4 py-3 bg-gradient-to-r from-red-50 to-yellow-50 my-2 text-sm rounded-lg shadow-inner border border-yellow-200">
+              <div className="flex items-start">
+                <AlertTriangle className="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0 animate-pulse" />
+                <div>
+                  <p className="font-bold text-red-700 leading-tight">
+                    Alerta de Limite GCJO
+                  </p>
+                  <p className="text-yellow-800 text-xs mt-1">
+                    {safeLimitReachedOfficers.length} {safeLimitReachedOfficers.length === 1 ? 'militar atingiu' : 'militares atingiram'} o limite máximo de 12 escalas mensais. Estes militares estão bloqueados para novas escalas.
+                  </p>
                 </div>
               </div>
-            )}
-            
-            {/* Grupo EXPEDIENTE */}
-            {groupedOfficers.EXPEDIENTE.length > 0 && (
-              <SelectGroup>
-                <SelectLabel className="font-bold text-blue-600 px-2 py-1 bg-blue-50 rounded-md flex items-center shadow-sm mb-1">
-                  <div className="flex-1">EXPEDIENTE</div>
-                  <div className="bg-blue-100 text-blue-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.EXPEDIENTE.length}</div>
+            </div>
+          )}
+          
+          {/* Mostrar todos os grupos com militares */}
+          {Object.entries(groupedOfficers).map(([group, officers]) => 
+            officers.length > 0 ? (
+              <SelectGroup key={group}>
+                <SelectLabel className={`font-bold ${
+                  group === "EXPEDIENTE" ? "text-blue-600 px-2 py-1 bg-blue-50" :
+                  group === "ALFA" ? "text-green-600 px-2 py-1 bg-green-50" :
+                  group === "BRAVO" ? "text-yellow-600 px-2 py-1 bg-yellow-50" :
+                  group === "CHARLIE" ? "text-red-600 px-2 py-1 bg-red-50" :
+                  "text-gray-600 px-2 py-1 bg-gray-50"
+                } rounded-md flex items-center shadow-sm mb-1`}>
+                  <div className="flex-1">{group}</div>
+                  <div className={`${
+                    group === "EXPEDIENTE" ? "bg-blue-100 text-blue-800" :
+                    group === "ALFA" ? "bg-green-100 text-green-800" :
+                    group === "BRAVO" ? "bg-yellow-100 text-yellow-800" :
+                    group === "CHARLIE" ? "bg-red-100 text-red-800" :
+                    "bg-gray-100 text-gray-800"
+                  } text-xs px-1.5 py-0.5 rounded-md`}>
+                    {/* Contagem de militares disponíveis (não-desabilitados) */}
+                    {officers.filter(o => !safeDisabledOfficers.includes(o)).length}
+                  </div>
                 </SelectLabel>
-                {groupedOfficers.EXPEDIENTE.map((officer) => {
-                  const hasReachedLimit = limitReachedOfficers.includes(officer);
-                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
+                
+                {officers.map((officer) => {
+                  const hasReachedLimit = safeLimitReachedOfficers.includes(officer);
+                  const isDisabled = safeDisabledOfficers.includes(officer) || hasReachedLimit;
                   
                   return (
                     <SelectItem
@@ -238,182 +273,26 @@ export default function OfficerSelect({
                           ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
                           : isDisabled
                             ? "bg-slate-100 opacity-60"
-                            : "hover:bg-blue-50 border-l-2 border-blue-300 pl-3"
+                            : group === "EXPEDIENTE" 
+                              ? "hover:bg-blue-50 border-l-2 border-blue-300 pl-3" 
+                              : group === "ALFA" 
+                                ? "hover:bg-green-50 border-l-2 border-green-300 pl-3"
+                                : group === "BRAVO"
+                                  ? "hover:bg-yellow-50 border-l-2 border-yellow-300 pl-3"
+                                  : group === "CHARLIE"
+                                    ? "hover:bg-red-50 border-l-2 border-red-300 pl-3"
+                                    : "hover:bg-gray-50 border-l-2 border-gray-300 pl-3"
                       }`}
                     >
-                      <div className="flex items-center justify-between w-full">
-                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
-                        {hasReachedLimit && (
-                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-0.5" />
-                            12+
-                          </span>
-                        )}
-                      </div>
+                      {officer}
                     </SelectItem>
                   );
                 })}
               </SelectGroup>
-            )}
-            
-            {/* Grupo ALFA */}
-            {groupedOfficers.ALFA.length > 0 && (
-              <SelectGroup>
-                <SelectLabel className="font-bold text-yellow-600 px-2 py-1 bg-yellow-50 rounded-md flex items-center shadow-sm mb-1">
-                  <div className="flex-1">ALFA</div>
-                  <div className="bg-yellow-100 text-yellow-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.ALFA.length}</div>
-                </SelectLabel>
-                {groupedOfficers.ALFA.map((officer) => {
-                  const hasReachedLimit = limitReachedOfficers.includes(officer);
-                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
-                  
-                  return (
-                    <SelectItem
-                      key={officer}
-                      value={officer}
-                      disabled={isDisabled}
-                      className={`mb-1 rounded-md transition-all duration-200 ${
-                        hasReachedLimit 
-                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
-                          : isDisabled
-                            ? "bg-slate-100 opacity-60"
-                            : "hover:bg-yellow-50 border-l-2 border-yellow-300 pl-3"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
-                        {hasReachedLimit && (
-                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-0.5" />
-                            12+
-                          </span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            )}
-            
-            {/* Grupo BRAVO */}
-            {groupedOfficers.BRAVO.length > 0 && (
-              <SelectGroup>
-                <SelectLabel className="font-bold text-green-600 px-2 py-1 bg-green-50 rounded-md flex items-center shadow-sm mb-1">
-                  <div className="flex-1">BRAVO</div>
-                  <div className="bg-green-100 text-green-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.BRAVO.length}</div>
-                </SelectLabel>
-                {groupedOfficers.BRAVO.map((officer) => {
-                  const hasReachedLimit = limitReachedOfficers.includes(officer);
-                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
-                  
-                  return (
-                    <SelectItem
-                      key={officer}
-                      value={officer}
-                      disabled={isDisabled}
-                      className={`mb-1 rounded-md transition-all duration-200 ${
-                        hasReachedLimit 
-                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
-                          : isDisabled
-                            ? "bg-slate-100 opacity-60"
-                            : "hover:bg-green-50 border-l-2 border-green-300 pl-3"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
-                        {hasReachedLimit && (
-                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-0.5" />
-                            12+
-                          </span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            )}
-            
-            {/* Grupo CHARLIE */}
-            {groupedOfficers.CHARLIE.length > 0 && (
-              <SelectGroup>
-                <SelectLabel className="font-bold text-cyan-600 px-2 py-1 bg-cyan-50 rounded-md flex items-center shadow-sm mb-1">
-                  <div className="flex-1">CHARLIE</div>
-                  <div className="bg-cyan-100 text-cyan-800 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.CHARLIE.length}</div>
-                </SelectLabel>
-                {groupedOfficers.CHARLIE.map((officer) => {
-                  const hasReachedLimit = limitReachedOfficers.includes(officer);
-                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
-                  
-                  return (
-                    <SelectItem
-                      key={officer}
-                      value={officer}
-                      disabled={isDisabled}
-                      className={`mb-1 rounded-md transition-all duration-200 ${
-                        hasReachedLimit 
-                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
-                          : isDisabled
-                            ? "bg-slate-100 opacity-60"
-                            : "hover:bg-cyan-50 border-l-2 border-cyan-300 pl-3"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
-                        {hasReachedLimit && (
-                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-0.5" />
-                            12+
-                          </span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            )}
-            
-            {/* Outros militares que não se encaixam em nenhum grupo */}
-            {groupedOfficers.OUTROS.length > 0 && (
-              <SelectGroup>
-                <SelectLabel className="font-bold text-slate-600 px-2 py-1 bg-slate-100 rounded-md flex items-center shadow-sm mb-1">
-                  <div className="flex-1">OUTROS</div>
-                  <div className="bg-slate-200 text-slate-700 text-xs px-1.5 py-0.5 rounded-md">{groupedOfficers.OUTROS.length}</div>
-                </SelectLabel>
-                {groupedOfficers.OUTROS.map((officer) => {
-                  const hasReachedLimit = limitReachedOfficers.includes(officer);
-                  const isDisabled = disabledOfficers.includes(officer) || hasReachedLimit;
-                  
-                  return (
-                    <SelectItem
-                      key={officer}
-                      value={officer}
-                      disabled={isDisabled}
-                      className={`mb-1 rounded-md transition-all duration-200 ${
-                        hasReachedLimit 
-                          ? "bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 pl-3 line-through opacity-80" 
-                          : isDisabled
-                            ? "bg-slate-100 opacity-60"
-                            : "hover:bg-slate-50 border-l-2 border-slate-300 pl-3"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className={hasReachedLimit ? "text-red-800" : ""}>{officer}</span>
-                        {hasReachedLimit && (
-                          <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-0.5" />
-                            12+
-                          </span>
-                        )}
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            )}
-          </SelectContent>
-        </Select>
-      )}
+            ) : null
+          )}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

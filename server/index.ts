@@ -74,14 +74,11 @@ app.use((req, res, next) => {
   }
 
   // Use PORT environment variable for Railway deployment or fallback to port 5000
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5007;
   
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`Server is running on port ${port}`);
+  // Simplificando a configuração de escuta
+  server.listen(port, () => {
+    log(`Server is running on http://localhost:${port}`);
     log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
   

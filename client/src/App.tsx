@@ -2,15 +2,18 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { Shield, BookOpen, Calendar, ArrowUp, AlertCircle, BarChart4, User, Database } from "lucide-react";
+import { Shield, BookOpen, Calendar, ArrowUp, AlertCircle, BarChart4, User, Database, Users, Settings } from "lucide-react";
 import brasaoCipm from "./assets/brasao-cipm.jpg";
 import Home from "@/pages/home";
 import EscolaSegura from "@/pages/escola-segura";
 import VerificadorEscalas from "@/pages/verificador-escalas";
 import Relatorios from "@/pages/relatorios";
+import Escala from "@/pages/escala";
+import AdminPage from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 import ConflictCounter from "@/components/calendar/ConflictCounter";
 import ConflictBadge from "@/components/calendar/ConflictBadge";
+import WebSocketStatus from "@/components/WebSocketStatus";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -74,10 +77,12 @@ function NavBar() {
           <div className="flex items-center space-x-1">
             <NavLink href="/" icon={<Shield />} text="Polícia Mais Forte" active={location === "/"} />
             <NavLink href="/escola-segura" icon={<BookOpen />} text="Escola Segura" active={location === "/escola-segura"} />
+            <NavLink href="/escala" icon={<Users />} text="Escala" active={location === "/escala"} />
             <NavLink href="/verificador-escalas" icon={<AlertCircle />} text="Verificador" active={location === "/verificador-escalas"}>
               <ConflictBadge className="z-10" />
             </NavLink>
             <NavLink href="/relatorios" icon={<BarChart4 />} text="Relatórios" active={location === "/relatorios"} />
+            <NavLink href="/admin" icon={<Settings />} text="Admin" active={location === "/admin"} />
           </div>
         </nav>
       </div>
@@ -145,13 +150,16 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/escola-segura" component={EscolaSegura} />
+          <Route path="/escala" component={Escala} />
           <Route path="/verificador-escalas" component={VerificadorEscalas} />
           <Route path="/relatorios" component={Relatorios} />
+          <Route path="/admin" component={AdminPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
       <Footer />
       <ScrollToTop />
+      <WebSocketStatus />
     </div>
   );
 }

@@ -1,7 +1,5 @@
 // Importações necessárias
-import { db } from './db';
-import { and, eq } from 'drizzle-orm';
-import { users, officers, schedules, type User, type InsertUser, type Officer, type InsertOfficer } from '@shared/schema';
+import { supabase } from './db';
 
 // Interface de armazenamento
 export interface IStorage {
@@ -17,6 +15,35 @@ export interface IStorage {
   saveSchedule(operation: string, year: number, month: number, data: any): Promise<void>;
   getSchedule(operation: string, year: number, month: number): Promise<any>;
   getCombinedSchedules(year: number, month: number): Promise<any>;
+}
+
+// Define interfaces para os modelos
+export interface User {
+  id: number;
+  username: string;
+  password: string;
+  name: string;
+  cpf: string;
+  email?: string;
+}
+
+export interface InsertUser {
+  username: string;
+  password: string;
+  name: string;
+  cpf: string;
+  email?: string;
+}
+
+export interface Officer {
+  id: number;
+  name: string;
+  rank: string;
+}
+
+export interface InsertOfficer {
+  name: string;
+  rank: string;
 }
 
 // Implementação com armazenamento em memória
@@ -150,7 +177,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Implementação com banco de dados PostgreSQL
+// Implementação com o Supabase
 export class DatabaseStorage implements IStorage {
   // Armazena mapeamentos entre IDs internos usados no aplicativo e UUIDs do banco de dados
   private userIdMap: Map<number, string> = new Map();
@@ -164,63 +191,69 @@ export class DatabaseStorage implements IStorage {
     // Se temos o mapeamento do ID, use-o para buscar diretamente
     const dbId = this.userIdMap.get(id);
     if (dbId) {
-      const [user] = await db.select().from(users).where(eq(users.id, parseInt(dbId)));
-      if (user) return { ...user, id };
+      const { data } = await supabase.from('users').select().eq('id', parseInt(dbId));
+      if (data && data.length > 0) return { ...data[0], id };
     }
     
     // Fallback: buscar todos os usuários e usar o primeiro
-    const allUsers = await db.select().from(users);
-    if (allUsers.length > 0) {
+    const { data } = await supabase.from('users').select();
+    if (data && data.length > 0) {
       // Armazenar o mapeamento para próximas consultas
-      this.userIdMap.set(id, allUsers[0].id.toString());
-      return { ...allUsers[0], id };
+      this.userIdMap.set(id, data[0].id.toString());
+      return { ...data[0], id };
     }
     
     return undefined;
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    if (user) {
+    const { data } = await supabase.from('users').select().eq('username', username);
+    if (data && data.length > 0) {
       const internalId = 1; // Para simplificar, usamos ID 1 para o usuário
-      this.userIdMap.set(internalId, user.id.toString());
-      return { ...user, id: internalId };
+      this.userIdMap.set(internalId, data[0].id.toString());
+      return { ...data[0], id: internalId };
     }
     return undefined;
   }
   
   async getUserByCpf(cpf: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.cpf, cpf));
-    if (user) {
+    const { data } = await supabase.from('users').select().eq('cpf', cpf);
+    if (data && data.length > 0) {
       const internalId = 1; // Para simplificar, usamos ID 1 para o usuário
-      this.userIdMap.set(internalId, user.id.toString());
-      return { ...user, id: internalId };
+      this.userIdMap.set(internalId, data[0].id.toString());
+      return { ...data[0], id: internalId };
     }
     return undefined;
   }
   
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    const { data, error } = await supabase.from('users').insert(insertUser).select();
+    if (error) throw error;
+    
     const internalId = 1;
-    this.userIdMap.set(internalId, user.id.toString());
-    return { ...user, id: internalId };
+    this.userIdMap.set(internalId, data[0].id.toString());
+    return { ...data[0], id: internalId };
   }
   
   async getAllOfficers(): Promise<Officer[]> {
     // Verificar se já temos oficiais no banco de dados
-    const existingOfficers = await db.select().from(officers);
+    const { data: existingOfficers } = await supabase.from('militares').select();
     
     // Se não temos oficiais, inicializar com a lista padrão
-    if (existingOfficers.length === 0) {
+    if (!existingOfficers || existingOfficers.length === 0) {
       await this.initializeOfficers();
       return this.getAllOfficers(); // Chamar novamente após inicialização
     }
     
-    // Mapear oficiais para o formato esperado pela aplicação
-    return existingOfficers.map((officer, index) => {
+    // Mapear militares para o formato esperado pela aplicação (Officer)
+    return existingOfficers.map((militar, index) => {
       const internalId = index + 1;
-      this.officerIdMap.set(internalId, officer.id.toString());
-      return { ...officer, id: internalId };
+      this.officerIdMap.set(internalId, militar.id.toString());
+      return { 
+        id: internalId, 
+        name: militar.nome, 
+        rank: militar.patente || militar.guarnicao || "OUTROS" 
+      };
     });
   }
   
@@ -228,56 +261,62 @@ export class DatabaseStorage implements IStorage {
     // Lista de oficiais a serem inicializados no banco
     const defaultOfficers = [
       // Oficiais - EXPEDIENTE
-      { name: "CAP QOPM MUNIZ", rank: "EXPEDIENTE" },
-      { name: "1º TEN QOPM MONTEIRO", rank: "EXPEDIENTE" },
-      { name: "TEN VANILSON", rank: "EXPEDIENTE" },
-      { name: "SUB TEN ANDRÉ", rank: "EXPEDIENTE" },
-      { name: "3º SGT PM CUNHA", rank: "EXPEDIENTE" },
-      { name: "3º SGT PM CARAVELAS", rank: "EXPEDIENTE" },
-      { name: "CB PM TONI", rank: "EXPEDIENTE" },
-      { name: "SD PM S. CORREA", rank: "EXPEDIENTE" },
-      { name: "SD PM RODRIGUES", rank: "EXPEDIENTE" },
-      { name: "2º SGT PM A. TAVARES", rank: "EXPEDIENTE" },
+      { nome: "CAP QOPM MUNIZ", patente: "CAP", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "1º TEN QOPM MONTEIRO", patente: "1º TEN", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "TEN VANILSON", patente: "TEN", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "SUB TEN ANDRÉ", patente: "SUB TEN", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "3º SGT PM CUNHA", patente: "3º SGT", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "3º SGT PM CARAVELAS", patente: "3º SGT", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "CB PM TONI", patente: "CB", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "SD PM S. CORREA", patente: "SD", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "SD PM RODRIGUES", patente: "SD", guarnicao: "EXPEDIENTE", ativo: true },
+      { nome: "2º SGT PM A. TAVARES", patente: "2º SGT", guarnicao: "EXPEDIENTE", ativo: true },
       
       // Grupo ALFA
-      { name: "2º SGT PM PEIXOTO", rank: "ALFA" },
-      { name: "3º SGT PM RODRIGO", rank: "ALFA" },
-      { name: "3º SGT PM LEDO", rank: "ALFA" },
-      { name: "3º SGT PM NUNES", rank: "ALFA" },
-      { name: "3º SGT AMARAL", rank: "ALFA" },
-      { name: "CB CARLA", rank: "ALFA" },
-      { name: "CB PM FELIPE", rank: "ALFA" },
-      { name: "CB PM BARROS", rank: "ALFA" },
-      { name: "CB PM A. SILVA", rank: "ALFA" },
-      { name: "SD PM LUAN", rank: "ALFA" },
-      { name: "SD PM NAVARRO", rank: "ALFA" },
+      { nome: "2º SGT PM PEIXOTO", patente: "2º SGT", guarnicao: "ALFA", ativo: true },
+      { nome: "3º SGT PM RODRIGO", patente: "3º SGT", guarnicao: "ALFA", ativo: true },
+      { nome: "3º SGT PM LEDO", patente: "3º SGT", guarnicao: "ALFA", ativo: true },
+      { nome: "3º SGT PM NUNES", patente: "3º SGT", guarnicao: "ALFA", ativo: true },
+      { nome: "3º SGT AMARAL", patente: "3º SGT", guarnicao: "ALFA", ativo: true },
+      { nome: "CB CARLA", patente: "CB", guarnicao: "ALFA", ativo: true },
+      { nome: "CB PM FELIPE", patente: "CB", guarnicao: "ALFA", ativo: true },
+      { nome: "CB PM BARROS", patente: "CB", guarnicao: "ALFA", ativo: true },
+      { nome: "CB PM A. SILVA", patente: "CB", guarnicao: "ALFA", ativo: true },
+      { nome: "SD PM LUAN", patente: "SD", guarnicao: "ALFA", ativo: true },
+      { nome: "SD PM NAVARRO", patente: "SD", guarnicao: "ALFA", ativo: true },
       
       // Grupo BRAVO
-      { name: "1º SGT PM OLIMAR", rank: "BRAVO" },
-      { name: "2º SGT PM FÁBIO", rank: "BRAVO" },
-      { name: "3º SGT PM ANA CLEIDE", rank: "BRAVO" },
-      { name: "3º SGT PM GLEIDSON", rank: "BRAVO" },
-      { name: "3º SGT PM CARLOS EDUARDO", rank: "BRAVO" },
-      { name: "3º SGT PM NEGRÃO", rank: "BRAVO" },
-      { name: "CB PM BRASIL", rank: "BRAVO" },
-      { name: "SD PM MARVÃO", rank: "BRAVO" },
-      { name: "SD PM IDELVAN", rank: "BRAVO" },
+      { nome: "1º SGT PM OLIMAR", patente: "1º SGT", guarnicao: "BRAVO", ativo: true },
+      { nome: "2º SGT PM FÁBIO", patente: "2º SGT", guarnicao: "BRAVO", ativo: true },
+      { nome: "3º SGT PM ANA CLEIDE", patente: "3º SGT", guarnicao: "BRAVO", ativo: true },
+      { nome: "3º SGT PM GLEIDSON", patente: "3º SGT", guarnicao: "BRAVO", ativo: true },
+      { nome: "3º SGT PM CARLOS EDUARDO", patente: "3º SGT", guarnicao: "BRAVO", ativo: true },
+      { nome: "3º SGT PM NEGRÃO", patente: "3º SGT", guarnicao: "BRAVO", ativo: true },
+      { nome: "CB PM BRASIL", patente: "CB", guarnicao: "BRAVO", ativo: true },
+      { nome: "SD PM MARVÃO", patente: "SD", guarnicao: "BRAVO", ativo: true },
+      { nome: "SD PM IDELVAN", patente: "SD", guarnicao: "BRAVO", ativo: true },
       
       // Grupo CHARLIE
-      { name: "2º SGT PM PINHEIRO", rank: "CHARLIE" },
-      { name: "3º SGT PM RAFAEL", rank: "CHARLIE" },
-      { name: "CB PM MIQUEIAS", rank: "CHARLIE" },
-      { name: "CB PM M. PAIXÃO", rank: "CHARLIE" },
-      { name: "SD PM CHAGAS", rank: "CHARLIE" },
-      { name: "SD PM CARVALHO", rank: "CHARLIE" },
-      { name: "SD PM GOVEIA", rank: "CHARLIE" },
-      { name: "SD PM ALMEIDA", rank: "CHARLIE" },
-      { name: "SD PM PATRIK", rank: "CHARLIE" },
-      { name: "SD PM GUIMARÃES", rank: "CHARLIE" }
+      { nome: "2º SGT PM PINHEIRO", patente: "2º SGT", guarnicao: "CHARLIE", ativo: true },
+      { nome: "3º SGT PM RAFAEL", patente: "3º SGT", guarnicao: "CHARLIE", ativo: true },
+      { nome: "CB PM MIQUEIAS", patente: "CB", guarnicao: "CHARLIE", ativo: true },
+      { nome: "CB PM M. PAIXÃO", patente: "CB", guarnicao: "CHARLIE", ativo: true },
+      { nome: "SD PM CHAGAS", patente: "SD", guarnicao: "CHARLIE", ativo: true },
+      { nome: "SD PM CARVALHO", patente: "SD", guarnicao: "CHARLIE", ativo: true },
+      { nome: "SD PM GOVEIA", patente: "SD", guarnicao: "CHARLIE", ativo: true },
+      { nome: "SD PM ALMEIDA", patente: "SD", guarnicao: "CHARLIE", ativo: true },
+      { nome: "SD PM PATRIK", patente: "SD", guarnicao: "CHARLIE", ativo: true },
+      { nome: "SD PM GUIMARÃES", patente: "SD", guarnicao: "CHARLIE", ativo: true }
     ];
     
-    // Inserir todos os oficiais no banco de dados
-    await db.insert(officers).values(defaultOfficers);
+    // Inserir todos os oficiais no banco de dados como militares
+    console.log('Inicializando militares no Supabase...');
+    const { error } = await supabase.from('militares').insert(defaultOfficers);
+    if (error) {
+      console.error('Erro ao inserir militares:', error);
+    } else {
+      console.log('Militares inicializados com sucesso!');
+    }
   }
   
   async getOfficer(id: number): Promise<Officer | undefined> {
@@ -289,40 +328,92 @@ export class DatabaseStorage implements IStorage {
       return this.getOfficer(id); // Tentar novamente após buscar todos
     }
     
-    // Buscar o oficial pelo ID do banco
-    const [officer] = await db.select().from(officers).where(eq(officers.id, parseInt(dbId)));
-    if (officer) return { ...officer, id };
+    // Buscar o militar pelo ID do banco
+    const { data } = await supabase.from('militares').select().eq('id', dbId);
+    if (data && data.length > 0) {
+      const militar = data[0];
+      return { 
+        id, 
+        name: militar.nome, 
+        rank: militar.patente || militar.guarnicao || "OUTROS" 
+      };
+    }
     
     return undefined;
   }
   
   async createOfficer(insertOfficer: InsertOfficer): Promise<Officer> {
-    const [officer] = await db.insert(officers).values(insertOfficer).returning();
-    const internalId = (await this.getAllOfficers()).length + 1;
-    this.officerIdMap.set(internalId, officer.id.toString());
-    return { ...officer, id: internalId };
+    // Converter formato Officer para Militar
+    const militar = {
+      nome: insertOfficer.name,
+      patente: insertOfficer.rank || "",
+      guarnicao: this.getGuarnicaoFromNome(insertOfficer.name),
+      ativo: true
+    };
+    
+    const { data, error } = await supabase.from('militares').insert(militar).select();
+    if (error) throw error;
+    
+    const officers = await this.getAllOfficers();
+    const internalId = officers.length + 1;
+    this.officerIdMap.set(internalId, data[0].id.toString());
+    
+    return { 
+      id: internalId, 
+      name: data[0].nome, 
+      rank: data[0].patente || data[0].guarnicao || "OUTROS" 
+    };
+  }
+  
+  // Função auxiliar para identificar a guarnição
+  private getGuarnicaoFromNome(nome: string): string {
+    if (nome.includes("QOPM") || nome.includes("MONTEIRO") || 
+        nome.includes("VANILSON") || nome.includes("ANDRÉ") || 
+        nome.includes("CUNHA") || nome.includes("CARAVELAS") || 
+        nome.includes("TONI") || nome.includes("CORREA") || 
+        nome.includes("RODRIGUES") || nome.includes("TAVARES")) {
+      return "EXPEDIENTE";
+    } else if (nome.includes("PEIXOTO") || nome.includes("RODRIGO") || 
+               nome.includes("LEDO") || nome.includes("NUNES") || 
+               nome.includes("AMARAL") || nome.includes("CARLA") || 
+               nome.includes("FELIPE") || nome.includes("BARROS") || 
+               nome.includes("A. SILVA") || nome.includes("LUAN") || 
+               nome.includes("NAVARRO")) {
+      return "ALFA";
+    } else if (nome.includes("OLIMAR") || nome.includes("FÁBIO") || 
+               nome.includes("ANA CLEIDE") || nome.includes("GLEIDSON") || 
+               nome.includes("CARLOS EDUARDO") || nome.includes("NEGRÃO") || 
+               nome.includes("BRASIL") || nome.includes("MARVÃO") || 
+               nome.includes("IDELVAN")) {
+      return "BRAVO";
+    } else if (nome.includes("PINHEIRO") || nome.includes("RAFAEL") || 
+               nome.includes("MIQUEIAS") || nome.includes("M. PAIXÃO") || 
+               nome.includes("CHAGAS") || nome.includes("CARVALHO") || 
+               nome.includes("GOVEIA") || nome.includes("ALMEIDA") || 
+               nome.includes("PATRIK") || nome.includes("GUIMARÃES")) {
+      return "CHARLIE";
+    }
+    return "OUTROS";
   }
   
   async saveSchedule(operation: string, year: number, month: number, data: any): Promise<void> {
     // Verificar se já existe uma escala para esta operação/ano/mês
-    const [existingSchedule] = await db.select()
-      .from(schedules)
-      .where(
-        and(
-          eq(schedules.operation, operation),
-          eq(schedules.year, year),
-          eq(schedules.month, month)
-        )
-      );
+    const { data: existingSchedules } = await supabase
+      .from('schedules')
+      .select()
+      .eq('operation', operation)
+      .eq('year', year)
+      .eq('month', month);
     
-    if (existingSchedule) {
+    if (existingSchedules && existingSchedules.length > 0) {
       // Atualizar escala existente
-      await db.update(schedules)
-        .set({ data: JSON.stringify(data) })
-        .where(eq(schedules.id, existingSchedule.id));
+      await supabase
+        .from('schedules')
+        .update({ data: JSON.stringify(data) })
+        .eq('id', existingSchedules[0].id);
     } else {
       // Inserir nova escala
-      await db.insert(schedules).values({
+      await supabase.from('schedules').insert({
         operation,
         year,
         month,
@@ -333,17 +424,16 @@ export class DatabaseStorage implements IStorage {
   
   async getSchedule(operation: string, year: number, month: number): Promise<any> {
     try {
-      const [schedule] = await db.select()
-        .from(schedules)
-        .where(
-          and(
-            eq(schedules.operation, operation),
-            eq(schedules.year, year),
-            eq(schedules.month, month)
-          )
-        );
+      const { data: schedules } = await supabase
+        .from('schedules')
+        .select()
+        .eq('operation', operation)
+        .eq('year', year)
+        .eq('month', month);
       
-      if (!schedule) return {};
+      if (!schedules || schedules.length === 0 || !schedules[0].data) return {};
+      
+      const schedule = schedules[0];
       
       // Tratar dados possivelmente mal formatados
       let scheduleData = {};
@@ -378,17 +468,16 @@ export class DatabaseStorage implements IStorage {
   private async getStoredScheduleData(operation: string, year: number, month: number): Promise<any> {
     try {
       // Buscar dados da escala no banco
-      const [schedule] = await db.select()
-        .from(schedules)
-        .where(
-          and(
-            eq(schedules.operation, operation),
-            eq(schedules.year, year),
-            eq(schedules.month, month)
-          )
-        );
+      const { data: schedules } = await supabase
+        .from('schedules')
+        .select()
+        .eq('operation', operation)
+        .eq('year', year)
+        .eq('month', month);
       
-      if (!schedule || !schedule.data) return {};
+      if (!schedules || schedules.length === 0 || !schedules[0].data) return {};
+      
+      const schedule = schedules[0];
       
       // Processar dados para garantir formato correto
       let parsedData = schedule.data;
@@ -418,30 +507,24 @@ export class DatabaseStorage implements IStorage {
   async getCombinedSchedules(year: number, month: number): Promise<any> {
     try {
       // Buscar a escala PMF
-      const pmfSchedules = await db.select()
-        .from(schedules)
-        .where(
-          and(
-            eq(schedules.operation, 'pmf'),
-            eq(schedules.year, year),
-            eq(schedules.month, month)
-          )
-        );
+      const { data: pmfSchedules } = await supabase
+        .from('schedules')
+        .select()
+        .eq('operation', 'pmf')
+        .eq('year', year)
+        .eq('month', month);
       
       // Buscar a escala Escola Segura
-      const escolaSeguraSchedules = await db.select()
-        .from(schedules)
-        .where(
-          and(
-            eq(schedules.operation, 'escolaSegura'),
-            eq(schedules.year, year),
-            eq(schedules.month, month)
-          )
-        );
+      const { data: escolaSeguraSchedules } = await supabase
+        .from('schedules')
+        .select()
+        .eq('operation', 'escolaSegura')
+        .eq('year', year)
+        .eq('month', month);
       
       // Extrair os dados ou usar objeto vazio se não houver nada
-      const pmfSchedule = pmfSchedules.length > 0 ? pmfSchedules[0] : null;
-      const escolaSeguraSchedule = escolaSeguraSchedules.length > 0 ? escolaSeguraSchedules[0] : null;
+      const pmfSchedule = pmfSchedules && pmfSchedules.length > 0 ? pmfSchedules[0] : null;
+      const escolaSeguraSchedule = escolaSeguraSchedules && escolaSeguraSchedules.length > 0 ? escolaSeguraSchedules[0] : null;
       
       // Tratar dados possivelmente mal formatados
       let pmfData = {};

@@ -34,11 +34,19 @@ export function getWeekdayName(day: number, month: number, year: number): string
   return weekdayNames[date.getDay()];
 }
 
-export function getWeekdayClass(weekday: string): string {
-  if (weekday === "Domingo") {
-    return "bg-blue-100 text-blue-800";
+export function getWeekdayClass(weekday: string): { border: string; background: string; badge: string } {
+  if (weekday === "Sáb" || weekday === "Dom") {
+    return {
+      border: "border-l-amber-500 border-l-4",
+      background: "bg-gradient-to-r from-amber-500/80 to-orange-600/60",
+      badge: "bg-amber-600/20 text-white border-amber-300/20"
+    };
   }
-  return "bg-gray-200 text-gray-800";
+  return {
+    border: "border-l-blue-500 border-l-4",
+    background: "bg-gradient-to-r from-blue-600/80 to-indigo-700/70",
+    badge: "bg-blue-600/20 text-white border-blue-300/20"
+  };
 }
 
 export function getLocalStorageSchedule(key: string): Record<string, Record<string, (string | null)[]>> {
@@ -48,6 +56,13 @@ export function getLocalStorageSchedule(key: string): Record<string, Record<stri
 
 export function saveLocalStorageSchedule(key: string, data: Record<string, Record<string, (string | null)[]>>): void {
   localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Função para obter a lista de militares do localStorage
+export function getLocalStorageMilitares(): string[] {
+  // Importar a classe MilitarStorage diretamente para evitar dependência circular
+  const { MilitarStorage } = require('./storage');
+  return MilitarStorage.getActiveMilitarNames();
 }
 
 /**
