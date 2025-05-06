@@ -1,16 +1,21 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "server/index.ts", "use": "@vercel/node" },
-    { "src": "client/**", "use": "@vercel/static-build", "config": { "distDir": "client/dist" } }
+  "buildCommand": "npm run build",
+  "outputDirectory": "client/dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/ws-api", "destination": "/ws-api" },
+    { "source": "/health", "destination": "/health" },
+    { "source": "/(.*)", "destination": "/" }
   ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "server/index.ts" },
-    { "src": "/ws-api", "dest": "server/index.ts" },
-    { "src": "/health", "dest": "server/index.ts" },
-    { "src": "/(.*)", "dest": "/client/dist/$1" }
-  ],
+  "functions": {
+    "api/**": {
+      "memory": 1024
+    }
+  },
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "PORT": "5006"
   }
 } 
