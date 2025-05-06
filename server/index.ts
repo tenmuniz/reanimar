@@ -5,6 +5,9 @@ import { setupVite, serveStatic, log } from "./vite";
 // Obter configurações do ambiente
 const isProd = process.env.NODE_ENV === 'production';
 
+// Definir porta padrão explicitamente
+process.env.PORT = process.env.PORT || "5006";
+
 const app = express();
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: false, limit: '2mb' }));
@@ -74,7 +77,7 @@ app.use((req, res, next) => {
   }
 
   // Use PORT environment variable for Vercel deployment or fallback to port 5006
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5006;
+  const port = parseInt(process.env.PORT || "5006", 10);
   
   // Simplificando a configuração de escuta
   server.listen(port, () => {

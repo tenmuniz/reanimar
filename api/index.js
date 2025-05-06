@@ -3,6 +3,9 @@ import express from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 
+// Definir porta padrão explicitamente
+process.env.PORT = process.env.PORT || "5006";
+
 // Importar configurações do Supabase
 const supabaseUrl = process.env.SUPABASE_URL || "https://uakdrtgabsxvuxilqepw.supabase.co";
 const supabaseKey = process.env.SUPABASE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVha2RydGdhYnN4dnV4aWxxZXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI2MzIwMDAsImV4cCI6MjAyNzk3NDQwMH0.FFxCUjovtw5JfbQvLTn7yUPRUYZ2HFLzEhdBd-1PYIB";
@@ -81,7 +84,7 @@ app.get("/api/officers", async (req, res) => {
 });
 
 // Definir porta e iniciar servidor
-const port = process.env.PORT || 5006;
+const port = parseInt(process.env.PORT || "5006", 10);
 server.listen(port, () => {
   console.log(`Servidor API está rodando na porta ${port}`);
 });
