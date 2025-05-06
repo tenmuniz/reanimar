@@ -113,4 +113,61 @@ Este projeto é licenciado sob [incluir licença]
 ## Contato
 
 Para questões ou suporte, entre em contato com:
-[Incluir informações de contato] 
+[Incluir informações de contato]
+
+## Configuração para Deploy no Vercel
+
+Para configurar corretamente o projeto no Vercel, siga estas etapas:
+
+1. Crie um novo projeto no Vercel e conecte ao repositório GitHub
+2. Configure as seguintes variáveis de ambiente no projeto Vercel:
+
+```
+SUPABASE_URL=https://seuprojetosupabase.supabase.co
+SUPABASE_KEY=sua_chave_anon_aqui
+PORT=5006
+```
+
+3. Certifique-se de que seu arquivo `vercel.json` contenha a configuração adequada para o servidor:
+
+```json
+{
+  "version": 2,
+  "builds": [
+    { "src": "server/index.ts", "use": "@vercel/node" },
+    { "src": "client/package.json", "use": "@vercel/static-build", "config": { "distDir": "build" } }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "server/index.ts" },
+    { "src": "/ws-api", "dest": "server/index.ts" },
+    { "src": "/(.*)", "dest": "client/build/$1" }
+  ]
+}
+```
+
+4. Adicione uma configuração específica para WebSockets no Vercel, se necessário (consulte a documentação do Vercel para mais detalhes)
+
+## Desenvolvimento Local
+
+Para executar o projeto localmente:
+
+1. Clone o repositório
+2. Instale as dependências:
+```bash
+npm install
+```
+3. Crie um arquivo `.env` na raiz do projeto com as variáveis necessárias
+4. Execute o servidor de desenvolvimento:
+```bash
+npm run dev
+```
+
+## Solução de Problemas do WebSocket
+
+Se encontrar erros na conexão WebSocket:
+
+1. Verifique se o servidor está rodando na porta 5006
+2. Certifique-se de que não há outros processos usando a mesma porta
+3. Se estiver usando HTTPS no cliente, a conexão WebSocket deve usar WSS
+4. Verifique as configurações de CORS no servidor
+5. Em produção no Vercel, certifique-se de que as rotas estão configuradas corretamente 
