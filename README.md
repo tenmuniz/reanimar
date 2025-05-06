@@ -95,6 +95,57 @@ Para instruções detalhadas sobre a configuração do Supabase, consulte o arqu
 - Restrição para dias letivos
 - Limite de 2 policiais por dia
 
+## Configuração para Deploy no Vercel
+
+Para configurar corretamente o projeto no Vercel, siga estas etapas:
+
+1. **Preparação do projeto no GitHub:**
+   - Certifique-se de que seu código esteja atualizado e funcionando localmente
+   - Verifique se o arquivo `vercel.json` está na raiz do projeto
+   - Confirme que `api/index.js` existe para o serverless
+
+2. **No dashboard do Vercel:**
+   - Crie um novo projeto e conecte ao repositório GitHub
+   - Na configuração de build, use as seguintes configurações:
+     - Framework: Vite
+     - Build Command: `npm run vercel-build`
+     - Output Directory: `client/dist`
+
+3. **Configure as variáveis de ambiente no Vercel:**
+   ```
+   SUPABASE_URL=https://seuprojetosupabase.supabase.co
+   SUPABASE_KEY=sua_chave_anon_aqui
+   PORT=5006
+   NODE_ENV=production
+   ```
+
+4. **Para habilitar WebSockets no Vercel:**
+   - No dashboard do Vercel, vá em Configurações do Projeto > Funções
+   - Ative a opção "WebSockets" (pode exigir um plano pago)
+
+5. **Faça o deploy:**
+   - Após as configurações, clique em "Deploy" no dashboard
+   - Vercel compilará automaticamente o frontend e configurará o serverless
+
+## Solução de Problemas do WebSocket
+
+Se encontrar erros na conexão WebSocket:
+
+1. Verifique se o servidor está rodando na porta 5006
+2. Certifique-se de que não há outros processos usando a mesma porta
+3. Se estiver usando HTTPS no cliente, a conexão WebSocket deve usar WSS
+4. Em produção no Vercel, verifique se os WebSockets estão habilitados no seu plano
+5. Consulte os logs do Vercel para identificar possíveis erros de conexão
+
+## Desenvolvimento Local
+
+Para executar o projeto localmente:
+
+1. Clone o repositório
+2. Instale as dependências: `npm install`
+3. Crie um arquivo `.env` na raiz do projeto com as variáveis necessárias
+4. Execute o servidor de desenvolvimento: `npm run dev`
+
 ## Deployment
 
 Para instruções de deployment na plataforma Railway, consulte o arquivo [README-RAILWAY.md](./README-RAILWAY.md).
@@ -118,9 +169,6 @@ Para questões ou suporte, entre em contato com:
 ## Configuração para Deploy no Vercel
 
 Para configurar corretamente o projeto no Vercel, siga estas etapas:
-
-1. Crie um novo projeto no Vercel e conecte ao repositório GitHub
-2. Configure as seguintes variáveis de ambiente no projeto Vercel:
 
 ```
 SUPABASE_URL=https://seuprojetosupabase.supabase.co
